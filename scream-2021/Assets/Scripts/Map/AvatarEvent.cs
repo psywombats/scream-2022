@@ -26,6 +26,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     public Rigidbody Body => body ?? (body = GetComponent<Rigidbody>());
 
     private Vector3 velocityThisFrame;
+    private Vector2Int lastLoc;
     private bool tracking;
 
     public void Start() {
@@ -36,14 +37,29 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     public virtual void Update() {
         tracking = false;
+
+        if (Event.Location != lastLoc) {
+            var targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(Event.PositionPx);
+            foreach (var tryTarget in targetEvents) {
+                if (tryTarget.IsSwitchEnabled && tryTarget.IsPassableBy(Event) && tryTarget != Event) {
+                    tryTarget.GetComponent<Dispatch>().Signal(MapEvent.EventCollide, this);
+                    return;
+                }
+            }
+        }
+        lastLoc = Event.Location;
+
+        if (velocityThisFrame != Vector3.zero) {
+            CheckPhysicsComponent(new Vector3(velocityThisFrame.x, 0, 0));
+            CheckPhysicsComponent(new Vector3(0, 0, velocityThisFrame.z));
+        }
+
         Body.velocity = velocityThisFrame;
         velocityThisFrame = Vector3.zero;
-        Body.angularVelocity = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
     }
 
     public bool OnCommand(InputManager.Command command, InputManager.Event eventType) {
-        if (InputPaused) {
+        if (InputPaused || Event.IsTracking) {
             return true;
         }
         switch (eventType) {
@@ -95,18 +111,53 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         return tracking;
     }
 
+    private void CheckPhysicsComponent(Vector3 delta) {
+        if (delta == Vector3.zero) {
+            return;
+        }
+
+        delta = delta.normalized;
+        var adjustedPos = transform.localPosition + .7f * (Vector3.zero + delta);
+        var adjustedLoc = MapEvent.WorldPositionToTileCoords(adjustedPos);
+        if (adjustedLoc != Event.Location) {
+            var h1 = Event.Map.Terrain.HeightAt(Event.Location);
+            var h2 = Event.Map.Terrain.HeightAt(adjustedLoc);
+            if ((Mathf.Abs(h1 - h2) == .5f) || (h1 - h2 == 1)) {
+                // these are stairs and we are moving towards them
+                velocityThisFrame = Vector3.zero;
+                Chara.Facing = OrthoDirExtensions.DirectionOf3D(delta);
+                StartCoroutine(Event.LinearStepRoutine(adjustedLoc));
+            }
+        }
+
+        adjustedPos = transform.localPosition + .3f * (Vector3.zero + delta);
+        adjustedLoc = MapEvent.WorldPositionToTileCoords(adjustedPos);
+        if (adjustedLoc != Event.Location) {
+            var h1 = Event.Map.Terrain.HeightAt(Event.Location);
+            var h2 = Event.Map.Terrain.HeightAt(adjustedLoc);
+            if (h1 - h2 >= 1) {
+                // this is a steep drop
+                if (adjustedLoc.x != Event.Location.x) {
+                    velocityThisFrame.x = 0;
+                }
+                if (adjustedLoc.y != Event.Location.y) {
+                    velocityThisFrame.z = 0;
+                }
+            }
+        }
+    }
+
     private void Interact() {
-        // TODO: scream2021
-        Vector2Int target = GetComponent<MapEvent>().Location + VectorForDir(GetComponent<CharaEvent>().Facing);
+        var target = Event.PositionPx + Chara.Facing.Px3D() * .5f;
         List<MapEvent> targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(target);
         foreach (MapEvent tryTarget in targetEvents) {
-            if (tryTarget.IsSwitchEnabled && !tryTarget.IsPassableBy(Event)) {
+            if (tryTarget.IsSwitchEnabled && !tryTarget.IsPassableBy(Event) && tryTarget != Event) {
                 tryTarget.GetComponent<Dispatch>().Signal(MapEvent.EventInteract, this);
                 return;
             }
         }
 
-        target = GetComponent<MapEvent>().Location;
+        target = Event.PositionPx;
         targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(target);
         foreach (MapEvent tryTarget in targetEvents) {
             if (tryTarget.IsSwitchEnabled && tryTarget.IsPassableBy(Event)) {

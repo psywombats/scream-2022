@@ -88,7 +88,7 @@ public static class OrthoDirExtensions {
     public static int Px3DX(this OrthoDir dir) { return dir.GetAttribute<OrthoDirAttribute>().Px3DX; }
     public static int Px3DY(this OrthoDir dir) { return dir.GetAttribute<OrthoDirAttribute>().Px3DY; }
     public static int Px3DZ(this OrthoDir dir) { return dir.GetAttribute<OrthoDirAttribute>().Px3DZ; }
-    public static Vector3Int Px3D(this OrthoDir dir) { return new Vector3Int(dir.Px3DX(), dir.Px3DY(), dir.Px3DZ()); }
+    public static Vector3 Px3D(this OrthoDir dir) { return new Vector3Int(dir.Px3DX(), dir.Px3DY(), dir.Px3DZ()); }
 
     public static int Ordinal(this OrthoDir dir) { return dir.GetAttribute<OrthoDirAttribute>().Ordinal; }
     public static string DirectionName(this OrthoDir dir) { return dir.GetAttribute<OrthoDirAttribute>().DirectionName; }

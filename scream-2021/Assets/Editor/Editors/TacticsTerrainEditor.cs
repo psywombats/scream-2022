@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 [CustomEditor(typeof(TacticsTerrainMesh))]
 public class TacticsTerrainEditor : Editor {
 
-    private static readonly string GenericPrefabPath = "Assets/Resources/Prefabs/MapEvent3D.prefab";
+    private static readonly string GenericPrefabPath = "Assets/Resources/Prefabs/MapEvent/MapEvent3D.prefab";
 
     private enum EditMode {
         None,

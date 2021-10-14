@@ -78,7 +78,9 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void LateUpdate() {
-        AutofaceDirection();
+        if (!Event.IsTracking) {
+            AutofaceDirection();
+        }
 
         bool steppingThisFrame = IsSteppingThisFrame();
         stepping = steppingThisFrame || wasSteppingLastFrame;
@@ -103,7 +105,7 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void UpdateAppearance(bool fixedTime = false) {
-        if (renderer == null || fixedTime) {
+        if (renderer == null) {
             return;
         }
         renderer.sprite = SpriteForMain(fixedTime);
@@ -177,13 +179,15 @@ public class CharaEvent : MonoBehaviour {
         var old = lastPosition;
         old.y = 0;
         var delta = position - old;
-        return (delta.sqrMagnitude > 0 && delta.sqrMagnitude < Map.UnitsPerTile)  ||
-            (GetComponent<AvatarEvent>() && GetComponent<AvatarEvent>().WantsToTrack());
+        return (delta.sqrMagnitude > 0 && delta.sqrMagnitude < Map.UnitsPerTile)  
+            || Event.IsTracking
+            || (GetComponent<AvatarEvent>() && GetComponent<AvatarEvent>().WantsToTrack());
     }
 
     private void AutofaceDirection() {
         var delta = transform.position - lastPosition;
-        if (delta.sqrMagnitude == 0) {
+        delta.y = 0f;
+        if (delta.sqrMagnitude / Time.deltaTime < .05) {
             return;
         }
         var xcom = new Vector3(delta.x, 0, 0);

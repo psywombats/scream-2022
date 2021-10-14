@@ -4,7 +4,7 @@ using UnityEditor;
 [CustomEditor(typeof(MapEvent), true)]
 public class MapEventEditor : Editor {
 
-    private static readonly string DollPath = "Assets/Resources/Prefabs/Doll.prefab";
+    private static readonly string DollPath = "Assets/Resources/Prefabs/MapEvent/Doll.prefab";
 
     public override void OnInspectorGUI() {
         MapEvent mapEvent = (MapEvent)target;

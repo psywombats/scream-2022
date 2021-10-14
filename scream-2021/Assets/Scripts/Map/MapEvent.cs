@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.Tilemaps;
 
 
@@ -29,6 +31,7 @@ public class MapEvent : MonoBehaviour {
 
     // Properties
     public LuaMapEvent LuaObject { get; private set; }
+    public bool IsTracking { get; private set; }
     
     public Vector3 PositionPx {
         get { return transform.localPosition; }
@@ -145,37 +148,11 @@ public class MapEvent : MonoBehaviour {
     }
 
     public bool CanPassAt(Vector2Int loc) {
-        if (!GetComponent<MapEvent>().IsSwitchEnabled) {
-            return true;
-        }
-        if (loc.x < 0 || loc.x >= Map.Width || loc.y < 0 || loc.y >= Map.Height) {
-            return false;
-        }
-        CharaEvent chara = GetComponent<CharaEvent>();
-        if (chara != null) {
-            if (!chara.CanCrossTileGradient(Location, loc)) {
-                return false;
-            }
-        }
-        foreach (Tilemap layer in Map.Layers) {
-            if (layer.transform.position.z >= Map.ObjectLayer.transform.position.z && 
-                    !Map.IsChipPassableAt(layer, loc)) {
-                return false;
-            }
-        }
-        foreach (MapEvent mapEvent in Map.GetEventsAt(loc)) {
-            if (!mapEvent.IsPassableBy(this)) {
-                return false;
-            }
-        }
-
-        return true;
+        throw new NotImplementedException();
     }
 
-    public bool ContainsLocation(Vector2Int loc) {
-        Vector2Int pos1 = Location;
-        Vector2Int pos2 = Location + size;
-        return loc.x >= pos1.x && loc.x < pos2.x && loc.y >= pos1.y && loc.y < pos2.y;
+    public bool ContainsPosition(Vector3 pos) {
+        return Vector3.Distance(pos, PositionPx) <= .62f;
     }
 
     public void SetLocation(Vector2Int location) {
@@ -230,6 +207,20 @@ public class MapEvent : MonoBehaviour {
 
     public OrthoDir DirectionTo(Vector2Int position) {
         return OrthoDirExtensions.DirectionOf3D(position - this.Location);
+    }
+
+    public IEnumerator LinearStepRoutine(Vector2Int target) {
+        return LinearStepRoutine(TileToWorldCoords(target));
+    }
+    public IEnumerator LinearStepRoutine(Vector3 target) {
+        IsTracking = true;
+        var elapsed = 0f;
+        while (transform.localPosition != target && elapsed < 1f) {
+            transform.localPosition = Vector3.MoveTowards(transform.localPosition, target, tilesPerSecond * Time.deltaTime);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        IsTracking = false;
     }
 
     protected void DrawGizmoSelf() {

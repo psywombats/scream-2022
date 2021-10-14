@@ -98,13 +98,11 @@ public class Map : MonoBehaviour {
 
         return passabilityMap[layer][loc.x, loc.y];
     }
-
-    // careful, this implementation is straight from MGNE, it's efficiency is questionable, to say the least
-    // it does support bigger than 1*1 events though
-    public List<MapEvent> GetEventsAt(Vector2Int loc) {
+    
+    public List<MapEvent> GetEventsAt(Vector3 pos) {
         List<MapEvent> events = new List<MapEvent>();
         foreach (MapEvent mapEvent in objectLayer.GetComponentsInChildren<MapEvent>()) {
-            if (mapEvent.ContainsLocation(loc)) {
+            if (mapEvent.ContainsPosition(pos)) {
                 events.Add(mapEvent);
             }
         }
@@ -112,14 +110,14 @@ public class Map : MonoBehaviour {
     }
 
     // returns the first event at loc that implements T
-    public T GetEventAt<T>(Vector2Int loc) {
-        List<MapEvent> events = GetEventsAt(loc);
-        foreach (MapEvent mapEvent in events) {
+    public T GetEventAt<T>(Vector3 pos) {
+        var events = GetEventsAt(pos);
+        foreach (var mapEvent in events) {
             if (mapEvent.GetComponent<T>() != null) {
                 return mapEvent.GetComponent<T>();
             }
         }
-        return default(T);
+        return default;
     }
 
     // returns all events that have a component of type t
