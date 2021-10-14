@@ -16,5 +16,7 @@ public class CharaEventEditor : Editor {
             chara.UpdateAppearance();
             EditorUtility.SetDirty(target);
         }
+        
+        chara.UpdateAppearance(fixedTime: true);
     }
 }

@@ -157,8 +157,9 @@ public class TacticsTerrainEditor : Editor {
             EditorGUI.BeginDisabledGroup(mode != EditMode.Selected);
             if (GUILayout.Button("Create MapEvent3D")) {
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(GenericPrefabPath);
-                MapEvent mapEvent = Instantiate(prefab).GetComponent<MapEvent>();
-                mapEvent.name = "Event" + Random.Range(1000000, 9999999);
+                var instance = (GameObject) PrefabUtility.InstantiatePrefab(prefab);
+                MapEvent mapEvent = instance.GetComponent<MapEvent>();
+                instance.name = "Event" + Random.Range(1000000, 9999999);
                 AddEvent(mapEvent);
             }
             EditorGUI.EndDisabledGroup();
@@ -561,8 +562,8 @@ public class TacticsTerrainEditor : Editor {
 
     private void AddEvent(MapEvent mapEvent) {
         TacticsTerrainMesh terrain = (TacticsTerrainMesh)target;
-        Map map = terrain.GetComponent<Map>();
-        GameObjectUtility.SetParentAndAlign(mapEvent.gameObject, map.objectLayer.gameObject);
+        Map map = terrain.map;
+        GameObjectUtility.SetParentAndAlign(mapEvent.gameObject, map.ObjectLayer.gameObject);
         Undo.RegisterCreatedObjectUndo(mapEvent, "Create " + mapEvent.name);
         mapEvent.SetLocation(new Vector2Int((int)primarySelection.pos.x, (int)primarySelection.pos.z));
         Selection.activeObject = mapEvent.gameObject;

@@ -9,14 +9,17 @@ using System;
 [DisallowMultipleComponent]
 public class CharaEvent : MonoBehaviour {
 
+    public const float HitThick = .4f;
     private const float DesaturationDuration = 0.5f;
     private const float StepsPerSecond = 2.0f;
 
     [SerializeField] public new SpriteRenderer renderer;
 
-    private Vector2 lastPosition;
+    private Vector3 lastPosition;
     private Vector3 targetPx;
-    private int oldX;
+    private bool stepping;
+    private bool wasSteppingLastFrame;
+    private float moveTime;
 
     public MapEvent Event { get { return GetComponent<MapEvent>(); } }
     public Map Map { get { return Event.Map; } }
@@ -73,14 +76,21 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void Update() {
-        //if (animates) {
-        //    var elapsed = Time.time;
-        //    var newX = Mathf.FloorToInt(elapsed * StepsPerSecond) % Sprites.StepCount;
-        //    if (oldX != newX) {
-        //        UpdateAppearance();
-        //        oldX = newX;
-        //    }
-        //}
+        AutofaceDirection();
+
+        bool steppingThisFrame = IsSteppingThisFrame();
+        stepping = steppingThisFrame || wasSteppingLastFrame;
+        if (steppingThisFrame && !wasSteppingLastFrame) {
+            moveTime += 1f / StepsPerSecond;
+        } else if (!steppingThisFrame && !wasSteppingLastFrame) {
+            moveTime = 0.0f;
+        } else {
+            moveTime += Time.deltaTime;
+        }
+        wasSteppingLastFrame = steppingThisFrame;
+        lastPosition = transform.position;
+
+        UpdateAppearance();
     }
 
     public void UpdateEnabled(bool enabled) {
@@ -90,8 +100,11 @@ public class CharaEvent : MonoBehaviour {
         UpdateAppearance();
     }
 
-    public void UpdateAppearance() {
-        renderer.sprite = SpriteForMain();
+    public void UpdateAppearance(bool fixedTime = false) {
+        if (renderer == null) {
+            return;
+        }
+        renderer.sprite = SpriteForMain(fixedTime);
     }
 
     public void FaceToward(MapEvent other) {
@@ -107,6 +120,11 @@ public class CharaEvent : MonoBehaviour {
         }
     }
 
+    public void SetAppearance(SpritesheetData sprite) {
+        sprites.Set(sprite);
+        UpdateAppearance();
+    }
+
     public void SetAppearanceByTag(string fieldSpriteTag) {
         Sprites.SetByTag(fieldSpriteTag);
         UpdateAppearance();
@@ -116,9 +134,14 @@ public class CharaEvent : MonoBehaviour {
         throw new NotImplementedException();
     }
 
-    private Sprite SpriteForMain() {
-        int x = Mathf.FloorToInt(Time.time * StepsPerSecond) % Sprites.StepCount;
-        return sprites.GetFrame(Facing, x);
+    private Sprite SpriteForMain(bool fixedTime) {
+        if (!fixedTime) {
+            var x = (Mathf.FloorToInt(moveTime * StepsPerSecond) + 1) % Sprites.StepCount;
+            return Sprites.GetFrame(Facing, x);
+        } else {
+            return Sprites.GetFrame(Facing, 1);
+        }
+        
     }
 
     public bool CanCrossTileGradient(Vector2Int from, Vector2Int to) {
@@ -144,5 +167,28 @@ public class CharaEvent : MonoBehaviour {
         Vector3 targetScreen = cam.GetCameraComponent().WorldToScreenPoint(targetWorld);
         Vector3 delta = targetScreen - ourScreen;
         return OrthoDirExtensions.DirectionOf2D(new Vector2(delta.x, -delta.y));
+    }
+
+    private bool IsSteppingThisFrame() {
+        var position = transform.position;
+        var delta = position - lastPosition;
+        return (delta.sqrMagnitude > 0 && delta.sqrMagnitude < Map.UnitsPerTile)  ||
+            (GetComponent<AvatarEvent>() && GetComponent<AvatarEvent>().WantsToTrack());
+    }
+
+    private void AutofaceDirection() {
+        var delta = transform.position - lastPosition;
+        if (delta.sqrMagnitude == 0) {
+            return;
+        }
+        var xcom = new Vector3(delta.x, delta.y, 0);
+        if (xcom != Vector3.zero && OrthoDirExtensions.DirectionOf3D(xcom) == Facing) {
+            return;
+        }
+        var zcom = new Vector3(0, delta.y, delta.z);
+        if (zcom != Vector3.zero && OrthoDirExtensions.DirectionOf3D(zcom) == Facing) {
+            return;
+        }
+        Facing = OrthoDirExtensions.DirectionOf3D(delta);
     }
 }

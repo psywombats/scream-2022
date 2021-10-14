@@ -4,11 +4,10 @@ using UnityEngine;
 
 [RequireComponent(typeof(CharaEvent))]
 [RequireComponent(typeof(MapEvent))]
+[RequireComponent(typeof(Rigidbody))]
 public class AvatarEvent : MonoBehaviour, IInputListener {
 
     public static AvatarEvent Instance => MapManager.Instance.Avatar;
-
-    private bool wantsToTrack;
 
     private int pauseCount;
     public bool InputPaused {
@@ -23,6 +22,12 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     private CharaEvent chara;
     public CharaEvent Chara => chara ?? (chara = GetComponent<CharaEvent>());
 
+    private Rigidbody body;
+    public Rigidbody Body => body ?? (body = GetComponent<Rigidbody>());
+
+    private Vector3 velocityThisFrame;
+    private bool tracking;
+
     public void Start() {
         MapManager.Instance.Avatar = this;
         InputManager.Instance.PushListener(this);
@@ -30,7 +35,11 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     public virtual void Update() {
-        wantsToTrack = false;
+        tracking = false;
+        Body.velocity = velocityThisFrame;
+        velocityThisFrame = Vector3.zero;
+        Body.angularVelocity = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
     }
 
     public bool OnCommand(InputManager.Command command, InputManager.Event eventType) {
@@ -83,7 +92,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     public bool WantsToTrack() {
-        return wantsToTrack;
+        return tracking;
     }
 
     private void Interact() {
@@ -108,7 +117,10 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     private bool TryStep(OrthoDir dir) {
-        throw new NotImplementedException();
+        tracking = true;
+        var component = (Vector3.zero + dir.Px3D()) * Event.tilesPerSecond;
+        velocityThisFrame += component;
+        return true;
     }
 
     protected Vector2Int VectorForDir(OrthoDir dir) {

@@ -53,9 +53,9 @@ internal sealed class SpriteImporter : AssetPostprocessor {
 
                     var index = 0;
                     var spriteData = new List<SpriteMetaData>();
-                    for (var y = 0; y < 2; y += 1) {
-                        for (var x = 0; x < 4; x += 1) {
-                            var subspriteName = assetName + "_0" + index;
+                    for (var y = 0; y < textureSize.y / 128; y += 1) {
+                        for (var x = 0; x < textureSize.x / 72; x += 1) {
+                            var subspriteName = assetName + "_" + index.ToString("D2");
                             var origin = new Vector2Int(x * 72, y * 128);
                             spriteData.AddRange(CreateAllMetadata(subspriteName, textureSize, origin, edgeSize, dirs, rows: 4, cols: 3));
                             index += 1;
@@ -144,9 +144,10 @@ internal sealed class SpriteImporter : AssetPostprocessor {
                 var assetName = path.Substring(path.LastIndexOf("/") + 1, path.LastIndexOf(".") - path.LastIndexOf("/") - 1);
                 if (path.Contains("Charas")) {
                     if (path.Contains("RM2K")) {
-                        var frames = new List<int>() { 0, 2 };
-                        for (var i = 0; i < 8; i += 1) {
-                            var subspriteName = assetName + "0" + i;
+                        var frames = new List<int>() { 0, 1, 2, 1 };
+                        var max = AssetDatabase.LoadAllAssetsAtPath(path).Count() / 12;
+                        for (var i = 0; i < max; i += 1) {
+                            var subspriteName = assetName + "_" + i.ToString("D2");
                             CreateScriptableObjectForSubsprite(path, subspriteName, frames);
                         }
                     } else if (path.Contains("Ocean")) {

@@ -9,7 +9,7 @@ using System.Collections;
 public class GameSceneManager : SingletonBehavior, IInputListener {
 
     public enum SceneType {
-        Map2D
+        Map3D
     }
 
     public enum WindowMode {

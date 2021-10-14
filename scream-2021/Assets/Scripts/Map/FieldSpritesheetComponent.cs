@@ -29,6 +29,10 @@ public class FieldSpritesheetComponent : MonoBehaviour {
         }
     }
 
+    public void Set(SpritesheetData data) {
+        spritesheet = data;
+    }
+
     public Sprite FrameForDirection(OrthoDir facing) {
         return GetFrame(facing, 0);
     }

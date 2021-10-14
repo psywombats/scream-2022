@@ -5,21 +5,17 @@ using UnityEngine.Tilemaps;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(Tilemap))]
-[RequireComponent(typeof(Map))]
 public class TacticsTerrainMesh : MonoBehaviour, ISerializationCallbackReceiver {
     
-    [HideInInspector]
-    public Vector2Int size;
-    [HideInInspector]
-    public float[] heights;
-    [HideInInspector]
-    public string paletteName;
+    [HideInInspector] public Vector2Int size;
+    [HideInInspector] public float[] heights;
+    [HideInInspector] public string paletteName;
 
-    public Tile defaultTopTile;
-    public Tile defaultFaceTile;
+    [SerializeField] public Map map;
+    [SerializeField] public Tile defaultTopTile;
+    [SerializeField] public Tile defaultFaceTile;
 
-    [HideInInspector]
-    public FacingTileDictionary serializedFacingTiles;
+    [HideInInspector] public FacingTileDictionary serializedFacingTiles;
     private Dictionary<FacingTileKey, Tile> facingTiles = new Dictionary<FacingTileKey, Tile>();
 
     private Tilemap _tilemap;
@@ -65,6 +61,22 @@ public class TacticsTerrainMesh : MonoBehaviour, ISerializationCallbackReceiver 
         size = newSize;
     }
 
+    public float HeightAt(Vector2 pos) {
+        var x1 = Mathf.FloorToInt(pos.x + .33f);
+        var x2 = Mathf.CeilToInt(pos.x - .33f);
+        var y1 = Mathf.FloorToInt(pos.y + .33f);
+        var y2 = Mathf.CeilToInt(pos.y - .33f);
+
+        var h1 = HeightAt(x1, y1);
+        var h2 = HeightAt(x1, y2);
+        var ha = Mathf.Lerp(h1, h2, pos.y - y1);
+
+        var h3 = HeightAt(x2, y1);
+        var h4 = HeightAt(x2, y2);
+        var hb = Mathf.Lerp(h3, h4, pos.y - y1);
+
+        return Mathf.Lerp(ha, hb, pos.x - x1);
+    }
     public float HeightAt(Vector2Int pos) {
         return HeightAt(pos.x, pos.y);
     }

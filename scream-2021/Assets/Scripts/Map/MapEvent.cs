@@ -1,13 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 
-/**
- * The generic "thing on the map" class for MGNE2. Usually comes from Tiled.
- */
+
 [RequireComponent(typeof(Dispatch))]
-[RequireComponent(typeof(LuaCutsceneContext))]
 [RequireComponent(typeof(RectTransform))]
 [DisallowMultipleComponent]
 public class MapEvent : MonoBehaviour {
@@ -163,7 +158,7 @@ public class MapEvent : MonoBehaviour {
             }
         }
         foreach (Tilemap layer in Map.Layers) {
-            if (layer.transform.position.z >= Map.objectLayer.transform.position.z && 
+            if (layer.transform.position.z >= Map.ObjectLayer.transform.position.z && 
                     !Map.IsChipPassableAt(layer, loc)) {
                 return false;
             }

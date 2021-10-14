@@ -13,10 +13,11 @@ public class Map : MonoBehaviour {
 
     public const string ResourcePath = "Maps/";
     
-    public Grid grid;
-    public ObjectLayer objectLayer;
-
-    public string bgmKey { get; private set; }
+    [SerializeField] private Grid grid = null;
+    [SerializeField] private ObjectLayer objectLayer = null;
+    [SerializeField] private TacticsTerrainMesh terrain = null;
+    [Space]
+    [SerializeField] private string bgmKey = null;
     
     // true if the tile in question is passable at x,y
     private Dictionary<Tilemap, bool[,]> passabilityMap;
@@ -57,14 +58,9 @@ public class Map : MonoBehaviour {
             return layers;
         }
     }
-
-    private TacticsTerrainMesh terrain;
-    public TacticsTerrainMesh Terrain {
-        get {
-            if (terrain == null) terrain = GetComponent<TacticsTerrainMesh>();
-            return terrain;
-        }
-    }
+    
+    public TacticsTerrainMesh Terrain => terrain;
+    public ObjectLayer ObjectLayer => objectLayer;
 
     public void Start() {
         // TODO: figure out loading

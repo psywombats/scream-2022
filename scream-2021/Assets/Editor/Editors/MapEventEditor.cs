@@ -16,7 +16,8 @@ public class MapEventEditor : Editor {
 
         if (!mapEvent.GetComponent<CharaEvent>()) {
             if (GUILayout.Button("Add Chara Event")) {
-                GameObject doll = Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(DollPath));
+                GameObject dollPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DollPath);
+                var doll = (GameObject)PrefabUtility.InstantiatePrefab(dollPrefab);
                 doll.name = mapEvent.name + " (doll)";
                 GameObjectUtility.SetParentAndAlign(doll, mapEvent.gameObject);
                 CharaEvent chara = mapEvent.gameObject.AddComponent<CharaEvent>();
@@ -26,7 +27,7 @@ public class MapEventEditor : Editor {
                 Selection.activeObject = doll;
 
                 // hardcode weirdness
-                doll.transform.localPosition = new Vector3(Map.PxPerTile / 2, -Map.PxPerTile, 0.0f);
+                doll.transform.localPosition = new Vector3(Map.UnitsPerTile / 2, 0, 0.25f);
             }
             GUILayout.Space(25.0f);
         }

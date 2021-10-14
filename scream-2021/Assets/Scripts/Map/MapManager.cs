@@ -91,7 +91,7 @@ public class MapManager : SingletonBehavior {
         if (Avatar == null) {
             AddInitialAvatar(map);
         } else {
-            Avatar.transform.SetParent(map.objectLayer.transform, false);
+            Avatar.transform.SetParent(map.ObjectLayer.transform, false);
         }
 
         if (map != ActiveMap) {
@@ -130,7 +130,7 @@ public class MapManager : SingletonBehavior {
 
     private void AddInitialAvatar(Map map) {
         Avatar = FindObjectOfType<AvatarEvent>();
-        Avatar.transform.SetParent(map.objectLayer.transform, false);
+        Avatar.transform.SetParent(map.ObjectLayer.transform, false);
         Camera.target = Avatar.Event;
         Camera.ManualUpdate();
     }
