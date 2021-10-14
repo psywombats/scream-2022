@@ -12,7 +12,8 @@ public class Map : MonoBehaviour {
     public const float UnitsPerTile = 1;
 
     public const string ResourcePath = "Maps/";
-    
+
+    [SerializeField] private string mapName = "New map";
     [SerializeField] private Grid grid = null;
     [SerializeField] private ObjectLayer objectLayer = null;
     [SerializeField] private TacticsTerrainMesh terrain = null;
@@ -36,6 +37,11 @@ public class Map : MonoBehaviour {
             return _size;
         }
     }
+
+    public string MapName => mapName;
+    public TacticsTerrainMesh Terrain => terrain;
+    public ObjectLayer ObjectLayer => objectLayer;
+
     public Vector2 SizePx { get { return size * PxPerTile; } }
     public int Width { get { return size.x; } }
     public int Height { get { return size.y; } }
@@ -58,9 +64,6 @@ public class Map : MonoBehaviour {
             return layers;
         }
     }
-    
-    public TacticsTerrainMesh Terrain => terrain;
-    public ObjectLayer ObjectLayer => objectLayer;
 
     public void Start() {
         // TODO: figure out loading

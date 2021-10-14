@@ -10,8 +10,8 @@ public class MapEventEditor : Editor {
         MapEvent mapEvent = (MapEvent)target;
 
         if (GUI.changed) {
-            //mapEvent.SetScreenPositionToMatchTilePosition();
-            //mapEvent.SetDepth();
+            mapEvent.SetScreenPositionToMatchTilePosition();
+            mapEvent.SetDepth();
         }
 
         if (!mapEvent.GetComponent<CharaEvent>()) {

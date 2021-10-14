@@ -86,9 +86,9 @@ internal sealed class SpriteImporter : AssetPostprocessor {
                     }
                     importer.spritesheet = spriteData.ToArray();
                 } else {
-                    var edgeSize = new Vector2Int(16, 16);
-                    var dirs = new List<OrthoDir>() { OrthoDir.East, OrthoDir.North, OrthoDir.West, OrthoDir.South };
-                    var sprites = CreateAllMetadata(assetName, textureSize, Vector2Int.zero, edgeSize, dirs, rows: 4, cols: 2);
+                    var edgeSize = new Vector2Int(32, 48);
+                    var dirs = new List<OrthoDir>() { OrthoDir.North, OrthoDir.East, OrthoDir.South, OrthoDir.West };
+                    var sprites = CreateAllMetadata(assetName +"_00", textureSize, Vector2Int.zero, edgeSize, dirs, rows: 4, cols: 3);
                     importer.spritesheet = sprites.ToArray();
                 }
             }
@@ -158,7 +158,7 @@ internal sealed class SpriteImporter : AssetPostprocessor {
                             CreateScriptableObjectForSubsprite(path, subspriteName, frames);
                         }
                     } else {
-                        CreateScriptableObject(path);
+                        CreateScriptableObjectForSubsprite(path, assetName + "_00", new List<int>() { 0, 1, 2, 1 });
                     }
                 } else if (path.Contains("Battlers") && !path.Contains("_mask")) {
                     CreateMaskForBattler(path, assetName);

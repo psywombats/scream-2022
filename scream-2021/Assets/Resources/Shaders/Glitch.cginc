@@ -4,8 +4,6 @@
 #include "UnityShaderVariables.cginc"
 #include "UnitySprites.cginc"
 
-float _Elapsed;
-
 float _Wave[512];
 int _WaveSamples;
 
@@ -165,12 +163,12 @@ float variance3(float source, float variance, float varianceRange, float3 seed) 
 
 // same as interval but no covariance and not clamped (for time)
 float intervalT(float interval) {
-    return ((float)((int)(_Elapsed * (1.0/interval)))) * interval;
+    return ((float)((int)(_Time[1] * (1.0/interval)))) * interval;
 }
 
 // same as interval, except it should covary based on a given seed
 float intervalR(float source, float interval, float seed) {
-    float stagger = rand2(seed, _Elapsed);
+    float stagger = rand2(seed, _Time[1]);
     float result = ((float)((int)((source + stagger) * (1.0/interval)))) * interval - stagger;
     return clamp(result, 0.0, 1.0);
 }
@@ -225,7 +223,7 @@ float clampShade(float source, float shadesAllowed, bool dither, bool vary, floa
     
     float roll;
     if (vary) {
-        roll = rand3(_Elapsed, seed[0] * 34.0, seed[1] * 35.0);
+        roll = rand3(_Time[1], seed[0] * 34.0, seed[1] * 35.0);
     } else {
         roll = rand2(seed[0] * 34.0, seed[1] * 35.0);
     }
@@ -265,7 +263,7 @@ fixed4 preserveBrightness(fixed4 c1, fixed4 c2) {
 // seed: covariant
 fixed4 invertChannel(fixed4 source, int channelIndex, float chance, float seed) {
     fixed4 result = source;
-    float roll = rand2(_Elapsed, seed);
+    float roll = rand2(_Time[1], seed);
     float invertChance = cubicEase(chance, 1.0);
     if ((roll > 1.0 - invertChance) && (source.a > 0.02 || _PDistAlphaIncluded > 0.0)) {
         result[channelIndex] = 1.0 - result[channelIndex];
@@ -274,7 +272,7 @@ fixed4 invertChannel(fixed4 source, int channelIndex, float chance, float seed) 
 }
 fixed4 maxChannel(fixed4 source, int channelIndex, float chance, float seed) {
     fixed4 result = source;
-    float roll = rand2(_Elapsed, seed);
+    float roll = rand2(_Time[1], seed);
     float invertChance = cubicEase(chance, 1.0);
     if ((roll > 1.0 - invertChance) && (source.a > 0.02 || _PDistAlphaIncluded > 0.0)) {
         result[channelIndex] = 1.0;
@@ -283,7 +281,7 @@ fixed4 maxChannel(fixed4 source, int channelIndex, float chance, float seed) {
 }
 
 fixed4 glitchFragFromCoords(float2 xy, float4 pxXY) {
-    float t = _Elapsed + 500.0;
+    float t = _Time[1] + 500.0;
     
     // horizontal chunk displacement
     if (_HDispEnabled > 0.0) {
@@ -303,7 +301,7 @@ fixed4 glitchFragFromCoords(float2 xy, float4 pxXY) {
         float syncChance = cubicEase(_VSyncChance, 1.0);
         float syncRoll = rand2(syncChunk, 20.0);
         if (syncRoll > 1.0 - syncChance) {
-            float syncElapsed = (_Elapsed - syncChunk) / syncDuration;
+            float syncElapsed = (_Time[1] - syncChunk) / syncDuration;
             xy[1] -= syncElapsed;
         } else {
             float jitterDuration = cubicEase(_VSyncJitterDuration, 0.4);
@@ -311,7 +309,7 @@ fixed4 glitchFragFromCoords(float2 xy, float4 pxXY) {
             float jitterChance = cubicEase(_VSyncJitterChance, 1.0);
             float jitterRoll = rand2(jitterChunk, 21.0);
             if (jitterRoll > 1.0 - jitterChance) {
-                float jitterElapsed = (_Elapsed - jitterChunk) / jitterDuration;
+                float jitterElapsed = (_Time[1] - jitterChunk) / jitterDuration;
                 float power = randRange(_VSyncPowerMin, _VSyncPowerMax, 0.4, float3(jitterChunk, 22.0, 22.0));
                 if (jitterElapsed < 0.5) {
                     power *= (jitterElapsed * 2.0);
@@ -395,7 +393,7 @@ fixed4 glitchFragFromCoords(float2 xy, float4 pxXY) {
         float chance = cubicEase(_TDistChance, 1.0);
         float roll = rand2(chunk, 26.0);
         if (roll > 1.0 - chance) {
-            float elapsed = (_Elapsed - chunk) / duration;
+            float elapsed = (_Time[1] - chunk) / duration;
             float maxSize = cubicEase(max(_TDistColorBarSize, _TDistStaticBarSize), 1.0);
             if (_TDistColorBarSize > 0.0) {
                 float colorSize = cubicEase(_TDistColorBarSize, 1.0);

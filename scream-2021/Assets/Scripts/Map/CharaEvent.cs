@@ -48,8 +48,10 @@ public class CharaEvent : MonoBehaviour {
     public OrthoDir Facing {
         get { return _facing; }
         set {
-            _facing = value;
-            UpdateAppearance();
+            if (_facing != value) {
+                _facing = value;
+                UpdateAppearance();
+            }
         }
     }
 
@@ -75,7 +77,7 @@ public class CharaEvent : MonoBehaviour {
         UpdateEnabled(Event.IsSwitchEnabled);
     }
 
-    public void Update() {
+    public void LateUpdate() {
         AutofaceDirection();
 
         bool steppingThisFrame = IsSteppingThisFrame();
@@ -101,7 +103,7 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void UpdateAppearance(bool fixedTime = false) {
-        if (renderer == null) {
+        if (renderer == null || fixedTime) {
             return;
         }
         renderer.sprite = SpriteForMain(fixedTime);
@@ -171,7 +173,10 @@ public class CharaEvent : MonoBehaviour {
 
     private bool IsSteppingThisFrame() {
         var position = transform.position;
-        var delta = position - lastPosition;
+        position.y = 0;
+        var old = lastPosition;
+        old.y = 0;
+        var delta = position - old;
         return (delta.sqrMagnitude > 0 && delta.sqrMagnitude < Map.UnitsPerTile)  ||
             (GetComponent<AvatarEvent>() && GetComponent<AvatarEvent>().WantsToTrack());
     }
@@ -181,11 +186,11 @@ public class CharaEvent : MonoBehaviour {
         if (delta.sqrMagnitude == 0) {
             return;
         }
-        var xcom = new Vector3(delta.x, delta.y, 0);
+        var xcom = new Vector3(delta.x, 0, 0);
         if (xcom != Vector3.zero && OrthoDirExtensions.DirectionOf3D(xcom) == Facing) {
             return;
         }
-        var zcom = new Vector3(0, delta.y, delta.z);
+        var zcom = new Vector3(0, 0, delta.z);
         if (zcom != Vector3.zero && OrthoDirExtensions.DirectionOf3D(zcom) == Facing) {
             return;
         }

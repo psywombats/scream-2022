@@ -396,7 +396,7 @@ public class TacticsTerrainEditor : Editor {
         Mesh mesh = filter.sharedMesh;
         if (mesh == null) {
             mesh = new Mesh();
-            AssetDatabase.CreateAsset(mesh, "Assets/Resources/TacticsMaps/Meshes/" + terrain.gameObject.name + ".asset");
+            AssetDatabase.CreateAsset(mesh, "Assets/Resources/TacticsMaps/Meshes/" + terrain.map.name + ".asset");
             filter.sharedMesh = mesh;
         }
 

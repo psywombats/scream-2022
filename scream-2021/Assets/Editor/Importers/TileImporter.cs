@@ -36,6 +36,7 @@ public class TileImporter : AssetPostprocessor {
         importer.spriteImportMode = SpriteImportMode.Multiple;
         importer.spritePixelsPerUnit = Map.UnitsPerTile;
         importer.spritePivot = new Vector2(Map.PxPerTile / 2, Map.PxPerTile / 2);
+        importer.isReadable = true;
 
         List<SpriteMetaData> newSheet = new List<SpriteMetaData>();
         for (int y = 0; y < textureSize.y / Map.PxPerTile; y += 1) {
