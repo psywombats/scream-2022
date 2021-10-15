@@ -11,6 +11,7 @@ public class IndexDatabase : ScriptableObject {
     public SoundEffectIndexData SFX;
     public BGMIndexData BGM;
     public FieldSpriteIndexData FieldSprites;
+    public PortraitIndexData Portraits;
 
     public static IndexDatabase LoadInstance() {
         return Resources.Load<IndexDatabase>("Database/Database");

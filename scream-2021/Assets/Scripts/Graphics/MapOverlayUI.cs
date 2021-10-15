@@ -20,5 +20,5 @@ public class MapOverlayUI : MonoBehaviour {
         }
     }
 
-    public Textbox Textbox;
+    public SpeakboxComponent Textbox;
 }

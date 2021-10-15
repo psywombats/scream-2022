@@ -155,6 +155,15 @@ public class MapEvent : MonoBehaviour {
         return Vector3.Distance(pos, PositionPx) <= .62f;
     }
 
+    public Vector3 GetTextPos() {
+        var chara = GetComponent<CharaEvent>();
+        if (chara != null) {
+            return chara.renderer.transform.position + new Vector3(0, 2f, 0);
+        } else {
+            return PositionPx + new Vector3(0, .75f, 0);
+        }
+    }
+
     public void SetLocation(Vector2Int location) {
         parent = null;
         Location = location;

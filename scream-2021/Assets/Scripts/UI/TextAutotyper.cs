@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using TMPro;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class TextAutotyper : MonoBehaviour, IInputListener {
 
-    [SerializeField] public Text textbox;
+    [SerializeField] public TextMeshProUGUI textbox;
     [SerializeField] public float charsPerSecond = 120f;
     [SerializeField] protected GameObject advanceArrow;
     [SerializeField] protected bool speedUpWhenHurried;

@@ -65,7 +65,8 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_targetTele"] = (Action<DynValue, DynValue, DynValue, DynValue>)TargetTeleport;
         lua.Globals["cs_fadeOutBGM"] = (Action<DynValue>)FadeOutBGM;
         lua.Globals["cs_fade"] = (Action<DynValue>)Fade;
-        lua.Globals["cs_speak"] = (Action<DynValue, DynValue>)Speak;
+        lua.Globals["cs_speak"] = (Action<DynValue, DynValue, DynValue>)Speak;
+        lua.Globals["cs_speakPortrait"] = (Action<DynValue, DynValue>)SpeakPortrait;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -97,16 +98,33 @@ public class LuaCutsceneContext : LuaContext {
         RunRoutineFromLua(AudioManager.Instance.FadeOutRoutine((float)seconds.Number));
     }
 
-    private void Speak(DynValue speaker, DynValue text) {
+    private void Speak(DynValue speaker, DynValue text, DynValue targetEventName) {
         var speakerString = speaker.IsNil() ? null : speaker.String;
         var textString = text.IsNil() ? null : text.String;
+        var targetEventString = targetEventName.IsNil() ? null : targetEventName.String;
         if (speaker.String.Contains(":")) {
             textString = speakerString.Split(':')[1].Substring(2);
             speakerString = speakerString.Split(':')[0];
         }
         speakerString = UIUtils.GlyphifyString(speakerString);
         textString = UIUtils.GlyphifyString(textString);
-        RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString));
+        if (targetEventString != null) {
+            var @event = MapManager.Instance.ActiveMap.GetEventNamed(targetEventString);
+            if (@event == null) {
+                Debug.LogError("No event named: " + targetEventString);
+            }
+            RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString, @event.GetTextPos()));
+        } else {
+            RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString));
+        }
+
+    }
+
+    private void SpeakPortrait(DynValue portraitTagValue, DynValue textValue) {
+        var portraitTag = portraitTagValue.String;
+        var text = textValue.String;
+        var portrait = IndexDatabase.Instance.Portraits.GetData(portraitTag);
+        RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine(" ", text, Vector3.zero, portrait));
     }
 
     private void Face(DynValue eventName, DynValue dir) {

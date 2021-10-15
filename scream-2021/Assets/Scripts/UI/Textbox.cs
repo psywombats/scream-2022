@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 
 /// <summary>
 /// Bloated textbox ripped almost directly from Snowbound VN
@@ -14,7 +15,7 @@ public class Textbox : TextAutotyper {
     public float animationSeconds = 0.2f;
     public float textClearSeconds = 0.1f;
 
-    public Text namebox;
+    public TextMeshProUGUI namebox;
     public RectTransform mainBox;
 
     public float minTextHeight = 12;

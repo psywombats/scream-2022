@@ -15,7 +15,13 @@ function fadeOutBGM(seconds)
     await()
 end
 
-function speak(speaker, line)
-    cs_speak(speaker, line)
+function speak(speaker, line, eventTarget)
+    cs_speak(speaker, line, eventTarget)
     await()
 end
+
+function speakP(portrait, line)
+    cs_speakPortrait(portrait, line)
+    await()
+end
+
