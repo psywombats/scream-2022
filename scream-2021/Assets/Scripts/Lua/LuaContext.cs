@@ -74,18 +74,20 @@ public class LuaContext {
         }
     }
     // all coroutines that are meant to block execution of the script should go through here
-    public async void RunRoutineFromLua(IEnumerator routine) {
-        await RunRoutineFromLuaInternal(routine);
+    public void RunRoutineFromLua(IEnumerator routine) {
+        RunRoutineFromLuaInternal(routine);
     }
-    protected virtual async Task RunRoutineFromLuaInternal(IEnumerator routine) {
+    protected virtual void RunRoutineFromLuaInternal(IEnumerator routine) {
         if (forceKilled) {
             // leave the old instance infinitely suspended
             return;
         }
-        await routine;
-        if (activeScripts.Count > 0 && !forceKilled) {
-            ResumeAwaitedScript();
-        }
+        
+        Global.Instance.StartCoroutine(CoUtils.RunWithCallback(routine, () => {
+            if (activeScripts.Count > 0 && !forceKilled) {
+                ResumeAwaitedScript();
+            }
+        }));
     }
 
     // meant to be evaluated synchronously

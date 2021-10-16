@@ -67,7 +67,10 @@ public class Map : MonoBehaviour {
 
     public void Start() {
         // TODO: figure out loading
-        Global.Instance.Maps.ActiveMap = this;
+        if (Global.Instance.Maps.ActiveMap == null) {
+            Global.Instance.Maps.ActiveMap = this;
+        }
+        
     }
 
     public Vector3Int TileToTilemapCoords(Vector2Int loc) {

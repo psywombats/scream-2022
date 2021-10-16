@@ -64,7 +64,7 @@ public class AudioManager : SingletonBehavior {
         if (Global.Instance.Data.GetSwitch("disable_bgm")) {
             return;
         }
-        if (key != CurrentBGMKey && key != NoChangeBGMKey) {
+        if (key != CurrentBGMKey && key != NoChangeBGMKey && key.Length > 0) {
             bgmSets += 1;
             CurrentBGMKey = key;
             bgmSource.Stop();

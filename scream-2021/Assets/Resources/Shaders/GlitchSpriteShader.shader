@@ -9,6 +9,7 @@
 		_Distortion ("Subsurface Distortion", Float) = 0.0
 		_Scale ("Subsurface Scale", Float) = 0.5
 		_SubColor ("Subsurface Color", Color) = (1.0, 1.0, 1.0, 1.0)
+        [MaterialToggle] _NormalizeLight("Normalize light", Float) = 0
     
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         [PerRendererData] _Color ("Tint", Color) = (1,1,1,1)
@@ -154,6 +155,7 @@
         #pragma surface surf Translucent vertex:vert nofog nolightmap nodynlightmap keepalpha noinstancing
         #pragma multi_compile _ PIXELSNAP_ON
         #pragma multi_compile _ ETC1_EXTERNAL_ALPHA
+        #pragma target 3.0
         #include "Glitch.cginc"
         
         float _ResolutionX;
@@ -172,6 +174,13 @@
             float2 texcoord : TEXCOORD0;
             float2 screenPos: TEXCOORD2;
         };
+        
+        float rayPlaneIntersection( float3 rayDir, float3 rayPos, float3 planeNormal, float3 planePos) {
+            float denom = dot(planeNormal, rayDir);
+            denom = max(denom, 0.000001); // avoid divide by zero
+            float3 diff = planePos - rayPos;
+            return dot(diff, planeNormal) / denom;
+        }
 
         void vert(inout appdata_full v, out Input o) {
             v.vertex.xy *= _Flip.xy;
@@ -183,6 +192,39 @@
             UNITY_INITIALIZE_OUTPUT(Input, o);
             o.color = v.color * _Color * _RendererColor;
             o.color.a = o.color.a * _Alpha;
+            
+            float4 oldVert = v.vertex;
+
+            // billboard mesh towards camera
+            float3 vpos = mul((float3x3)unity_ObjectToWorld, v.vertex.xyz);
+            float4 worldCoord = float4(unity_ObjectToWorld._m03, unity_ObjectToWorld._m13, unity_ObjectToWorld._m23, 1);
+            float4 viewPos = mul(UNITY_MATRIX_V, worldCoord) + float4(vpos, 0);
+
+            v.vertex = mul(UNITY_MATRIX_P, viewPos);
+
+            // calculate distance to vertical billboard plane seen at this vertex's screen position
+            float3 planeNormal = normalize(float3(UNITY_MATRIX_V._m20, 0.0, UNITY_MATRIX_V._m22));
+            float3 planePoint = unity_ObjectToWorld._m03_m13_m23;
+            float3 rayStart = _WorldSpaceCameraPos.xyz;
+            float3 rayDir = -normalize(mul(UNITY_MATRIX_I_V, float4(viewPos.xyz, 1.0)).xyz - rayStart); // convert view to world, minus camera pos
+            float dist = rayPlaneIntersection(rayDir, rayStart, planeNormal, planePoint);
+
+            // calculate the clip space z for vertical plane
+            float4 planeOutPos = mul(UNITY_MATRIX_VP, float4(rayStart + rayDir * dist, 1.0));
+            float newPosZ = planeOutPos.z / planeOutPos.w * v.vertex.w;
+
+            // use the closest clip space z
+            float oldZ = v.vertex.z;
+            #if defined(UNITY_REVERSED_Z)
+            v.vertex.z = max(v.vertex.z, newPosZ);
+            #else
+            v.vertex.z = min(v.vertex.z, newPosZ);
+            #endif
+            float delta = newPosZ - oldZ;
+            
+            v.vertex = oldVert;
+
+            v.vertex.z += delta;
         }
 
         void surf(Input IN, inout SurfaceOutput o) {
@@ -198,31 +240,31 @@
         }
         
         inline fixed4 LightingTranslucent(SurfaceOutput s, fixed3 lightDir, fixed3 viewDir, fixed atten) {		
-			// You can remove these two lines,
-			// to save some instructions. They're just
-			// here for visual fidelity.
 			viewDir = normalize ( viewDir );
 			lightDir = normalize ( lightDir );
  
 			// Translucency.
-			half3 transLightDir = lightDir + s.Normal * _Distortion;
+			/*half3 transLightDir = lightDir + s.Normal * _Distortion;
 			float transDot = pow ( max (0, dot ( viewDir, -transLightDir ) ), _Power ) * _Scale;
 			fixed3 transLight = (atten * 2) * ( transDot ) * s.Alpha * _SubColor.rgb;
             if (transLight[0] > 1.0) transLight[0] = 1.0;
             if (transLight[1] > 1.0) transLight[1] = 1.0;
             if (transLight[2] > 1.0) transLight[2] = 1.0;
-			fixed3 transAlbedo = s.Albedo * _LightColor0.rgb * transLight;
+			fixed3 transAlbedo = s.Albedo * _LightColor0.rgb * transLight;*/
  
 			// Regular BlinnPhong.
+            //float3 normal = s.Normal;
+            float3 normal = float3(0, 1, 0);
 			half3 h = normalize (lightDir + viewDir);
-			fixed diff = max (0, dot (s.Normal, lightDir));
-			float nh = max (0, dot (s.Normal, h));
+			fixed diff = max (0, dot (normal, lightDir));
+			float nh = max (0, dot (normal, h));
 			float spec = pow (nh, s.Specular*128.0) * s.Gloss;
 			fixed3 diffAlbedo = (s.Albedo * _LightColor0.rgb * diff + _LightColor0.rgb * spec) * (atten * 2);
  
 			// Add the two together.
 			fixed4 c;
-			c.rgb = diffAlbedo + transAlbedo;
+			//c.rgb = diffAlbedo + transAlbedo;
+			c.rgb = diffAlbedo;
             if (c.r > 1.0) c.r = 1.0;
             if (c.g > 1.0) c.g = 1.0;
             if (c.b > 1.0) c.b = 1.0;

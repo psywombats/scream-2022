@@ -4,6 +4,7 @@
         _Color("Tint", Color) = (1,1,1,1)
         [MaterialToggle] PixelSnap("Pixel snap", Float) = 0
         _Alpha("Alpha", Float) = 1.0
+        _XFade("Fade", Range(0, 1)) = 0.0
         
         [Space(25)][MaterialToggle] _DLimitEnabled(" === Depth limit === ", Float) = 0.0
         _DLimitDepthTex("Depth tex", 2D) = "white" {}
@@ -144,7 +145,7 @@
             #pragma vertex vert
             #pragma fragment frag
             
-            float _Alpha;
+            float _Alpha, _XFade;
             float _DLimitEnabled, _DLimitMin, _DLimitMax, _DLimitFar;
             sampler2D _DLimitDepthTex;
 
@@ -173,6 +174,7 @@
                     float blend = saturate(smoothstep(_DLimitMin, _DLimitMax, depth));
                     c = (1 - blend) * orig + (blend) * c;
                 }
+                c -= fixed4(_XFade, _XFade, _XFade, 0);
                 
                 c *= IN.color;
                 c.a = _Alpha;

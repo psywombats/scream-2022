@@ -68,7 +68,8 @@ public class IntertitleBar : MonoBehaviour {
             var incr = fixes[i].Value - at;
             AppendGarbage(sb, incr, at);
             if (red) {
-                var rh = (int)(r * 256f);
+                var rh = (int)(r * 512f - 256f);
+                if (rh < 0) rh = 0;
                 sb.Append("<color=#ff");
                 var str = rh.ToString("X2");
                 sb.Append(str);

@@ -21,4 +21,5 @@ public class MapOverlayUI : MonoBehaviour {
     }
 
     public SpeakboxComponent Textbox;
+    public IntertitleController Intertitle;
 }

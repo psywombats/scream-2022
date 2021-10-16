@@ -26,6 +26,13 @@ public class TacticsTerrainMesh : MonoBehaviour, ISerializationCallbackReceiver 
         }
     }
 
+    protected void Start() {
+        var collider = GetComponent<MeshCollider>();
+        if (collider != null) {
+            collider.sharedMesh = GetComponent<MeshFilter>().mesh;
+        }
+    }
+
     public void Resize(Vector2Int newSize) {
         List<FacingTileKey> toRemove = new List<FacingTileKey>();
         foreach (FacingTileKey key in facingTiles.Keys) {

@@ -23,6 +23,8 @@ public class MapEvent : MonoBehaviour {
     [Header("Movement")]
     [SerializeField] public float tilesPerSecond = 2.0f;
     [SerializeField] public bool passable = true;
+    [SerializeField] public bool requiresDir = false;
+    [SerializeField] public OrthoDir requiredDir = OrthoDir.North;
     [Space]
     [Header("Lua scripting")]
     [SerializeField] public string luaCondition;
@@ -183,8 +185,8 @@ public class MapEvent : MonoBehaviour {
 
     public static Vector2Int WorldPositionToTileCoords(Vector3 pos) {
         return new Vector2Int(
-            Mathf.RoundToInt(pos.x) * OrthoDir.East.Px3DX(),
-            Mathf.RoundToInt(pos.z) * OrthoDir.North.Px3DZ());
+            Mathf.RoundToInt(pos.x),
+            Mathf.RoundToInt(pos.z));
     }
 
     public Vector2Int OffsetForTiles(OrthoDir dir) {
@@ -259,6 +261,9 @@ public class MapEvent : MonoBehaviour {
     // called when the avatar stumbles into us
     // facing us if impassable, on top of us if passable
     private void OnInteract(AvatarEvent avatar) {
+        if (requiresDir && avatar.Chara.Facing != requiredDir) {
+            return;
+        }
         if (GetComponent<CharaEvent>() != null) {
             GetComponent<CharaEvent>().Facing = DirectionTo(avatar.GetComponent<MapEvent>());
         }

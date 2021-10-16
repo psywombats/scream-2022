@@ -1,4 +1,4 @@
-﻿using System;
+﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,14 +6,11 @@ using UnityEngine;
 public class IntertitleController : MonoBehaviour {
 
     [SerializeField] private List<IntertitleBar> bars = null;
+    [SerializeField] private CanvasGroup canvas = null;
     [Space]
     [SerializeField] private float delay = .7f;
     [SerializeField] private float fadeDuration = 2f;
     [SerializeField] private float interleaveDuration = .8f;
-
-    protected void Start() {
-        StartCoroutine(DisplayRoutine("VIOLENCE IS NOT\nTHE ANSWER\n\nVIOLENCE IS THE QUESTION\n\nTHE ANSWER\nIS YES"));
-    }
 
     public IEnumerator FadeInRoutine() {
         var toRun = new List<IEnumerator>();
@@ -40,6 +37,8 @@ public class IntertitleController : MonoBehaviour {
     }
 
     public IEnumerator DisplayRoutine(string text) {
+        gameObject.SetActive(true);
+        yield return CoUtils.RunTween(canvas.DOFade(1f, fadeDuration));
         yield return CoUtils.Wait(interleaveDuration);
         yield return FadeInRoutine();
 
@@ -72,6 +71,8 @@ public class IntertitleController : MonoBehaviour {
         yield return FadeOutRoutine();
         yield return CoUtils.Wait(interleaveDuration * 2);
         yield return FadeOutAllRoutine();
+        yield return CoUtils.RunTween(canvas.DOFade(0f, fadeDuration));
+        gameObject.SetActive(false);
     }
 
     private int ToGo(int from, string[] words) {

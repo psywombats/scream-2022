@@ -7,12 +7,20 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class AvatarEvent : MonoBehaviour, IInputListener {
 
+    [SerializeField] private new Collider collider = null;
+
     public static AvatarEvent Instance => MapManager.Instance.Avatar;
 
     private int pauseCount;
     public bool InputPaused {
         get {
             return pauseCount > 0;
+        }
+    }
+
+    public bool CancelCollisions {
+        set {
+            collider.enabled = value;
         }
     }
 
@@ -30,28 +38,37 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     private bool tracking;
 
     public void Start() {
+        if (MapManager.Instance.Avatar != null) {
+            Destroy(gameObject);
+            return;
+        }
         MapManager.Instance.Avatar = this;
         InputManager.Instance.PushListener(this);
-        pauseCount = 0;
     }
 
     public virtual void Update() {
         tracking = false;
 
-        if (Event.Location != lastLoc) {
+        if (Event.Location != lastLoc && !InputPaused) {
             var targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(Event.PositionPx);
             foreach (var tryTarget in targetEvents) {
                 if (tryTarget.IsSwitchEnabled && tryTarget.IsPassableBy(Event) && tryTarget != Event) {
                     tryTarget.GetComponent<Dispatch>().Signal(MapEvent.EventCollide, this);
-                    return;
+                    break;
                 }
             }
         }
         lastLoc = Event.Location;
 
         if (velocityThisFrame != Vector3.zero) {
-            CheckPhysicsComponent(new Vector3(velocityThisFrame.x, 0, 0));
-            CheckPhysicsComponent(new Vector3(0, 0, velocityThisFrame.z));
+            var xcom = new Vector3(velocityThisFrame.x, 0, 0);
+            var ycom = new Vector3(0, 0, velocityThisFrame.z);
+
+            // TODO: don't switch directions if facing is okay
+            Chara.Facing = OrthoDirExtensions.DirectionOf3D(velocityThisFrame);
+
+            CheckPhysicsComponent(xcom);
+            CheckPhysicsComponent(ycom);
         }
 
         Body.velocity = velocityThisFrame;

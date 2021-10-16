@@ -78,7 +78,7 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void LateUpdate() {
-        if (!Event.IsTracking) {
+        if (!Event.IsTracking && Event != AvatarEvent.Instance.Event) {
             AutofaceDirection();
         }
 
@@ -138,6 +138,11 @@ public class CharaEvent : MonoBehaviour {
         throw new NotImplementedException();
     }
 
+    public IEnumerator FadeRoutine(float duration, bool inverse = false) {
+        float val = inverse ? 1.0f : 0.0f;
+        yield return CoUtils.RunTween(renderer.DOColor(new Color(val, val, val), duration));
+    }
+
     private Sprite SpriteForMain(bool fixedTime) {
         if (!fixedTime) {
             var x = (Mathf.FloorToInt(moveTime * StepsPerSecond) + 1) % Sprites.StepCount;
@@ -174,14 +179,15 @@ public class CharaEvent : MonoBehaviour {
     }
 
     private bool IsSteppingThisFrame() {
+        var ava = GetComponent<AvatarEvent>();
+        if (ava != null) return Event.IsTracking || ava.WantsToTrack();
         var position = transform.position;
         position.y = 0;
         var old = lastPosition;
         old.y = 0;
         var delta = position - old;
         return (delta.sqrMagnitude > 0 && delta.sqrMagnitude < Map.UnitsPerTile)  
-            || Event.IsTracking
-            || (GetComponent<AvatarEvent>() && GetComponent<AvatarEvent>().WantsToTrack());
+            || Event.IsTracking;
     }
 
     private void AutofaceDirection() {

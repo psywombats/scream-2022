@@ -30,20 +30,20 @@ public class LuaCutsceneContext : LuaContext {
         LoadDefines(DefinesPath);
     }
 
-    protected override async Task RunRoutineFromLuaInternal(IEnumerator routine) {
+    protected override void RunRoutineFromLuaInternal(IEnumerator routine) {
         if (MapOverlayUI.Instance.Textbox.isDisplaying) {
             MapOverlayUI.Instance.Textbox.MarkHiding();
-            await base.RunRoutineFromLuaInternal(CoUtils.RunSequence(new IEnumerator[] {
+            base.RunRoutineFromLuaInternal(CoUtils.RunSequence(new IEnumerator[] {
                 MapOverlayUI.Instance.Textbox.DisableRoutine(),
                 routine,
             }));
         } else {
-            await base.RunRoutineFromLuaInternal(routine);
+            base.RunRoutineFromLuaInternal(routine);
         }
     }
 
-    public async void RunTextboxRoutineFromLua(IEnumerator routine) {
-        await base.RunRoutineFromLuaInternal(routine);
+    public void RunTextboxRoutineFromLua(IEnumerator routine) {
+        base.RunRoutineFromLuaInternal(routine);
     }
 
     protected void ResumeNextFrame() {
@@ -67,6 +67,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_fade"] = (Action<DynValue>)Fade;
         lua.Globals["cs_speak"] = (Action<DynValue, DynValue, DynValue>)Speak;
         lua.Globals["cs_speakPortrait"] = (Action<DynValue, DynValue>)SpeakPortrait;
+        lua.Globals["cs_intertitle"] = (Action<DynValue>)Intertitle;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -150,6 +151,10 @@ public class LuaCutsceneContext : LuaContext {
         lastFade = fade;
         var globals = Global.Instance;
         RunRoutineFromLua(globals.Maps.Camera.fade.FadeRoutine(fade, invert));
+    }
+
+    private void Intertitle(DynValue linesVal) {
+        RunRoutineFromLua(MapOverlayUI.Instance.Intertitle.DisplayRoutine(linesVal.String));
     }
 
     //private void Choose() {

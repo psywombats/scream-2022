@@ -6,8 +6,17 @@ public class MapManager : SingletonBehavior {
 
     public static MapManager Instance => Global.Instance.Maps;
 
-    public Map ActiveMap { get; set; }
     public AvatarEvent Avatar { get; set; }
+
+    private Map activeMap;
+    public Map ActiveMap {
+        get => activeMap;
+        set {
+            activeMap = value;
+            activeMapName = activeMap.MapName;
+        }
+    }
+   
 
     private new MapCamera camera;
     public MapCamera Camera {
@@ -39,9 +48,10 @@ public class MapManager : SingletonBehavior {
         Avatar?.PauseInput();
         TransitionData data = IndexDatabase.Instance.Transitions.GetData(FadeComponent.DefaultTransitionTag);
         if (!isRaw) {
-            yield return Camera.fade.TransitionRoutine(data, () => {
-                RawTeleport(mapName, location, facing);
-            });
+            yield return Camera.fade.FadeRoutine(data.GetFadeOut());
+            RawTeleport(mapName, location, facing);
+            Camera = activeMap.GetComponentInChildren<MapCamera>();
+            yield return Camera.fade.FadeRoutine(data.GetFadeIn(), true);
         } else {
             RawTeleport(mapName, location, facing);
             yield return CoUtils.Wait(0.1f);
@@ -54,9 +64,10 @@ public class MapManager : SingletonBehavior {
         if (avatarExists) Avatar.PauseInput();
         TransitionData data = IndexDatabase.Instance.Transitions.GetData(FadeComponent.DefaultTransitionTag);
         if (!isRaw) {
-            yield return Camera.fade.TransitionRoutine(data, () => {
-                RawTeleport(mapName, targetEventName, facing);
-            });
+            yield return Camera.fade.FadeRoutine(data.GetFadeOut());
+            RawTeleport(mapName, targetEventName, facing);
+            Camera = activeMap.GetComponentInChildren<MapCamera>();
+            yield return Camera.fade.FadeRoutine(data.GetFadeIn(), true);
         } else {
             RawTeleport(mapName, targetEventName, facing);
             yield return CoUtils.Wait(0.1f);
@@ -100,7 +111,7 @@ public class MapManager : SingletonBehavior {
             }
         }
 
-        Avatar.GetComponent<MapEvent>().Location = location;
+        Avatar.GetComponent<MapEvent>().transform.position = new Vector3(location.x, map.Terrain.HeightAt(location), location.y);
         if (facing != null) {
             Avatar.Chara.Facing = facing.GetValueOrDefault(OrthoDir.North);
         }
@@ -125,7 +136,9 @@ public class MapManager : SingletonBehavior {
             newMapObject = Resources.Load<GameObject>(mapName);
         }
         Assert.IsNotNull(newMapObject);
-        return Instantiate(newMapObject).GetComponentInChildren<Map>();
+        var obj = Instantiate(newMapObject);
+        obj.transform.position = Vector3.zero;
+        return obj.GetComponentInChildren<Map>();
     }
 
     private void AddInitialAvatar(Map map) {

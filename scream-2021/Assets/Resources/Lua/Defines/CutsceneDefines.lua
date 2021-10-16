@@ -25,3 +25,12 @@ function speakP(portrait, line)
     await()
 end
 
+function intertitle(text)
+    cs_intertitle(text)
+    await()
+end
+
+function fade(fadeType)
+    cs_fade(fadeType)
+    await()
+end

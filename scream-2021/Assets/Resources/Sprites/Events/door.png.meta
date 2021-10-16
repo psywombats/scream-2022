@@ -58,7 +58,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 12
+  spritePixelsToUnits: 24
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -84,7 +84,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -96,7 +96,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -105,17 +105,17 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 96
-        width: 16
-        height: 32
+        y: 0
+        width: 32
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: adefbc94e8123784c91202e1e2c6658e
+      spriteID: 1d3c9b8cb051e1a90800000000000000
       internalID: -7341407202210888751
       vertices: []
       indices: 
@@ -125,18 +125,18 @@ TextureImporter:
       name: door_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 64
-        width: 16
-        height: 32
+        x: 32
+        y: 0
+        width: 32
+        height: 58
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 532af53a8282c4b4f91cd4dd26efb192
+      spriteID: cd9cf01dc8d2ceb50800000000000000
       internalID: 6623719234781301212
       vertices: []
       indices: 
@@ -146,18 +146,18 @@ TextureImporter:
       name: door_2
       rect:
         serializedVersion: 2
-        x: 0
-        y: 32
-        width: 16
-        height: 32
+        x: 64
+        y: 0
+        width: 32
+        height: 58
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cb6d650945b5cdc41971e95d03485a34
+      spriteID: d71ec8013d556d140800000000000000
       internalID: 4744073622485524861
       vertices: []
       indices: 
@@ -167,18 +167,18 @@ TextureImporter:
       name: door_3
       rect:
         serializedVersion: 2
-        x: 0
+        x: 96
         y: 0
-        width: 16
-        height: 32
+        width: 32
+        height: 58
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8567e47959d37ef4e84b4dcc462b6ecf
+      spriteID: 6e5de2ccf9dfbb580800000000000000
       internalID: -8810169383252994586
       vertices: []
       indices: 

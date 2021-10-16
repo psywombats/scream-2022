@@ -182,7 +182,6 @@
                 c = c * dt + origVal * (1 - dt); 
             }
             
-            
             o.Albedo = c.rgb * c.a;
             o.Alpha = c.a * _Alpha;
         }
