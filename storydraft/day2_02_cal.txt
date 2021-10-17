@@ -56,11 +56,11 @@ else
     TESS: "I assure you I am not."
 end
 
-CAL: "Enough of that. Let's go on to the final question. Are you ready?"
+CAL: "Okay, okay, enough of that. Let's go on to the final question. Are you ready?"
 TESS: "I'm always ready."
-CAL: "What do you call a tuna with a fancy hat?"
+CAL: "What do you call a tuna with a top hat?"
 
-choice("Captain?", "I don't know.")
+choice("Fishy?", "I don't know.")
 if choice_result == 0 then
     CAL: "Nope!"
 else

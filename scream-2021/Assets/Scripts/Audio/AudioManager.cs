@@ -48,7 +48,12 @@ public class AudioManager : SingletonBehavior {
     
     public void PlaySFX(string key, bool mute = false) {
         if (key == null || key.Length == 0) return;
-        AudioClip clip = IndexDatabase.Instance.SFX.GetData(key).clip;
+        var data = IndexDatabase.Instance.SFX.GetDataOrNull(key);
+        if (data == null) {
+            Debug.LogWarning("sfx not found: " + key);
+            return;
+        }
+        AudioClip clip = data.clip;
         sfxSource.clip = clip;
         sfxSource.Play();
         StartCoroutine(PlaySFXRoutine(sfxSource, clip, mute));

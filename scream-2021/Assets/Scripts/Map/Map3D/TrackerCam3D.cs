@@ -7,7 +7,7 @@ public class TrackerCam3D : MapCamera3D {
 
     void Start() {
         if (target == null) {
-            target = AvatarEvent.Instance.Event;
+            target = FindObjectOfType<AvatarEvent>().Event;
         }
     }
 

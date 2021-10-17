@@ -74,6 +74,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_notebook"] = (Action<DynValue>)Notebook;
         lua.Globals["cs_flashcards"] = (Action)Flashcards;
         lua.Globals["cs_keywords"] = (Action<DynValue>)Keywords;
+        lua.Globals["cs_choice"] = (Action<DynValue, DynValue>)Choice;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -193,19 +194,17 @@ public class LuaCutsceneContext : LuaContext {
     private void Flashcards() {
         RunRoutineFromLua(FlashcardsRoutine());
     }
-
-    //private void Choose() {
-    //    RunRoutineFromLua(CoUtils.TaskAsRoutine(ChooseAsync()));
-    //}
-    //private async Task ChooseAsync() {
-    //    var menu = YesNoView.ShowDefault();
-    //    var selection = await menu.DoMenuAsync();
-    //    lua.Globals["selection"] = Marshal(selection);
-    //}
-
     private IEnumerator FlashcardsRoutine() {
         yield return MapOverlayUI.Instance.Flashcards.DOFade(1f, .7f);
         yield return InputManager.Instance.AwaitConfirm();
         yield return MapOverlayUI.Instance.Flashcards.DOFade(0f, .7f);
+    }
+
+    private void Choice(DynValue a, DynValue b) {
+        RunRoutineFromLua(CoUtils.TaskAsRoutine(ChooseAsync(a.String, b.String)));
+    }
+    private async Task ChooseAsync(string a, string b) {
+        var selection = await MapOverlayUI.Instance.Textbox.ChooseAsync(a, b);
+        lua.Globals["choice_result"] = Marshal(selection);
     }
 }

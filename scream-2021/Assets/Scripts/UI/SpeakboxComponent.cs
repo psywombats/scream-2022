@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using System.Collections;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,7 @@ public class SpeakboxComponent : TextAutotyper {
     private static readonly string SystemSpeaker = "SYSTEM";
 
     [SerializeField] private float animationSeconds = 0.2f;
+    [SerializeField] private float moveDuration = .4f;
     [Space]
     [SerializeField] private TextMeshProUGUI namebox = null;
     [SerializeField] private RectTransform mainBox = null;
@@ -20,6 +22,11 @@ public class SpeakboxComponent : TextAutotyper {
     [Space]
     [SerializeField] private Vector2 margin = new Vector2(340, 48);
     [SerializeField] private Vector2 tailMargin = new Vector2(64, 48);
+    [Space]
+    [SerializeField] private GameObject selectionArea = null;
+    [SerializeField] private ListSelector choiceSelector = null;
+    [SerializeField] private SelectableCell cellA = null;
+    [SerializeField] private SelectableCell cellB = null;
 
     public bool isDisplaying { get; private set; }
 
@@ -30,6 +37,14 @@ public class SpeakboxComponent : TextAutotyper {
         base.Start();
         textbox.text = "";
         GetComponent<CanvasGroup>().alpha = 0f;
+        cellA.onSelectionChange += Cell_onSelectionChange;
+        cellB.onSelectionChange += Cell_onSelectionChange;
+    }
+
+    private void Cell_onSelectionChange(SelectableCell cell, bool enabled) {
+        var choice = cell.GetComponent<ChoiceCell>();
+        choice.meshA.gameObject.SetActive(enabled);
+        choice.meshB.gameObject.SetActive(!enabled);
     }
 
     public IEnumerator SetupForPos(Vector3 pos, float duration, bool useTail = true) {
@@ -71,6 +86,26 @@ public class SpeakboxComponent : TextAutotyper {
         }
     }
 
+    public async Task<int> ChooseAsync(string choiceA, string choiceB) {
+        if (!isDisplaying) {
+            namebox.text = "";
+            await SetupForPos(AvatarEvent.Instance.Event.GetTextPos(), 0f, false);
+            await EnableRoutine();
+        } else {
+            await CoUtils.RunParallel(new IEnumerator[] {
+                    EraseNameRoutine(animationSeconds / 2.0f),
+                    EraseTextRoutine(animationSeconds / 2.0f),
+                    SetupForPos(AvatarEvent.Instance.Event.GetTextPos(), moveDuration, false)
+                }, this);
+        }
+        selectionArea.SetActive(true);
+        cellA.GetComponent<ChoiceCell>().Populate(choiceA);
+        cellB.GetComponent<ChoiceCell>().Populate(choiceB);
+        var result = await choiceSelector.SelectItemAsync();
+        selectionArea.SetActive(false);
+        return result;
+    }
+
     public IEnumerator SpeakRoutine(string text, Vector3 worldPos) => SpeakRoutine(SystemSpeaker, text, worldPos);
     public IEnumerator SpeakRoutine(string text) => SpeakRoutine(SystemSpeaker, text, Vector3.zero);
     public IEnumerator SpeakRoutine(string speakerName, string text) => SpeakRoutine(speakerName, text, Vector3.zero);
@@ -106,7 +141,7 @@ public class SpeakboxComponent : TextAutotyper {
                     EraseNameRoutine(animationSeconds / 2.0f),
                     EraseTextRoutine(animationSeconds / 2.0f),
                 }, this);
-                yield return SetupForPos(pos, .6f, speakerName != SystemSpeaker);
+                yield return SetupForPos(pos, moveDuration, speakerName != SystemSpeaker);
             } else {
                 yield return EraseTextRoutine(animationSeconds / 2.0f);
             }

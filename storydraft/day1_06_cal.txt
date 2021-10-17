@@ -50,6 +50,7 @@ end
 CAL: "Okay! Drumroll please, this is the last question. Final Jeopardy!"
 CAL: "Could you tell me please, what is my purpose in life?"
 choice("To tease me with stupid questions, apparently.", "I don't know.")
+if choice_result == 0 then
     CAL: "Sheesh, I can't catch a break today.")
 else
     CAL: "Sheesh, you'd think you were born with that scowl on your face, Tess. Lighten up a bit."

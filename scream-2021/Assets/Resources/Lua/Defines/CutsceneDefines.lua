@@ -54,3 +54,8 @@ function keywords(text)
     cs_keywords(text)
     await()
 end
+
+function choice(a, b)
+    cs_choice(a, b)
+    await()
+end
