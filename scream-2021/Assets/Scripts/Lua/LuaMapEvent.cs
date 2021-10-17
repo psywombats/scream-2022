@@ -1,4 +1,5 @@
-﻿using MoonSharp.Interpreter;
+﻿using DG.Tweening;
+using MoonSharp.Interpreter;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -72,6 +73,12 @@ public class LuaMapEvent {
 
     public void faceToward(LuaMapEvent other) {
         mapEvent.GetComponent<CharaEvent>().Facing = mapEvent.DirectionTo(other.mapEvent);
+    }
+
+    public void faceIn() {
+        var renderer = mapEvent.GetComponent<CharaEvent>().renderer;
+        renderer.color = new Color(renderer.color.r, renderer.color.b, renderer.color.g, 0f);
+        renderer.DOFade(1f, 0f);
     }
 
     public int x() {

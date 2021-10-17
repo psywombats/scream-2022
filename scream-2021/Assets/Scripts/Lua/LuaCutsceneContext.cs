@@ -61,6 +61,9 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["sceneSwitch"] = (Action<DynValue, DynValue>)SetSwitch;
         lua.Globals["face"] = (Action<DynValue, DynValue>)Face;
         lua.Globals["debug"] = (Action<DynValue>)DebugLog;
+        lua.Globals["setting"] = (Action<DynValue>)Setting;
+        lua.Globals["faceToward"] = (Action<DynValue>)FaceToward;
+        lua.Globals["cs_search"] = (Action<DynValue>)Search;
         lua.Globals["cs_teleport"] = (Action<DynValue, DynValue, DynValue, DynValue>)TargetTeleport;
         lua.Globals["cs_targetTele"] = (Action<DynValue, DynValue, DynValue, DynValue>)TargetTeleport;
         lua.Globals["cs_fadeOutBGM"] = (Action<DynValue>)FadeOutBGM;
@@ -68,6 +71,9 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_speak"] = (Action<DynValue, DynValue, DynValue>)Speak;
         lua.Globals["cs_speakPortrait"] = (Action<DynValue, DynValue>)SpeakPortrait;
         lua.Globals["cs_intertitle"] = (Action<DynValue>)Intertitle;
+        lua.Globals["cs_notebook"] = (Action<DynValue>)Notebook;
+        lua.Globals["cs_flashcards"] = (Action)Flashcards;
+        lua.Globals["cs_keywords"] = (Action<DynValue>)Keywords;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -109,11 +115,17 @@ public class LuaCutsceneContext : LuaContext {
         }
         speakerString = UIUtils.GlyphifyString(speakerString);
         textString = UIUtils.GlyphifyString(textString);
+
+        MapEvent @event = null;
         if (targetEventString != null) {
-            var @event = MapManager.Instance.ActiveMap.GetEventNamed(targetEventString);
+            @event = MapManager.Instance.ActiveMap.GetEventNamed(targetEventString);
             if (@event == null) {
                 Debug.LogError("No event named: " + targetEventString);
             }
+        } else if (speakerString != null) {
+            @event = MapManager.Instance.ActiveMap.GetEventNamed(speakerString);
+        }
+        if (@event != null) { 
             RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString, @event.GetTextPos()));
         } else {
             RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString));
@@ -157,6 +169,31 @@ public class LuaCutsceneContext : LuaContext {
         RunRoutineFromLua(MapOverlayUI.Instance.Intertitle.DisplayRoutine(linesVal.String));
     }
 
+    private void Setting(DynValue textVal) {
+        MapOverlayUI.Instance.Setting.Show(textVal.String);
+    }
+
+    private void Search(DynValue text) {
+        RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine("SYSTEM", text.String, AvatarEvent.Instance.Event.PositionPx));
+    }
+
+    private void Notebook(DynValue text) {
+        RunRoutineFromLua(MapOverlayUI.Instance.Notes.NotebookRoutine(text.String));
+    }
+
+    private void Keywords(DynValue text) {
+        RunRoutineFromLua(MapOverlayUI.Instance.Keywords.ShowRoutine(text.String.Split('\n')));
+    }
+
+    private void FaceToward(DynValue eventName) {
+        var @event = MapManager.Instance.ActiveMap.GetEventNamed(eventName.String);
+        AvatarEvent.Instance.Chara.FaceToward(@event);
+    }
+
+    private void Flashcards() {
+        RunRoutineFromLua(FlashcardsRoutine());
+    }
+
     //private void Choose() {
     //    RunRoutineFromLua(CoUtils.TaskAsRoutine(ChooseAsync()));
     //}
@@ -165,4 +202,10 @@ public class LuaCutsceneContext : LuaContext {
     //    var selection = await menu.DoMenuAsync();
     //    lua.Globals["selection"] = Marshal(selection);
     //}
+
+    private IEnumerator FlashcardsRoutine() {
+        yield return MapOverlayUI.Instance.Flashcards.DOFade(1f, .7f);
+        yield return InputManager.Instance.AwaitConfirm();
+        yield return MapOverlayUI.Instance.Flashcards.DOFade(0f, .7f);
+    }
 }

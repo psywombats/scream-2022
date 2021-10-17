@@ -22,4 +22,8 @@ public class MapOverlayUI : MonoBehaviour {
 
     public SpeakboxComponent Textbox;
     public IntertitleController Intertitle;
+    public SettingBox Setting;
+    public NotebookBox Notes;
+    public CanvasGroup Flashcards;
+    public KeywordController Keywords;
 }

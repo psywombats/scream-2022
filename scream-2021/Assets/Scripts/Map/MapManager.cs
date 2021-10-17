@@ -89,6 +89,7 @@ public class MapManager : SingletonBehavior {
         }
         activeMapName = mapName;
         MapEvent target = newMapInstance.GetEventNamed(targetEventName);
+        AvatarEvent.Instance.Chara.renderer.color = Color.white;
         if (target == null) {
             Debug.LogError("Couldn't find target " + targetEventName + " on " + mapName + " from " + activeMapName);
             RawTeleport(newMapInstance, Avatar.Event.Location, facing);

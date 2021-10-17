@@ -22,6 +22,7 @@ public class MapEventEditor : Editor {
                 GameObjectUtility.SetParentAndAlign(doll, mapEvent.gameObject);
                 CharaEvent chara = mapEvent.gameObject.AddComponent<CharaEvent>();
                 chara.renderer = doll.GetComponent<SpriteRenderer>();
+                chara.collider = doll.GetComponentInChildren<CapsuleCollider>();
                 mapEvent.passable = false;
                 Undo.RegisterCreatedObjectUndo(mapEvent, "Create " + doll.name);
                 Selection.activeObject = doll;

@@ -34,3 +34,23 @@ function fade(fadeType)
     cs_fade(fadeType)
     await()
 end
+
+function search(text)
+    cs_search(text)
+    await()
+end
+
+function notebook(text)
+    cs_notebook(text)
+    await()
+end
+
+function flashcards()
+    cs_flashcards()
+    await()
+end
+
+function keywords(text)
+    cs_keywords(text)
+    await()
+end

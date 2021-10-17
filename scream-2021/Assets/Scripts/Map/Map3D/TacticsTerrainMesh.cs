@@ -11,7 +11,7 @@ public class TacticsTerrainMesh : MonoBehaviour, ISerializationCallbackReceiver 
     [HideInInspector] public float[] heights;
     [HideInInspector] public string paletteName;
 
-    [SerializeField] public Map map;
+    [SerializeField] public string meshName;
     [SerializeField] public Tile defaultTopTile;
     [SerializeField] public Tile defaultFaceTile;
 

@@ -17,6 +17,10 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
     protected bool hurried;
     protected bool confirmed;
 
+    protected virtual void Start() {
+        advanceArrow.SetActive(false);
+    }
+
     public bool OnCommand(InputManager.Command command, InputManager.Event eventType) {
         switch (eventType) {
             case InputManager.Event.Hold:

@@ -87,7 +87,7 @@ internal sealed class SpriteImporter : AssetPostprocessor {
                     importer.spritesheet = spriteData.ToArray();
                 } else {
                     var edgeSize = new Vector2Int(32, 48);
-                    var dirs = new List<OrthoDir>() { OrthoDir.North, OrthoDir.East, OrthoDir.South, OrthoDir.West };
+                    var dirs = new List<OrthoDir>() { OrthoDir.South, OrthoDir.West, OrthoDir.West, OrthoDir.North };
                     var sprites = CreateAllMetadata(assetName +"_00", textureSize, Vector2Int.zero, edgeSize, dirs, rows: 4, cols: 3);
                     importer.spritesheet = sprites.ToArray();
                 }

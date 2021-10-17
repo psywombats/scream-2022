@@ -1,0 +1,62 @@
+CAL: "Hey! Tess!"
+TESS: "Dr. Cooper."
+CAL: "Did you lose track of time or what? I couldn't find you in your room, but you're late for your 4:00!"
+TESS: "I have to go, Lia. I'll see you back in the room?"
+LIA: "Alright. Bye Tess, Dr. Cooper."
+CAL: "It's Cal! I see Tess has been filling your head with weird ideas already. Sheesh."
+TESS: "Let's just go."
+CAL: "Your wish is my command."
+
+CAL: "Alright. Are you comfortable?"
+TESS: "I'm fine."
+CAL: "You know the drill by now. I'm going to ask a series of questions to assess your cognitive state and powers of specific recall."
+CAL: "Even if you feel like you don't know the answer, think carefully before you respond."
+CAL: "Coming up with the right answer is less important than giving us a sample of your brainwaves to analyze. Ready?"
+TESS: "As always."
+CAL: "Could you please tell me your full name?"
+
+choice("...Tess.", "I don't know.")
+if choice_result == 0 then
+    CAL: "Your full name."
+else
+    CAL: "Even just part of your name."
+    TESS: "I can't remember."
+end
+
+TESS: "I am patient #2876. Two Eight Seven Six. T-E-S-S."
+CAL: "..."
+CAL: "You'll remember one of these days Tess. I know it."
+CAL: "Next question... Could you please tell me the current year?"
+
+choice("2021?", "I don't know.")
+if choice_result == 0 then
+    CAL: "I'm afraid it hasn't been 2021 for quite some time."
+    TESS: "Then tell me what year it is."
+else
+    CAL: "Think harder."
+    TESS: "I don't know. I don't remember. You never tell me."
+end
+
+CAL: "Moving on..."
+CAL: "Can you tell me your place of birth?"
+
+choice("Allsaints' Hospital", "I don't know.")
+if choice_result == 0 then
+    CAL: "No, that's the hospital you're in now. We don't even have a maternity ward."
+else
+    CAL: "That's alright. Plenty of kids don't know that."
+end
+
+CAL: "Okay! Drumroll please, this is the last question. Final Jeopardy!"
+CAL: "Could you tell me please, what is my purpose in life?"
+choice("To tease me with stupid questions, apparently.", "I don't know.")
+    CAL: "Sheesh, I can't catch a break today.")
+else
+    CAL: "Sheesh, you'd think you were born with that scowl on your face, Tess. Lighten up a bit."
+end
+
+CAL: "Thanks for bearing with me. We'll move on and take your vitals and do a basic checkup from here, although..."
+CAL: "Next time please think a little harder about the questions, okay? It's really important for my research."
+TESS: "Whatever you say."
+
+

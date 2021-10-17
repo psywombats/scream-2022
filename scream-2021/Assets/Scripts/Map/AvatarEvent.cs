@@ -20,7 +20,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     public bool CancelCollisions {
         set {
-            collider.enabled = value;
+            Body.isKinematic = value;
         }
     }
 

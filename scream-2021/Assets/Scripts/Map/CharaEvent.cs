@@ -14,6 +14,7 @@ public class CharaEvent : MonoBehaviour {
     private const float StepsPerSecond = 2.0f;
 
     [SerializeField] public new SpriteRenderer renderer;
+    [SerializeField] public new Collider collider;
 
     private Vector3 lastPosition;
     private Vector3 targetPx;

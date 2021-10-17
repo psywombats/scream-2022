@@ -24,10 +24,10 @@ public class Textbox : TextAutotyper {
 
     public bool isDisplaying { get; private set; }
 
-    public void Start() {
+    protected override void Start() {
+        base.Start();
         textbox.text = "";
         mainBox.sizeDelta = new Vector2(mainBox.sizeDelta.x, 0.0f);
-        advanceArrow.SetActive(false);
     }
 
     public void MemorizeSizes() {

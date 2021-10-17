@@ -396,7 +396,10 @@ public class TacticsTerrainEditor : Editor {
         Mesh mesh = filter.sharedMesh;
         if (mesh == null) {
             mesh = new Mesh();
-            AssetDatabase.CreateAsset(mesh, "Assets/Resources/TacticsMaps/Meshes/" + terrain.map.name + ".asset");
+            if (terrain.meshName == null) {
+                terrain.meshName = FindObjectOfType<Map>().name;
+            }
+            AssetDatabase.CreateAsset(mesh, "Assets/Resources/TacticsMaps/Meshes/" + terrain.meshName + ".asset");
             filter.sharedMesh = mesh;
         }
 
@@ -562,7 +565,7 @@ public class TacticsTerrainEditor : Editor {
 
     private void AddEvent(MapEvent mapEvent) {
         TacticsTerrainMesh terrain = (TacticsTerrainMesh)target;
-        Map map = terrain.map;
+        var map = FindObjectOfType<Map>();
         GameObjectUtility.SetParentAndAlign(mapEvent.gameObject, map.ObjectLayer.gameObject);
         Undo.RegisterCreatedObjectUndo(mapEvent, "Create " + mapEvent.name);
         mapEvent.SetLocation(new Vector2Int((int)primarySelection.pos.x, (int)primarySelection.pos.z));

@@ -1,6 +1,5 @@
 ﻿using DG.Tweening;
 using System.Collections;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,13 +26,13 @@ public class SpeakboxComponent : TextAutotyper {
     private Vector3 pos = Vector3.zero;
     private PortraitData portrait = null;
 
-    public void Start() {
+    protected override void Start() {
+        base.Start();
         textbox.text = "";
         GetComponent<CanvasGroup>().alpha = 0f;
-        advanceArrow.SetActive(false);
     }
 
-    public IEnumerator SetupForPos(Vector3 pos, float duration) {
+    public IEnumerator SetupForPos(Vector3 pos, float duration, bool useTail = true) {
         var screen = MapManager.Instance.Camera.GetCameraComponent().WorldToScreenPoint(pos);
         var rect = GetComponent<RectTransform>();
 
@@ -49,8 +48,8 @@ public class SpeakboxComponent : TextAutotyper {
             CoUtils.RunTween(boxTrans.DOAnchorPos(new Vector2(boxX, boxY), duration)),
             CoUtils.RunTween(tailTrans.DOAnchorPos(new Vector2(tailX, tailY), duration)),
             CoUtils.RunTween(topTailTrans.DOAnchorPos(new Vector2(tailX, tailY), duration)),
-            CoUtils.RunTween(tailTrans.GetComponent<CanvasGroup>().DOFade(screen.y > 96 ? 1 : 0, duration)),
-            CoUtils.RunTween(topTailTrans.GetComponent<CanvasGroup>().DOFade(screen.y <= 96 ? 1 : 0, duration)),
+            CoUtils.RunTween(tailTrans.GetComponent<CanvasGroup>().DOFade(((screen.y > 96) && useTail) ? 1 : 0, duration)),
+            CoUtils.RunTween(topTailTrans.GetComponent<CanvasGroup>().DOFade(((screen.y <= 96) && useTail) ? 1 : 0, duration)),
         }, this);
     }
 
@@ -85,7 +84,7 @@ public class SpeakboxComponent : TextAutotyper {
         }
         if (!isDisplaying) {
             pos = worldPos;
-            yield return SetupForPos(pos, 0f);
+            yield return SetupForPos(pos, 0f, speakerName != SystemSpeaker);
             if (speakerName == SystemSpeaker) {
                 SetNameboxEnabled(false);
             }
@@ -107,7 +106,7 @@ public class SpeakboxComponent : TextAutotyper {
                     EraseNameRoutine(animationSeconds / 2.0f),
                     EraseTextRoutine(animationSeconds / 2.0f),
                 }, this);
-                yield return SetupForPos(pos, .6f);
+                yield return SetupForPos(pos, .6f, speakerName != SystemSpeaker);
             } else {
                 yield return EraseTextRoutine(animationSeconds / 2.0f);
             }
@@ -130,7 +129,6 @@ public class SpeakboxComponent : TextAutotyper {
 
         yield return CoUtils.RunParallel(new IEnumerator[] {
             ShowMainBoxRoutine(animationSeconds),
-            SetupForPos(pos, animationSeconds),
         }, this);
     }
     public IEnumerator DisableRoutine() {

@@ -19,6 +19,7 @@ public class Map : MonoBehaviour {
     [SerializeField] private TacticsTerrainMesh terrain = null;
     [Space]
     [SerializeField] private string bgmKey = null;
+    [SerializeField] private List<string> settings = null;
     
     // true if the tile in question is passable at x,y
     private Dictionary<Tilemap, bool[,]> passabilityMap;
@@ -70,7 +71,6 @@ public class Map : MonoBehaviour {
         if (Global.Instance.Maps.ActiveMap == null) {
             Global.Instance.Maps.ActiveMap = this;
         }
-        
     }
 
     public Vector3Int TileToTilemapCoords(Vector2Int loc) {
@@ -135,7 +135,7 @@ public class Map : MonoBehaviour {
     public MapEvent GetEventNamed(string eventName) {
         foreach (ObjectLayer layer in GetComponentsInChildren<ObjectLayer>()) {
             foreach (MapEvent mapEvent in layer.GetComponentsInChildren<MapEvent>()) {
-                if (mapEvent.name == eventName) {
+                if (mapEvent.name == eventName && mapEvent.IsSwitchEnabled) {
                     return mapEvent;
                 }
             }
@@ -146,6 +146,9 @@ public class Map : MonoBehaviour {
     public void OnTeleportTo() {
         if (bgmKey != null) {
             AudioManager.Instance.PlayBGM(bgmKey);
+        }
+        foreach (var setting in settings) {
+            MapOverlayUI.Instance.Setting.Show(setting);
         }
     }
 

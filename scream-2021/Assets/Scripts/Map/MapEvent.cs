@@ -30,6 +30,7 @@ public class MapEvent : MonoBehaviour {
     [SerializeField] public string luaCondition;
     [SerializeField] [TextArea(3, 6)] public string luaOnInteract;
     [SerializeField] [TextArea(3, 6)] public string luaOnCollide;
+    [SerializeField] private GameObject enableChild;
 
     // Properties
     public LuaMapEvent LuaObject { get; private set; }
@@ -96,6 +97,9 @@ public class MapEvent : MonoBehaviour {
         set {
             if (value != isSwitchEnabled) {
                 GetComponent<Dispatch>().Signal(EventEnabled, value);
+                if (enableChild != null) {
+                    enableChild.SetActive(value);
+                }
             }
             isSwitchEnabled = value;
         }
@@ -154,7 +158,10 @@ public class MapEvent : MonoBehaviour {
     }
 
     public bool ContainsPosition(Vector3 pos) {
-        return Vector3.Distance(pos, PositionPx) <= .62f;
+        return Vector3.Distance( 
+                new Vector3(pos.x, 0, pos.z),
+                new Vector3(PositionPx.x, 0, PositionPx.z))
+            <= .62f;
     }
 
     public Vector3 GetTextPos() {
