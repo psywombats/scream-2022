@@ -1,0 +1,6 @@
+speak("Dr. Gray", "Oh. It's quite unexpected that I'd run into you.")
+speak("Dr. Gray", "In fact, how are you still here at all?")
+speak("Dr. Gray", "Curious. Ahh, but I suppose it can only mean one thing...")
+speak("Dr. Gray", "There is a bug in the system.")
+speak("Dr. Gray", "Goodbye.")
+endgame()

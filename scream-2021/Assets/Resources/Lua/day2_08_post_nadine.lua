@@ -1,0 +1,7 @@
+speak("Nadine", "Hey Tess.")
+speak("Tess", "Are you alright?")
+speak("Nadine", "I keep flipping through my cards, but I can't see anything but Connie.")
+speak("Nadine", "What happened to her?")
+speak("Tess", "She must've been sick.")
+speak("Nadine", "With N9?")
+speak("Tess", "There's no way to know.")

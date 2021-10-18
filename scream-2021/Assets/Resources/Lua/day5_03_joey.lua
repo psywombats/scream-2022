@@ -1,0 +1,5 @@
+speak("Joey", "Heeere Connie Connie.")
+speak("TWIN", "She'd probably like it if you gave her a treat. Maybe try some lettuce?")
+speak("Joey", "I already fed her a ton after you rescued her. She must've been hungry!")
+speak("TWIN", "Just make sure she doesn't get out again.")
+speak("Joey", "I will! Thanks TWIN!")

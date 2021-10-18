@@ -1,0 +1,6 @@
+speak("Lia", "Connie!")
+speak("Lia", "Look Tess! There she is!")
+speak("Tess", "Good work.")
+speak("Lia", "Hee, Connie. Here girl. Aw, she looks so scared.")
+speak("Tess", "Why don't you scoop her up and bring her back to Joey? I'm sure he'll be thrilled.")
+speak("Lia", "I will! I'm so glad we found her.")

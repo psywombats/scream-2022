@@ -1,0 +1,7 @@
+speak("Lia", "I just wanted to say thank you, TWIN.")
+speak("Lia", "I've... never really fit in anywhere.")
+speak("Lia", "Since I found out I had caught N9, no one wanted anything to do with me.")
+speak("TWIN", "You must've been brave to endure that.")
+speak("Lia", "No, I wasn't. I'm a bit of a coward.")
+speak("TWIN", "You don't have to worry. We'll look after you.")
+speak("Lia", "I know you will. I feel safe here.")

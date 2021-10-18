@@ -1,0 +1,7 @@
+speak("Joey", "Connie...")
+speak("Tess", "I'm sorry. She was a good bunny.")
+speak("Tess", "Maybe we can convince Dr. Cooper to find a new ward pet.")
+speak("Joey", "You can't replace her.")
+speak("Tess", "No. I suppose not.")
+speak("Tess", "Keep her memory with you. There were a lot of good times.")
+speak("Joey", "I'll never forget you, Connie.")

@@ -1,0 +1,5 @@
+speak("Owen", "There!")
+speak("TWIN", "Congrats!")
+speak("Owen", "It only took three months of practice and I'm so much worse than before, but I played it all the way through.")
+speak("TWIN", "That doesn't matter. To me, you sounded incredible.")
+speak("Owen", "Then just wait til I'm back to my old self. Trust me. I can do it for sure.")

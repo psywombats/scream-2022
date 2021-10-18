@@ -7,8 +7,6 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class AvatarEvent : MonoBehaviour, IInputListener {
 
-    [SerializeField] private new Collider collider = null;
-
     public static AvatarEvent Instance => MapManager.Instance.Avatar;
 
     private int pauseCount;

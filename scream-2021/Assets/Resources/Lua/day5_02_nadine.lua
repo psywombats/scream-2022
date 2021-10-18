@@ -1,0 +1,6 @@
+speak("Nadine", "TWIN! TWIN!")
+speak("TWIN", "What's up Nadine?")
+speak("Nadine", "You won't believe it! Allen's finally coming to visit tomorrow!")
+speak("TWIN", "That's great news.")
+speak("Nadine", "You wanna meet him? He's only two years older than me, and he's really handsome! You'll like him!")
+speak("TWIN", "Haha, I wouldn't want to get in your way. You guys enjoy catching up.")

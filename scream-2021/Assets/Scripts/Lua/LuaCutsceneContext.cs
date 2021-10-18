@@ -75,7 +75,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_card"] = (Action<DynValue>)Card;
         lua.Globals["cs_keywords"] = (Action<DynValue>)Keywords;
         lua.Globals["cs_choice"] = (Action<DynValue, DynValue>)Choice;
-        lua.Globals["cs_caldeath"] = (Action)Caldeath;
+        lua.Globals["cs_caldeath"] = (Action<DynValue>)Caldeath;
     }
 
     // === LUA CALLABLE ============================================================================

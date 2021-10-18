@@ -1,0 +1,7 @@
+speak("Lia", "Cecily...")
+speak("Lia", "What happened to you, Cecily?")
+speak("Tess", "Lia? Hello?")
+speak("Lia", "Just when I thought I'd fit in here...")
+speak("Lia", "Where did you go?")
+speak("Tess", "Lia. Read what I'm writing on the screen.")
+speak("Lia", "...")

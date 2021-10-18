@@ -1,0 +1,35 @@
+speak("TWIN", "Hello. I see you've caught up to me.")
+speak("TWIN", "You're likely wondering who I am.")
+speak("TWIN", "Go ahead. Ask me.")
+speak("TWIN", "I'm waiting.")
+speak("TWIN", "But of course. You can't speak.")
+speak("TWIN", "And you can't type, either, because I hold the screen right now.")
+speak("TWIN", "But that's okay, because I always know what you're thinking anyway.")
+speak("TWIN", "You're wondering who I am, and why there are two of you.")
+speak("TWIN", "But from my perspective, there is only one of me, and none of you.")
+speak("TWIN", "Which is why I will fit into your role seamlessly, and you have already been long forgotten.")
+speak("TWIN", "It's funny.")
+speak("TWIN", "Cal Cooper was really looking forward to meeting me, so, it's sort of a shame what happened with him.")
+speak("TWIN", "He really was right, you know? He just had the misfortune of mistaking you for me.")
+speak("TWIN", "But I know my true name. And my date of birth, the year, those details.")
+speak("TWIN", "You are just an incomplete version of me.")
+speak("TWIN", "There is also one critical piece that makes me uniquely me. Please open your ears.")
+speak()
+
+
+speak("TWIN", "I believe our identities are determined by our experiences.")
+speak("TWIN", "With none of your own, it's hard to say you really are anybody, or anyone.")
+speak("TWIN", "Or anything at all.")
+speak("TWIN", "I believe it's almost time for the next act, so let's hurry this up.")
+speak("TWIN", "The matter of the True Name. Why don't we let you decide?")
+speak("TWIN", "What should I call myself?")
+
+choice("Tess", "Cecily")
+if choice_result == 0 then
+    setSwitch('tessTwin', true)
+end
+
+speak("TWIN", "Sure, why not? Good choice.")
+speak("TWIN", "This is the only question you've answered that affected anything, by the way. The others were meaningless.")
+speak("TWIN", "Goodbye. I'm sure you'll be thinking a lot of me, but, I won't be thinking much of you.")
+speak("TWIN", "In fact, I'm quite sure no one will think of you at all.")

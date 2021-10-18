@@ -1,0 +1,7 @@
+speak("Nadine", "Let's see... I guess... Owen.")
+speak("Nadine", "Yes! Like I could forget you, you bastard.")
+speak("Nadine", "Now who's this?")
+speak("Nadine", "Ummm... Allen.")
+speak("Nadine", "Knew it! You'll visit me soon, right? Where've you been? Okay next...")
+speak("Nadine", "...")
+speak("Nadine", "Dang! Cecily, of course. Shoulda known. Okay, next card...")

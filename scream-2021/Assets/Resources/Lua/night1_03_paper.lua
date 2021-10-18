@@ -13,5 +13,5 @@ keywords(
     "lysosomal storage disorder\n" ..
     "dimensia, vision loss, shortened lifespan\n" ..
     "specific recall modulator gene\n" ..
-    "proteinopathy-linked suicide cases");
+    "proteinopathy-linked suicide cases")
 speak("This is a neuroscience research paper. Even the abstract is beyond my understanding.")

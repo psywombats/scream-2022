@@ -1,0 +1,5 @@
+speak("Tess", "Any luck?")
+speak("Joey", "There's no sign of her.")
+speak("Joey", "Why do you think she ran away?")
+speak("Tess", "Animals are like that. If they're cooped up in the same place all their lives, they naturally want to escape.")
+speak("Joey", "...")
