@@ -8,9 +8,12 @@ public class DepthCamComponent : FadeComponent {
 
     private static bool staticInited;
 
-    [SerializeField] private Material blitMat;
-    [SerializeField] private Material depthDumpMat;
-    [SerializeField] private RenderTexture depthDumpTex;
+    [SerializeField] private Material blitMat = null;
+    [SerializeField] private Material depthDumpMat = null;
+    [SerializeField] private RenderTexture depthDumpTex = null;
+    [Space]
+    [SerializeField] private float rangeMin = 10f;
+    [SerializeField] private float rangeMax = 12f;
 
     public void Start() {
         GetComponent<Camera>().depthTextureMode = DepthTextureMode.Depth;
@@ -41,6 +44,8 @@ public class DepthCamComponent : FadeComponent {
 
     protected void OnRenderImage(RenderTexture src, RenderTexture dest) {
         if (blitMat != null) {
+            blitMat.SetFloat("_DLimitMin", rangeMin);
+            blitMat.SetFloat("_DLimitMax", rangeMax);
             Graphics.Blit(src, dest, blitMat);
         } else {
             Graphics.Blit(src, dest);

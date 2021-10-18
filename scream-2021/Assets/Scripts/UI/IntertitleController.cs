@@ -12,6 +12,12 @@ public class IntertitleController : MonoBehaviour {
     [SerializeField] private float fadeDuration = 2f;
     [SerializeField] private float interleaveDuration = .8f;
 
+    public void Autostart() {
+        foreach (var bar in bars) {
+            StartCoroutine(bar.FadeInRoutine(.3f));
+        }
+    }
+
     public IEnumerator FadeInRoutine() {
         var toRun = new List<IEnumerator>();
         foreach (var bar in bars) {

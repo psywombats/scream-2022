@@ -72,9 +72,10 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_speakPortrait"] = (Action<DynValue, DynValue>)SpeakPortrait;
         lua.Globals["cs_intertitle"] = (Action<DynValue>)Intertitle;
         lua.Globals["cs_notebook"] = (Action<DynValue>)Notebook;
-        lua.Globals["cs_flashcards"] = (Action)Flashcards;
+        lua.Globals["cs_card"] = (Action<DynValue>)Card;
         lua.Globals["cs_keywords"] = (Action<DynValue>)Keywords;
         lua.Globals["cs_choice"] = (Action<DynValue, DynValue>)Choice;
+        lua.Globals["cs_caldeath"] = (Action)Caldeath;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -191,13 +192,9 @@ public class LuaCutsceneContext : LuaContext {
         AvatarEvent.Instance.Chara.FaceToward(@event);
     }
 
-    private void Flashcards() {
-        RunRoutineFromLua(FlashcardsRoutine());
-    }
-    private IEnumerator FlashcardsRoutine() {
-        yield return MapOverlayUI.Instance.Flashcards.DOFade(1f, .7f);
-        yield return InputManager.Instance.AwaitConfirm();
-        yield return MapOverlayUI.Instance.Flashcards.DOFade(0f, .7f);
+    private void Card(DynValue cardName) {
+        var cardData = IndexDatabase.Instance.Portraits.GetData(cardName.String);
+        RunRoutineFromLua(MapOverlayUI.Instance.Cards.ShowRoutine(cardData));
     }
 
     private void Choice(DynValue a, DynValue b) {
@@ -206,5 +203,16 @@ public class LuaCutsceneContext : LuaContext {
     private async Task ChooseAsync(string a, string b) {
         var selection = await MapOverlayUI.Instance.Textbox.ChooseAsync(a, b);
         lua.Globals["choice_result"] = Marshal(selection);
+    }
+
+    private void Caldeath() {
+        RunRoutineFromLua(CaldeathRoutine());
+    }
+    private IEnumerator CaldeathRoutine() {
+        var pupils = MapOverlayUI.Instance.Pupils;
+        pupils.alpha = 0f;
+        pupils.gameObject.SetActive(true);
+        yield return CoUtils.RunTween(pupils.DOFade(1f, .5f));
+        yield return CoUtils.Wait(2f);
     }
 }

@@ -59,3 +59,8 @@ function choice(a, b)
     cs_choice(a, b)
     await()
 end
+
+function card(data)
+    cs_card(data)
+    await()
+end

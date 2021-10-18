@@ -10,7 +10,7 @@ LIA: "You're a photographer? I-I'm not really good-looking..."
 NADINE: "Oh, no haha, I just take photos for my flashcards. If you're gonna be joining Ward #6, I want to remember you."
 LIA: "Flashcards?"
 NADINE: "Here. See?"
-flashcards()
+card('flashcards')
 LIA: "That's... um..."
 NADINE: "My family's going to visit any day now, so I need to be prepared."
 NADINE: "Do you have any symptoms yet? N9 kind of sucks."

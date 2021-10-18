@@ -4,6 +4,8 @@ using UnityEngine.Assertions;
 
 public class MapManager : SingletonBehavior {
 
+    [SerializeField] private AvatarEvent avatarPrefab;
+
     public static MapManager Instance => Global.Instance.Maps;
 
     public AvatarEvent Avatar { get; set; }
@@ -64,7 +66,9 @@ public class MapManager : SingletonBehavior {
         if (avatarExists) Avatar.PauseInput();
         TransitionData data = IndexDatabase.Instance.Transitions.GetData(FadeComponent.DefaultTransitionTag);
         if (!isRaw) {
-            yield return Camera.fade.FadeRoutine(data.GetFadeOut());
+            if (Camera != null ){
+                yield return Camera.fade.FadeRoutine(data.GetFadeOut());
+            }
             RawTeleport(mapName, targetEventName, facing);
             Camera = activeMap.GetComponentInChildren<MapCamera>();
             yield return Camera.fade.FadeRoutine(data.GetFadeIn(), true);
@@ -134,7 +138,7 @@ public class MapManager : SingletonBehavior {
             newMapObject = Resources.Load<GameObject>(localPath);
         }
         if (newMapObject == null) {
-            newMapObject = Resources.Load<GameObject>(mapName);
+            newMapObject = Resources.Load<GameObject>("Maps/" + mapName);
         }
         Assert.IsNotNull(newMapObject);
         var obj = Instantiate(newMapObject);
@@ -144,6 +148,9 @@ public class MapManager : SingletonBehavior {
 
     private void AddInitialAvatar(Map map) {
         Avatar = FindObjectOfType<AvatarEvent>();
+        if (Avatar == null) {
+            Avatar = Instantiate(avatarPrefab);
+        }
         Avatar.transform.SetParent(map.ObjectLayer.transform, false);
         Camera.target = Avatar.Event;
         Camera.ManualUpdate();

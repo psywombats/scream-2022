@@ -24,6 +24,7 @@ public class MapOverlayUI : MonoBehaviour {
     public IntertitleController Intertitle;
     public SettingBox Setting;
     public NotebookBox Notes;
-    public CanvasGroup Flashcards;
+    public CardController Cards;
     public KeywordController Keywords;
+    public CanvasGroup Pupils;
 }

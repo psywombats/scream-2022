@@ -1,0 +1,2 @@
+speak("No sign of Owen. But I swear he told me to meet up tonight."
+speak("Where could he have gone?")

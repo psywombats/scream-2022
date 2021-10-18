@@ -1,0 +1,7 @@
+NADINE: "Hey Tess."
+TESS: "Are you alright?"
+NADINE: "I keep flipping through my cards, but I can't see anything but Connie."
+NADINE: "What happened to her?"
+TESS: "She must've been sick."
+NADINE: "With N9?"
+TESS: "There's no way to know."

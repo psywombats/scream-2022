@@ -177,7 +177,6 @@
                 c -= fixed4(_XFade, _XFade, _XFade, 0);
                 
                 c *= IN.color;
-                c.a = _Alpha;
                 return c;
             }
 

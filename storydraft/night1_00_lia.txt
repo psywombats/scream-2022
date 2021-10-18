@@ -27,5 +27,5 @@ TESS: "Hold on to your memories of the outside world. Even if they're bad ones.
 TESS: "You might be the only patient in Ward #6 who still has them."
 LIA: "I-I will."
 TESS: "I promised I'd meet up with Owen tonight."
-TESS: "Don't wait up for me, and if someone like Dr. Cooper tries to check up on me, say I'm in the bathroom or somewhere."
+TESS: "Don't wait up for me, and if some nurse tries to check up on us, say I'm in the bathroom or somewhere."
 TESS: "Goodnight."
