@@ -1,6 +1,6 @@
 CAL: "Hey! Tess!"
 TESS: "Dr. Cooper."
-CAL: "Did you lose track of time or what? I couldn't find you in your room, but you're late for your 4:00!"
+CAL: "Did you lose track of time or what? I couldn't find you in your room, but you're late for your 4 o'clock!"
 TESS: "I have to go, Lia. I'll see you back in the room?"
 LIA: "Alright. Bye Tess, Dr. Cooper."
 CAL: "It's Cal! I see Tess has been filling your head with weird ideas already. Sheesh."

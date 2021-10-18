@@ -1,0 +1,55 @@
+CAL: "Ahh if it isn't Tess. There you are!"
+LIA: "Hey Cal. You already know Tess?"
+CAL: "Yep, I know she's late for our 4 o'clock. Haha! This way, Tess. And catch you later, ummm..."
+LIA: "I'm Lia."
+CAL: "Right, Lia. See you Lia! Haha!"
+
+CAL: "Tess. Tess Tess Tess Tess Tess."
+CAL: "I'm going to ask a series of questions to assess your cognitive state and powers of specific recall."
+TESS: "Dr. Cooper, how long have I been in Ward #6?"
+CAL: "Tess Tess Tess. What a question."
+TESS: "Longer than a day?"
+CAL: "You crack me up Tess. Tess Tess Tess. You've been here almost longer than me. I think."
+TESS: "Everyone in the ward forgot me."
+CAL: "Well it is an N9 ward after all. Haha! Now, are you comfy? Are you ready?"
+TESS: "This doesn't seem important right now."
+CAL: "Fair enough. I've already broken through, but humor me, for old time's sake."
+CAL: "Now then... What was the first question?"
+
+choice("What is my name?", "I don't know.")
+if choice_result == 0 then
+    CAL: "Tess, I think."
+else
+    CAL: "That makes two of us!"
+end
+
+CAL: "Next question... The second question."
+CAL: "Could you please tell me the second question?"
+
+choice("What is the current year?", "I don't know.")
+if choice_result == 0 then
+    CAL: "That's one of many smaller, pettier details that I've exchanged for truer knowledge of the nature of reality."
+    CAL: "Or something like that!
+else
+    CAL: "Spooky. I don't know it either."
+end
+
+CAL: "Ahaha. Just pulling your leg. Of course I know that."
+CAL: "Now, the moment of truth. The razor's edge! The final question. The final answer."
+CAL: "TELL ME, OH TELL ME, WHAT IS THE PURPOSE OF MY LIFE?"
+choice("There is none.", "I don't know.")
+if choice_result == 0 then
+    CAL: "Really? Is that really the answer?"
+    TESS: "I do not know or care."
+else
+    CAL: "No. No! No no no!"
+end
+
+CAL: "Tess. 2876. Cecily. Whatever your name is. I need you!"
+CAL: "Tell me what it is I was meant to do!"
+TESS: "Who do you think I am?"
+CAL: "You've done it! You're the culmination of everything we've been working towards!"
+CAL: "Tell me the future. Tell me it wasn't all for nothing, all of that, that..."
+CAL: "Ahem."
+CAL: "Thanks for bearing with me. We'll move on and take your vitals and do a basic checkup from here."
+CAL: "Next time please think a little harder about the questions, okay? It's really important for my research."

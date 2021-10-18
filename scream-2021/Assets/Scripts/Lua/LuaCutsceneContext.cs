@@ -205,10 +205,10 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["choice_result"] = Marshal(selection);
     }
 
-    private void Caldeath() {
-        RunRoutineFromLua(CaldeathRoutine());
+    private void Caldeath(DynValue version) {
+        RunRoutineFromLua(CaldeathRoutine((int)version.Number));
     }
-    private IEnumerator CaldeathRoutine() {
+    private IEnumerator CaldeathRoutine(int version) {
         var pupils = MapOverlayUI.Instance.Pupils;
         pupils.alpha = 0f;
         pupils.gameObject.SetActive(true);

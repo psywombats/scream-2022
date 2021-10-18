@@ -64,3 +64,8 @@ function card(data)
     cs_card(data)
     await()
 end
+
+function caldeath(version)
+    cs_caldeath(version)
+    await()
+end

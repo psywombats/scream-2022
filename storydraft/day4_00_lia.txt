@@ -1,0 +1,7 @@
+LIA: "Cecily..."
+LIA: "What happened to you, Cecily?"
+TESS: "Lia? Hello?"
+LIA: "Just when I thought I'd fit in here..."
+LIA: "Where did you go?"
+TESS: "Lia. Read what I'm writing on the screen."
+LIA: "..."

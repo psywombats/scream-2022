@@ -41,7 +41,12 @@ if choice_result == 0 then
 else
     CAL: "I guess that makes sense..."
 end
+
 TESS: "If I ever get it right, would you tell me?"
+CAL: "Tess, you understand how close I am here?"
+CAL: "This is the breakthrough. This will change my life. Yours too."
+CAL: "I just need need a few more samples, so at least try to cooperate. I know you can do it."
+TESS: "Next question then."
 CAL: "Could you please tell me your birth date?"
 
 choice("March 4th", "I don't know.")

@@ -1,0 +1,5 @@
+GRAY: "Oh. It's quite unexpected that I'd run into you."
+GRAY: "In fact, how are you still here at all?"
+GRAY: "Curious. But I suppose I do know what it means."
+GRAY: "There is a bug in the system."
+end()
