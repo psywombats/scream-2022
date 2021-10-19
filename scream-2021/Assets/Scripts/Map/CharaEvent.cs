@@ -69,6 +69,8 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void Start() {
+        lastPosition = transform.position;
+
         GetComponent<Dispatch>().RegisterListener(MapEvent.EventEnabled, (object payload) => {
             UpdateEnabled((bool)payload);
         });
@@ -99,6 +101,7 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void UpdateEnabled(bool enabled) {
+        collider.enabled = enabled;
         foreach (var renderer in Renderers) {
             renderer.enabled = enabled && !OverrideHide;
         }

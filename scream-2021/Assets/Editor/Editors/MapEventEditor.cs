@@ -35,6 +35,7 @@ public class MapEventEditor : Editor {
 
         Vector2Int newPosition = EditorGUILayout.Vector2IntField("Tiles position", mapEvent.Location);
         if (newPosition != mapEvent.Location) {
+            mapEvent.transform.hasChanged = false;
             mapEvent.SetLocation(newPosition);
         }
 
@@ -47,14 +48,23 @@ public class MapEventEditor : Editor {
     }
 
     public void OnSceneGUI() {
-        //((MapEvent)target).transform.position = Handles.PositionHandle(((MapEvent)target).transform.position, Quaternion.identity);
+        MapEvent mapEvent = (MapEvent)target;
+        var handlePos = Handles.PositionHandle(((MapEvent)target).transform.position, Quaternion.identity);
+        ((MapEvent)target).transform.position = new Vector3(
+            Mathf.RoundToInt(handlePos.x * 2) / 2f,
+            handlePos.y,
+            Mathf.RoundToInt(handlePos.z * 2) / 2f);
+        mapEvent.SetDepth();
     }
 
-    public void OnEnable() {
-        Tools.hidden = true;
-    }
+    //void OnEnable() { EditorApplication.update += Update; }
+    //void OnDisable() { EditorApplication.update -= Update; }
 
-    public void OnDisable() {
-        Tools.hidden = false;
-    }
+    //void Update() {
+    //    MapEvent mapEvent = (MapEvent)target;
+    //    if (mapEvent.transform.hasChanged) {
+    //        mapEvent.transform.hasChanged = false;
+    //        mapEvent.SetDepth();
+    //    }
+    //}
 }

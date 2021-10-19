@@ -29,10 +29,13 @@ public class SettingBox : MonoBehaviour {
     }
 
     private IEnumerator ShowRoutine() {
+        showing = true;
         text.text = toShow[0];
         toShow.RemoveAt(0);
-        yield return CoUtils.RunTween(rect.DOAnchorPosX(rect.rect.width - 4, inTime));
+        yield return null;
+        yield return CoUtils.RunTween(Rect.DOAnchorPosX(text.rectTransform.rect.width + 28, inTime));
         yield return CoUtils.Wait(waitTime);
-        yield return CoUtils.RunTween(rect.DOAnchorPosX(0, inTime));
+        yield return CoUtils.RunTween(Rect.DOAnchorPosX(0, inTime));
+        showing = false;
     }
 }

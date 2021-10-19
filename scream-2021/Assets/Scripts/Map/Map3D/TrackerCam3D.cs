@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class TrackerCam3D : MapCamera3D {
     
@@ -7,7 +6,7 @@ public class TrackerCam3D : MapCamera3D {
 
     void Start() {
         if (target == null) {
-            target = FindObjectOfType<AvatarEvent>().Event;
+            target = FindObjectOfType<AvatarEvent>()?.Event;
         }
     }
 

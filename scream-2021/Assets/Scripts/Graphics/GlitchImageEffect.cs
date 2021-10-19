@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
 public class GlitchImageEffect : MonoBehaviour {
 
-    public Material material;
-    public bool UseWaveSource;
+    [SerializeField] private Material material;
+    [SerializeField] private bool UseWaveSource;
+    [SerializeField] private bool enableGlitch = true;
 
     private float elapsedSeconds;
 
@@ -22,7 +21,7 @@ public class GlitchImageEffect : MonoBehaviour {
     }
 
     private void AssignCommonShaderVariables() {
-        material.SetFloat("_Elapsed", elapsedSeconds);
+        material.SetFloat("_UniversalEnable", enableGlitch ? 1 : 0);
         if (UseWaveSource && Global.Instance.Audio.GetWaveSource().GetSampleCount() > 0) {
             material.SetFloatArray("_Wave", Global.Instance.Audio.GetWaveSource().GetSamples());
             material.SetInt("_WaveSamples", Global.Instance.Audio.GetWaveSource().GetSampleCount());

@@ -130,6 +130,12 @@ public class LuaMapEvent {
     }
 
     public void cs_step(string directionName) {
-        throw new NotImplementedException();
+        
+    }
+
+    public void cs_pathTo(string targetName) {
+        var context = Global.Instance.Maps.Lua;
+        var target = Global.Instance.Maps.ActiveMap.GetEventNamed(targetName);
+        context.RunRoutineFromLua(mapEvent.LinearStepRoutine(target.Location));
     }
 }

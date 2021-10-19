@@ -44,10 +44,11 @@ public class TerrainQuad {
 
         Debug.Assert(tile != null);
         Vector2[] spriteUVs = tile.sprite.uv;
-        spriteUVs[0] += new Vector2(.001f, -.001f);
-        spriteUVs[1] += new Vector2(-.001f, -.001f);
-        spriteUVs[1] += new Vector2(.001f, .001f);
-        spriteUVs[1] += new Vector2(-.001f, .001f);
+        var fudge = .002f;
+        spriteUVs[0] += new Vector2(fudge, -fudge);
+        spriteUVs[1] += new Vector2(-fudge, -fudge);
+        spriteUVs[2] += new Vector2(fudge, fudge);
+        spriteUVs[3] += new Vector2(-fudge, fudge);
         if (normal.y == 0.0f) {
             spriteUVs = MathHelper3D.AdjustZ(spriteUVs, tileset, lowerLeft.y, normal.x == 0.0f);
         }

@@ -35,6 +35,18 @@ public class MapEvent : MonoBehaviour {
     // Properties
     public LuaMapEvent LuaObject { get; private set; }
     public bool IsTracking { get; private set; }
+
+    private bool checkedChara;
+    private CharaEvent chara;
+    public CharaEvent Chara {
+        get {
+            if (!checkedChara) {
+                checkedChara = true;
+                chara = GetComponent<CharaEvent>();
+            }
+            return chara;
+        }
+    }
     
     public Vector3 PositionPx {
         get { return transform.localPosition; }
@@ -150,7 +162,10 @@ public class MapEvent : MonoBehaviour {
     }
 
     public OrthoDir DirectionTo(MapEvent other) {
-        return DirectionTo(other.Location);
+        return DirectionTo(other.PositionPx);
+    }
+    public OrthoDir DirectionTo(Vector3 position) {
+        return OrthoDirExtensions.DirectionOf3D(position - PositionPx);
     }
 
     public bool CanPassAt(Vector2Int loc) {
@@ -158,16 +173,27 @@ public class MapEvent : MonoBehaviour {
     }
 
     public bool ContainsPosition(Vector3 pos) {
-        return Vector3.Distance( 
+        if (Chara != null) {
+            return Vector3.Distance(
                 new Vector3(pos.x, 0, pos.z),
                 new Vector3(PositionPx.x, 0, PositionPx.z))
             <= .62f;
+        } else {
+            var p1 = PositionPx + new Vector3(-.5f, 0 , -.5f);
+            var p2 = p1 + new Vector3(size.x * Map.UnitsPerTile, 0, size.y * Map.UnitsPerTile);
+            var res =   pos.x >= p1.x && pos.y >= p1.y && pos.z >= p1.z &&
+                        pos.x <= p2.x && pos.y <= p2.y && pos.z <= p2.z;
+            if (res == true)
+                return true;
+            else return false;
+        }
+
     }
 
     public Vector3 GetTextPos() {
         var chara = GetComponent<CharaEvent>();
         if (chara != null) {
-            return chara.renderer.transform.position + new Vector3(0, 2f, 0);
+            return chara.renderer.transform.position + new Vector3(0, 2.5f, 0);
         } else {
             return PositionPx + new Vector3(0, .75f, 0);
         }
@@ -223,17 +249,22 @@ public class MapEvent : MonoBehaviour {
         return tilesPerSecond;
     }
 
-    public OrthoDir DirectionTo(Vector2Int position) {
-        return OrthoDirExtensions.DirectionOf3D(position - this.Location);
+    public IEnumerator StepMultiRoutine(OrthoDir dir, int steps) {
+        var target = PositionPx + dir.Px3D() * steps;
+        return LinearStepRoutine(target);
     }
 
     public IEnumerator LinearStepRoutine(Vector2Int target) {
         return LinearStepRoutine(TileToWorldCoords(target));
     }
     public IEnumerator LinearStepRoutine(Vector3 target) {
+        if (Chara != null) {
+            Chara.Facing = DirectionTo(target);
+        }
         IsTracking = true;
         var elapsed = 0f;
-        while (transform.localPosition != target && elapsed < 1f) {
+        var goal = (target - transform.localPosition).magnitude / tilesPerSecond * 2f;
+        while (transform.localPosition != target && elapsed < goal) {
             transform.localPosition = Vector3.MoveTowards(transform.localPosition, target, tilesPerSecond * Time.deltaTime);
             elapsed += Time.deltaTime;
             yield return null;
@@ -245,18 +276,24 @@ public class MapEvent : MonoBehaviour {
         if (GetComponent<Map3DHandleExists>() != null) {
             return;
         }
-        Gizmos.color = new Color(Gizmos.color.r, Gizmos.color.g, Gizmos.color.b, 0.5f);
+        var fudge = 0.005f;
+        if (gameObject.name.Contains("target")) {
+            Gizmos.color = new Color(.66f, 1f, 0f, 0.5f);
+            fudge *= 2;
+        } else {
+            Gizmos.color = new Color(Gizmos.color.r, Gizmos.color.g, Gizmos.color.b, 0.5f);
+        }
         Gizmos.DrawCube(new Vector3(
                 transform.position.x + size.x * OrthoDir.East.Px3DX() / 2.0f,
                 transform.position.y,
                 transform.position.z + size.y * OrthoDir.North.Px3DZ() / 2.0f),
-            new Vector3((size.x - 0.1f), 0.002f, (size.y - 0.1f)));
+            new Vector3((size.x - 0.1f), fudge, (size.y - 0.1f)));
         Gizmos.color = Color.white;
         Gizmos.DrawWireCube(new Vector3(
                 transform.position.x + size.x * OrthoDir.East.Px3DX() / 2.0f,
                 transform.position.y,
                 transform.position.z + size.y * OrthoDir.North.Px3DZ() / 2.0f),
-            new Vector3((size.x - 0.1f), 0.002f, (size.y - 0.1f)));
+            new Vector3((size.x - 0.1f), fudge, (size.y - 0.1f)));
     }
 
     // called when the avatar stumbles into us

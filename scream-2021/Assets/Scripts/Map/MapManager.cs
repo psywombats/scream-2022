@@ -66,7 +66,7 @@ public class MapManager : SingletonBehavior {
         if (avatarExists) Avatar.PauseInput();
         TransitionData data = IndexDatabase.Instance.Transitions.GetData(FadeComponent.DefaultTransitionTag);
         if (!isRaw) {
-            if (Camera != null ){
+            if (Camera != null) {
                 yield return Camera.fade.FadeRoutine(data.GetFadeOut());
             }
             RawTeleport(mapName, targetEventName, facing);
@@ -85,15 +85,16 @@ public class MapManager : SingletonBehavior {
     }
 
     private void RawTeleport(string mapName, string targetEventName, OrthoDir? facing = null) {
+        // all we're doing here is turning strings into variables
+
         Map newMapInstance;
         if (mapName == activeMapName) {
             newMapInstance = ActiveMap;
         } else {
             newMapInstance = InstantiateMap(mapName);
         }
-        activeMapName = mapName;
         MapEvent target = newMapInstance.GetEventNamed(targetEventName);
-        AvatarEvent.Instance.Chara.renderer.color = Color.white;
+        
         if (target == null) {
             Debug.LogError("Couldn't find target " + targetEventName + " on " + mapName + " from " + activeMapName);
             RawTeleport(newMapInstance, Avatar.Event.Location, facing);
@@ -104,18 +105,14 @@ public class MapManager : SingletonBehavior {
 
     private void RawTeleport(Map map, Vector2Int location, OrthoDir? facing = null) {
         activeMapName = null;
-        if (Avatar == null) {
-            AddInitialAvatar(map);
-        } else {
-            Avatar.transform.SetParent(map.ObjectLayer.transform, false);
-        }
-
         if (map != ActiveMap) {
             if (ActiveMap != null) {
                 ActiveMap.OnTeleportAway(map);
             }
         }
 
+        AddInitialAvatar(map);
+        AvatarEvent.Instance.Chara.renderer.color = Color.white;
         Avatar.GetComponent<MapEvent>().transform.position = new Vector3(location.x, map.Terrain.HeightAt(location), location.y);
         if (facing != null) {
             Avatar.Chara.Facing = facing.GetValueOrDefault(OrthoDir.North);
@@ -129,6 +126,7 @@ public class MapManager : SingletonBehavior {
             ActiveMap = map;
             ActiveMap.OnTeleportTo();
         }
+        activeMapName = map.MapName;
     }
 
     private Map InstantiateMap(string mapName) {
@@ -147,7 +145,9 @@ public class MapManager : SingletonBehavior {
     }
 
     private void AddInitialAvatar(Map map) {
-        Avatar = FindObjectOfType<AvatarEvent>();
+        if (Avatar == null) {
+            Avatar = FindObjectOfType<AvatarEvent>();
+        }
         if (Avatar == null) {
             Avatar = Instantiate(avatarPrefab);
         }

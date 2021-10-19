@@ -85,9 +85,24 @@ internal sealed class SpriteImporter : AssetPostprocessor {
                         }
                     }
                     importer.spritesheet = spriteData.ToArray();
+                } else if (path.Contains("VX")) {
+                    var edgeSize = new Vector2Int(32, 48);
+                    var dirs = new List<OrthoDir>() { OrthoDir.South, OrthoDir.West, OrthoDir.East, OrthoDir.North };
+
+                    var index = 0;
+                    var spriteData = new List<SpriteMetaData>();
+                    for (var y = 0; y < textureSize.y / (edgeSize.y * 4); y += 1) {
+                        for (var x = 0; x < textureSize.x / (edgeSize.x * 3); x += 1) {
+                            var subspriteName = assetName + "_" + index.ToString("D2");
+                            var origin = new Vector2Int(x * edgeSize.x * 3, y * edgeSize.y * 4);
+                            spriteData.AddRange(CreateAllMetadata(subspriteName, textureSize, origin, edgeSize, dirs, rows: 4, cols: 3));
+                            index += 1;
+                        }
+                    }
+                    importer.spritesheet = spriteData.ToArray();
                 } else {
                     var edgeSize = new Vector2Int(32, 48);
-                    var dirs = new List<OrthoDir>() { OrthoDir.South, OrthoDir.West, OrthoDir.West, OrthoDir.North };
+                    var dirs = new List<OrthoDir>() { OrthoDir.South, OrthoDir.West, OrthoDir.East, OrthoDir.North };
                     var sprites = CreateAllMetadata(assetName +"_00", textureSize, Vector2Int.zero, edgeSize, dirs, rows: 4, cols: 3);
                     importer.spritesheet = sprites.ToArray();
                 }
@@ -143,7 +158,7 @@ internal sealed class SpriteImporter : AssetPostprocessor {
             if (path.EndsWith(".png") && path.Contains("Sprites")) {
                 var assetName = path.Substring(path.LastIndexOf("/") + 1, path.LastIndexOf(".") - path.LastIndexOf("/") - 1);
                 if (path.Contains("Charas")) {
-                    if (path.Contains("RM2K")) {
+                    if (path.Contains("RM2K") || path.Contains("VX")) {
                         var frames = new List<int>() { 0, 1, 2, 1 };
                         var max = AssetDatabase.LoadAllAssetsAtPath(path).Count() / 12;
                         for (var i = 0; i < max; i += 1) {

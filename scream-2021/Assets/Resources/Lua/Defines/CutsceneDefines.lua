@@ -10,6 +10,11 @@ function teleport(mapName, eventName)
     await()
 end
 
+function targetTele(mapName, eventName)
+    cs_teleport(mapName, eventName)
+    await()
+end
+
 function fadeOutBGM(seconds)
     cs_fadeOutBGM(seconds)
     await()
@@ -68,4 +73,17 @@ end
 function caldeath(version)
     cs_caldeath(version)
     await()
+end
+
+function pathEvent(eventName)
+    cs_pathTo(eventName)
+    await()
+end
+
+function walk(event, count, direction, wait)
+    if wait == nil then wait = true end
+    cs_walk(event, count, direction, wait)
+    if wait then
+        await()
+    end
 end

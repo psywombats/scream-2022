@@ -1,6 +1,7 @@
 ﻿Shader "Scream2021/GlitchEffect" {
     Properties {
         [PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
+        [MaterialToggle][PerRendererData] _UniversalEnable("Universal enable", Float) = 0
         _Color("Tint", Color) = (1,1,1,1)
         [MaterialToggle] PixelSnap("Pixel snap", Float) = 0
         _Alpha("Alpha", Float) = 1.0
@@ -119,7 +120,7 @@
         _PEdgeDuration("Duration",  Range(0, 1)) = 0.5
         _PEdgeDepthMin("Depth Min",  Range(0, 1)) = 0.0
         _PEdgeDepthMax("Depth Max",  Range(0, 1)) = 0.5
-        _PEdgePower("Power",  Range(0, 1)) = 1.0
+        _PEdgePower("Power", Range(0, 1)) = 1.0
         _PEdgeAmplitude("Amplitude",  Range(0, 1)) = 0.5
         _PEdgeDistanceGrain("Distance Granularity", Range(0, 1)) = 1.0
     }
@@ -145,6 +146,7 @@
             #pragma vertex vert
             #pragma fragment frag
             
+            float _UniversalEnable;
             float _Alpha, _XFade;
             float _DLimitEnabled, _DLimitMin, _DLimitMax, _DLimitFar;
             sampler2D _DLimitDepthTex;
@@ -166,10 +168,15 @@
             fixed4 frag(v2f IN) : SV_Target {
                 float2 xy = IN.texcoord;
                 float4 pxXY = IN.vertex;
-                fixed4 c = glitchFragFromCoords(xy, pxXY);
+                fixed4 orig = tex2D(_MainTex, xy);
+                fixed4 c;
+                if (_UniversalEnable) {
+                    c = glitchFragFromCoords(xy, pxXY);
+                } else {
+                    c = orig;
+                }
                 
-                if (_DLimitEnabled > 0) {
-                    fixed4 orig = tex2D(_MainTex, xy);
+                if (_DLimitEnabled > 0 && _UniversalEnable) {
                     float depth = tex2D(_DLimitDepthTex, xy) * _DLimitFar;
                     float blend = saturate(smoothstep(_DLimitMin, _DLimitMax, depth));
                     c = (1 - blend) * orig + (blend) * c;

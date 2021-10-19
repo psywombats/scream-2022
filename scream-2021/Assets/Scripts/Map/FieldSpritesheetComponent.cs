@@ -21,7 +21,6 @@ public class FieldSpritesheetComponent : MonoBehaviour {
     }
 
     public void SetByTag(string tag) {
-        this.tag = tag;
         if (tag == null || tag == "") {
             // ?
         } else {

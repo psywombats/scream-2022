@@ -64,8 +64,8 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["setting"] = (Action<DynValue>)Setting;
         lua.Globals["faceToward"] = (Action<DynValue>)FaceToward;
         lua.Globals["cs_search"] = (Action<DynValue>)Search;
+        lua.Globals["cs_pathTo"] = (Action<DynValue>)PathTo;
         lua.Globals["cs_teleport"] = (Action<DynValue, DynValue, DynValue, DynValue>)TargetTeleport;
-        lua.Globals["cs_targetTele"] = (Action<DynValue, DynValue, DynValue, DynValue>)TargetTeleport;
         lua.Globals["cs_fadeOutBGM"] = (Action<DynValue>)FadeOutBGM;
         lua.Globals["cs_fade"] = (Action<DynValue>)Fade;
         lua.Globals["cs_speak"] = (Action<DynValue, DynValue, DynValue>)Speak;
@@ -76,6 +76,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_keywords"] = (Action<DynValue>)Keywords;
         lua.Globals["cs_choice"] = (Action<DynValue, DynValue>)Choice;
         lua.Globals["cs_caldeath"] = (Action<DynValue>)Caldeath;
+        lua.Globals["cs_walk"] = (Action<DynValue, DynValue, DynValue, DynValue>)Walk;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -115,8 +116,6 @@ public class LuaCutsceneContext : LuaContext {
             textString = speakerString.Split(':')[1].Substring(2);
             speakerString = speakerString.Split(':')[0];
         }
-        speakerString = UIUtils.GlyphifyString(speakerString);
-        textString = UIUtils.GlyphifyString(textString);
 
         MapEvent @event = null;
         if (targetEventString != null) {
@@ -124,15 +123,26 @@ public class LuaCutsceneContext : LuaContext {
             if (@event == null) {
                 Debug.LogError("No event named: " + targetEventString);
             }
+        } else if (speakerString == "Tess") {
+            @event = AvatarEvent.Instance.Event;
         } else if (speakerString != null) {
             @event = MapManager.Instance.ActiveMap.GetEventNamed(speakerString);
         }
-        if (@event != null) { 
-            RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString, @event.GetTextPos()));
-        } else {
-            RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString));
+        RunTextboxRoutineFromLua(SpeakRoutine(speakerString, textString, @event));
+    }
+    private IEnumerator SpeakRoutine(string speakerString, string textString, MapEvent @event) {
+        var isProtag = speakerString == "Tess";
+        if (isProtag) {
+            AvatarEvent.Instance.Chara.SetAppearanceByTag("tess_screen");
         }
-
+        if (@event != null) {
+            yield return MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString, @event.GetTextPos(), useTail:!isProtag);
+        } else {
+            yield return MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString);
+        }
+        if (speakerString == "Tess") {
+            AvatarEvent.Instance.Chara.SetAppearanceByTag("tess");
+        }
     }
 
     private void SpeakPortrait(DynValue portraitTagValue, DynValue textValue) {
@@ -175,6 +185,15 @@ public class LuaCutsceneContext : LuaContext {
         MapOverlayUI.Instance.Setting.Show(textVal.String);
     }
 
+    private void PathTo(DynValue eventNameVal) {
+        var @event = MapManager.Instance.ActiveMap.GetEventNamed(eventNameVal.String);
+        if (@event == null) {
+            RunRoutineFromLua(CoUtils.Wait(0f));
+            Debug.LogError("No event: " + eventNameVal.String);
+        }
+        RunRoutineFromLua(AvatarEvent.Instance.Event.LinearStepRoutine(@event.PositionPx));
+    }
+
     private void Search(DynValue text) {
         RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine("SYSTEM", text.String, AvatarEvent.Instance.Event.PositionPx));
     }
@@ -214,5 +233,24 @@ public class LuaCutsceneContext : LuaContext {
         pupils.gameObject.SetActive(true);
         yield return CoUtils.RunTween(pupils.DOFade(1f, .5f));
         yield return CoUtils.Wait(2f);
+    }
+
+    private void Walk(DynValue eventLua, DynValue steps, DynValue directionLua, DynValue waitLua) {
+        if (eventLua.Type == DataType.String) {
+            var @event = Global.Instance.Maps.ActiveMap.GetEventNamed(eventLua.String);
+            if (@event == null) {
+                Debug.LogError("Couldn't find walk event " + eventLua.String);
+            } else {
+                var routine = @event.StepMultiRoutine(OrthoDirExtensions.Parse(directionLua.String), (int)steps.Number);
+                if (!waitLua.IsNil() && waitLua.Boolean) {
+                    RunRoutineFromLua(routine);
+                } else {
+                    @event.StartCoroutine(routine);
+                }
+            }
+        } else {
+            var function = eventLua.Table.Get("walk");
+            function.Function.Call(steps, directionLua, waitLua);
+        }
     }
 }

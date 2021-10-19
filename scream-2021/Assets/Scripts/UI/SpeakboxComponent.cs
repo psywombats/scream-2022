@@ -109,7 +109,7 @@ public class SpeakboxComponent : TextAutotyper {
     public IEnumerator SpeakRoutine(string text, Vector3 worldPos) => SpeakRoutine(SystemSpeaker, text, worldPos);
     public IEnumerator SpeakRoutine(string text) => SpeakRoutine(SystemSpeaker, text, Vector3.zero);
     public IEnumerator SpeakRoutine(string speakerName, string text) => SpeakRoutine(speakerName, text, Vector3.zero);
-    public IEnumerator SpeakRoutine(string speakerName, string text, Vector3 worldPos, PortraitData portrait = null) {
+    public IEnumerator SpeakRoutine(string speakerName, string text, Vector3 worldPos, PortraitData portrait = null, bool useTail = true) {
         if (text == null || text.Length == 0) {
             text = speakerName;
             speakerName = SystemSpeaker;
@@ -117,9 +117,10 @@ public class SpeakboxComponent : TextAutotyper {
         if (speakerName == SystemSpeaker) {
             SetNameboxEnabled(false);
         }
+        useTail &= speakerName != SystemSpeaker;
         if (!isDisplaying) {
             pos = worldPos;
-            yield return SetupForPos(pos, 0f, speakerName != SystemSpeaker);
+            yield return SetupForPos(pos, 0f, useTail);
             if (speakerName == SystemSpeaker) {
                 SetNameboxEnabled(false);
             }
@@ -141,7 +142,7 @@ public class SpeakboxComponent : TextAutotyper {
                     EraseNameRoutine(animationSeconds / 2.0f),
                     EraseTextRoutine(animationSeconds / 2.0f),
                 }, this);
-                yield return SetupForPos(pos, moveDuration, speakerName != SystemSpeaker);
+                yield return SetupForPos(pos, moveDuration, useTail);
             } else {
                 yield return EraseTextRoutine(animationSeconds / 2.0f);
             }

@@ -12,8 +12,6 @@
         _ResolutionX("Resolution X (px)", Float) = 1066
         _ResolutionY("Resolution Y (px)", Float) = 600
         
-        _Elapsed("Elapsed Seconds", Float) = 1.0
-        
         [Space(25)][MaterialToggle] _HDispEnabled(" === Horizontal Displacement === ", Float) = 0.0
         [MaterialToggle] _HDispSloppyPower("Sloppy power", Float) = 0
         _HDispChance("Chance", Range(0, 1)) = 0.5
@@ -170,7 +168,7 @@
             float4 pxXY = float4(xy[0] * (float)_ResolutionX, xy[1] * (float)_ResolutionY, 0.0, 0.0);
             fixed4 c = glitchFragFromCoords(xy, pxXY) * IN.color;
             o.Albedo = c.rgb * c.a;
-            o.Alpha = c.a * _Alpha;
+            o.Alpha = c.a * _Alpha * IN.color.a;
         }
         ENDCG
     }

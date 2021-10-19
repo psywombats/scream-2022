@@ -143,12 +143,18 @@ public class Map : MonoBehaviour {
         return null;
     }
 
+    private static bool firstMap = true;
     public void OnTeleportTo() {
         if (bgmKey != null) {
             AudioManager.Instance.PlayBGM(bgmKey);
         }
-        foreach (var setting in settings) {
-            MapOverlayUI.Instance.Setting.Show(setting);
+        if (firstMap == true) {
+            firstMap = false;
+        } else {
+            firstMap = false;
+            foreach (var setting in settings) {
+                MapOverlayUI.Instance.Setting.Show(setting);
+            }
         }
     }
 

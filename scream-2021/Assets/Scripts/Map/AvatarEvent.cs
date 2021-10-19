@@ -33,29 +33,17 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     private Vector3 velocityThisFrame;
     private Vector2Int lastLoc;
+    private Map lastMap;
     private bool tracking;
 
     public void Start() {
-        if (MapManager.Instance.Avatar != null) {
-            Destroy(gameObject);
-            return;
-        }
         MapManager.Instance.Avatar = this;
         InputManager.Instance.PushListener(this);
     }
 
     public virtual void Update() {
         tracking = false;
-
-        if (Event.Location != lastLoc && !InputPaused) {
-            var targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(Event.PositionPx);
-            foreach (var tryTarget in targetEvents) {
-                if (tryTarget.IsSwitchEnabled && tryTarget.IsPassableBy(Event) && tryTarget != Event) {
-                    tryTarget.GetComponent<Dispatch>().Signal(MapEvent.EventCollide, this);
-                    break;
-                }
-            }
-        }
+        lastMap = MapManager.Instance.ActiveMap;
         lastLoc = Event.Location;
 
         if (velocityThisFrame != Vector3.zero) {
@@ -132,7 +120,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         }
 
         delta = delta.normalized;
-        var adjustedPos = transform.localPosition + .7f * (Vector3.zero + delta);
+        var adjustedPos = transform.localPosition + .7f * delta;
         var adjustedLoc = MapEvent.WorldPositionToTileCoords(adjustedPos);
         if (adjustedLoc != Event.Location) {
             var h1 = Event.Map.Terrain.HeightAt(Event.Location);
@@ -145,7 +133,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
             }
         }
 
-        adjustedPos = transform.localPosition + .3f * (Vector3.zero + delta);
+        adjustedPos = transform.localPosition + .3f * delta;
         adjustedLoc = MapEvent.WorldPositionToTileCoords(adjustedPos);
         if (adjustedLoc != Event.Location) {
             var h1 = Event.Map.Terrain.HeightAt(Event.Location);
@@ -163,7 +151,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     private void Interact() {
-        var target = Event.PositionPx + Chara.Facing.Px3D() * .5f;
+        var target = Event.PositionPx + Chara.Facing.Px3D() * .75f;
         List<MapEvent> targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(target);
         foreach (MapEvent tryTarget in targetEvents) {
             if (tryTarget.IsSwitchEnabled && !tryTarget.IsPassableBy(Event) && tryTarget != Event) {
@@ -183,8 +171,16 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     private bool TryStep(OrthoDir dir) {
+        var targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(Event.PositionPx);
+        foreach (var tryTarget in targetEvents) {
+            if (tryTarget.IsSwitchEnabled && tryTarget.IsPassableBy(Event) && tryTarget != Event) {
+                tryTarget.GetComponent<Dispatch>().Signal(MapEvent.EventCollide, this);
+                break;
+            }
+        }
+
         tracking = true;
-        var component = (Vector3.zero + dir.Px3D()) * Event.tilesPerSecond;
+        var component = dir.Px3D() * Event.tilesPerSecond;
         velocityThisFrame += component;
         return true;
     }

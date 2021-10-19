@@ -2,6 +2,7 @@
 using System.Collections;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SerializationManager : SingletonBehavior {
 
@@ -92,10 +93,10 @@ public class SerializationManager : SingletonBehavior {
     }
 
     public IEnumerator StartGameRoutine(string map, string target) {
-        //yield return CoUtils.TaskAsRoutine(Global.Instance.Scene.LoadAsync(SagaSceneManager.SceneType.Map2D));
+        yield return SceneManager.LoadSceneAsync("Map3D", LoadSceneMode.Single);
         //var transition = IndexDatabase.Instance.Transitions.GetData(FadeComponent.DefaultTransitionTag);
         //yield return Global.Instance.Maps.Camera.fade.FadeRoutine(transition.GetFadeOut(), false, 0.0f);
-        //yield return Global.Instance.Maps.TeleportRoutine(map, target, OrthoDir.South, true);
+        yield return Global.Instance.Maps.TeleportRoutine(map, target, OrthoDir.South);
         //yield return Global.Instance.Maps.Camera.fade.FadeRoutine(transition.GetFadeIn(), true);
         yield return null;
     }
