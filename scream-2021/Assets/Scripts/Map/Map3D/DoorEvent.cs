@@ -10,6 +10,7 @@ public class DoorEvent : MonoBehaviour {
     [Space]
     [SerializeField] private string mapName;
     [SerializeField] private string targetEventName;
+    [SerializeField] private string lockedLua = "speak('Locked')";
     [SerializeField] [TextArea(5, 10)] private string lockedCondition;
 
     private MapEvent @event;
@@ -34,7 +35,7 @@ public class DoorEvent : MonoBehaviour {
         }
         if (lockedCondition.Length > 0 && !Event.LuaObject.EvaluateBool("door")) {
             if (force) {
-                yield return Event.LuaObject.Evaluate("speak('Locked.')");
+                yield return Event.LuaObject.Evaluate(lockedLua);
             }
             yield break;
         }

@@ -62,6 +62,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["face"] = (Action<DynValue, DynValue>)Face;
         lua.Globals["debug"] = (Action<DynValue>)DebugLog;
         lua.Globals["setting"] = (Action<DynValue>)Setting;
+        lua.Globals["spawnFollower"] = (Action<DynValue, DynValue>)SpawnFollower;
         lua.Globals["faceToward"] = (Action<DynValue>)FaceToward;
         lua.Globals["cs_search"] = (Action<DynValue>)Search;
         lua.Globals["cs_pathTo"] = (Action<DynValue>)PathTo;
@@ -251,6 +252,17 @@ public class LuaCutsceneContext : LuaContext {
         } else {
             var function = eventLua.Table.Get("walk");
             function.Function.Call(steps, directionLua, waitLua);
+        }
+    }
+
+    private void SpawnFollower(DynValue follower, DynValue target) {
+        var followerName = follower.String;
+        var @event = MapManager.Instance.ActiveMap.GetEventNamed(followerName);
+        if (!@event.gameObject.activeSelf) {
+            var targetEvent = MapManager.Instance.ActiveMap.GetEventNamed(target.String);
+            @event.SetLocation(targetEvent.Location);
+            @event.Chara.FaceToward(AvatarEvent.Instance.Event);
+            @event.gameObject.SetActive(true);
         }
     }
 }

@@ -134,7 +134,7 @@ public class Map : MonoBehaviour {
 
     public MapEvent GetEventNamed(string eventName) {
         foreach (ObjectLayer layer in GetComponentsInChildren<ObjectLayer>()) {
-            foreach (MapEvent mapEvent in layer.GetComponentsInChildren<MapEvent>()) {
+            foreach (MapEvent mapEvent in layer.GetComponentsInChildren<MapEvent>(includeInactive: true)) {
                 if (mapEvent.name == eventName && mapEvent.IsSwitchEnabled) {
                     return mapEvent;
                 }

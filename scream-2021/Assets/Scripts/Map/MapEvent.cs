@@ -181,8 +181,8 @@ public class MapEvent : MonoBehaviour {
         } else {
             var p1 = PositionPx + new Vector3(-.5f, 0 , -.5f);
             var p2 = p1 + new Vector3(size.x * Map.UnitsPerTile, 0, size.y * Map.UnitsPerTile);
-            var res =   pos.x >= p1.x && pos.y >= p1.y && pos.z >= p1.z &&
-                        pos.x <= p2.x && pos.y <= p2.y && pos.z <= p2.z;
+            var res =   pos.x >= p1.x && /*pos.y >= p1.y &&*/ pos.z >= p1.z &&
+                        pos.x <= p2.x && /*pos.y <= p2.y &&*/ pos.z <= p2.z;
             if (res == true)
                 return true;
             else return false;

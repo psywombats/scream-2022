@@ -39,11 +39,6 @@ public class MapEventEditor : Editor {
             mapEvent.SetLocation(newPosition);
         }
 
-        Vector2Int newSize = EditorGUILayout.Vector2IntField("Size", mapEvent.size);
-        if (newSize != mapEvent.size) {
-            mapEvent.SetSize(newSize);
-        }
-
         base.OnInspectorGUI();
     }
 

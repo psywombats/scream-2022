@@ -3,7 +3,7 @@
 /**
  * Renders the attached sprite as fixed-x at the camera.
  */
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 [DisallowMultipleComponent]
 public class BillboardingSpriteComponent : MonoBehaviour {
 
@@ -32,7 +32,7 @@ public class BillboardingSpriteComponent : MonoBehaviour {
 
     private MapCamera GetCamera() {
         if (Application.isPlaying) {
-            return Global.Instance.Maps.GetComponent<MapCamera>();
+            return Global.Instance.Maps.Camera;
         } else {
             return FindObjectOfType<MapCamera>();
         }
