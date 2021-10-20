@@ -151,6 +151,7 @@ public class MapManager : SingletonBehavior {
         if (Avatar == null) {
             Avatar = Instantiate(avatarPrefab);
         }
+        Avatar.gameObject.name = "hero";
         Avatar.transform.SetParent(map.ObjectLayer.transform, false);
         Camera.target = Avatar.Event;
         Camera.ManualUpdate();

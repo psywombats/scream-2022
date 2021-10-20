@@ -46,7 +46,7 @@ public class DoorEvent : MonoBehaviour {
             yield break;
         }
 
-        //Global.Instance.Audio.PlaySFX("door");
+        Global.Instance.Audio.PlaySFX("door");
 
         avatar.PauseInput();
         avatar.CancelCollisions = true;

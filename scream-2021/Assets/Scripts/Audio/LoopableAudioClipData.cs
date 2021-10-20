@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[CreateAssetMenu(fileName = "LoopableAudioClipData", menuName = "Data/LoopableAudioClipData")]
 public class LoopableAudioClipData : ScriptableObject {
 
     public AudioClip clip;

@@ -81,6 +81,9 @@ public class AudioManager : SingletonBehavior {
             } else {
                 SetVolume();
                 var data = IndexDatabase.Instance.BGM.GetData(key);
+                if (data.track.loopEndSample == 0) {
+                    data.track.loopEndSample = data.track.clip.samples;
+                }
                 if (data == null) return;
                 currentBgm = data.track;
                 bgmSource.clip = currentBgm.clip;

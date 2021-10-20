@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 //[ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
@@ -25,7 +24,7 @@ public class DepthCamComponent : FadeComponent {
         if (!staticInited) {
             staticInited = true;
             if (blitMat != null) {
-                blitMat.SetFloat("_XFade", 0);
+                blitMat.SetFloat("_XFade", Application.isEditor ? 0 : 1);
             }
         }
     }
