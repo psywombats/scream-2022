@@ -47,17 +47,18 @@ public class SpeakboxComponent : TextAutotyper {
         choice.meshB.gameObject.SetActive(!enabled);
     }
 
-    public IEnumerator SetupForPos(Vector3 pos, float duration, bool useTail = true) {
+    public IEnumerator SetupForPos(Vector3 pos, float duration, bool useTail = true, bool bottom = false) {
         var screen = MapManager.Instance.Camera.GetCameraComponent().WorldToScreenPoint(pos);
+        screen += new Vector3(0, 88f, 0);
         var rect = GetComponent<RectTransform>();
 
-        if (pos == Vector3.zero) {
+        if (pos == Vector3.zero || bottom) {
             screen = new Vector2(640, 72);
         }
         var boxX = Mathf.Clamp(screen.x, margin.x, 1280 - margin.x);
-        var boxY = Mathf.Clamp(screen.y, margin.y, 1280 - margin.y);
+        var boxY = Mathf.Clamp(screen.y, margin.y, 720 - margin.y * 2.5f);
         var tailX = Mathf.Clamp(screen.x, tailMargin.x, 1280 - tailMargin.x);
-        var tailY = Mathf.Clamp(screen.y, tailMargin.y, 1280 - tailMargin.y);
+        var tailY = Mathf.Clamp(screen.y, tailMargin.y, 720 - margin.y * 2.5f);
 
         yield return CoUtils.RunParallel(new IEnumerator[] {
             CoUtils.RunTween(boxTrans.DOAnchorPos(new Vector2(boxX, boxY), duration)),
@@ -98,6 +99,7 @@ public class SpeakboxComponent : TextAutotyper {
                     SetupForPos(AvatarEvent.Instance.Event.GetTextPos(), moveDuration, false)
                 }, this);
         }
+        pos = new Vector3(-1, -1, -1); // dummy to always check false
         selectionArea.SetActive(true);
         cellA.GetComponent<ChoiceCell>().Populate(choiceA);
         cellB.GetComponent<ChoiceCell>().Populate(choiceB);
@@ -109,7 +111,7 @@ public class SpeakboxComponent : TextAutotyper {
     public IEnumerator SpeakRoutine(string text, Vector3 worldPos) => SpeakRoutine(SystemSpeaker, text, worldPos);
     public IEnumerator SpeakRoutine(string text) => SpeakRoutine(SystemSpeaker, text, Vector3.zero);
     public IEnumerator SpeakRoutine(string speakerName, string text) => SpeakRoutine(speakerName, text, Vector3.zero);
-    public IEnumerator SpeakRoutine(string speakerName, string text, Vector3 worldPos, PortraitData portrait = null, bool useTail = true) {
+    public IEnumerator SpeakRoutine(string speakerName, string text, Vector3 worldPos, PortraitData portrait = null, bool useTail = true, bool bottom = false) {
         if (text == null || text.Length == 0) {
             text = speakerName;
             speakerName = SystemSpeaker;
@@ -120,7 +122,7 @@ public class SpeakboxComponent : TextAutotyper {
         useTail &= speakerName != SystemSpeaker;
         if (!isDisplaying) {
             pos = worldPos;
-            yield return SetupForPos(pos, 0f, useTail);
+            yield return SetupForPos(pos, 0f, useTail, bottom);
             if (speakerName == SystemSpeaker) {
                 SetNameboxEnabled(false);
             }
@@ -142,7 +144,7 @@ public class SpeakboxComponent : TextAutotyper {
                     EraseNameRoutine(animationSeconds / 2.0f),
                     EraseTextRoutine(animationSeconds / 2.0f),
                 }, this);
-                yield return SetupForPos(pos, moveDuration, useTail);
+                yield return SetupForPos(pos, moveDuration, useTail, bottom);
             } else {
                 yield return EraseTextRoutine(animationSeconds / 2.0f);
             }

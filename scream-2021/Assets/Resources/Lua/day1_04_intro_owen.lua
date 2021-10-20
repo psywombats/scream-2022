@@ -47,3 +47,4 @@ speak("Lia", "N9?", 'lia_bot')
 speak("Tess", "N9.")
 
 setSwitch('day1_04_intro_owen', true)
+play('day1_intro')

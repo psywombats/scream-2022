@@ -25,3 +25,4 @@ speak("Nadine", "And stick close to Tess. She's great!", 'd1_nadine0')
 speak("Tess", "Thanks Nadine. Take care.")
 
 setSwitch('day1_05_intro_nadine', true)
+play('day1_intro')

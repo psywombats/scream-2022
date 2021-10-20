@@ -5,13 +5,13 @@ function teleportCoords(mapName, x, y)
     await()
 end
 
-function teleport(mapName, eventName)
-    cs_teleport(mapName, eventName)
+function teleport(mapName, eventName, dir)
+    cs_teleport(mapName, eventName, dir)
     await()
 end
 
-function targetTele(mapName, eventName)
-    cs_teleport(mapName, eventName)
+function targetTele(mapName, eventName, dir)
+    cs_teleport(mapName, eventName, dir)
     await()
 end
 

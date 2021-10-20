@@ -35,6 +35,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     private Vector2Int lastLoc;
     private Map lastMap;
     private bool tracking;
+    private bool trackingLastFrame;
 
     public void Start() {
         MapManager.Instance.Avatar = this;
@@ -42,6 +43,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     public virtual void Update() {
+        trackingLastFrame = tracking;
         tracking = false;
         lastMap = MapManager.Instance.ActiveMap;
         lastLoc = Event.Location;
@@ -59,6 +61,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
         Body.velocity = velocityThisFrame;
         velocityThisFrame = Vector3.zero;
+        
     }
 
     public bool OnCommand(InputManager.Command command, InputManager.Event eventType) {
@@ -111,7 +114,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     public bool WantsToTrack() {
-        return tracking;
+        return trackingLastFrame || tracking;
     }
 
     private void CheckPhysicsComponent(Vector3 delta) {

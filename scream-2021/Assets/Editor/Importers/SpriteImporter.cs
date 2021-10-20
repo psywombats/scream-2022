@@ -16,10 +16,7 @@ internal sealed class SpriteImporter : AssetPostprocessor {
             importer.filterMode = FilterMode.Point;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.textureType = TextureImporterType.Sprite;
-
-            if (importer.spritesheet != null && importer.spritesheet.Count() > 0) {
-                return;
-            }
+            importer.spriteImportMode = SpriteImportMode.Multiple;
 
             if (path.Contains("Battler")) {
                 importer.spritePixelsPerUnit = Map.PxPerTile / Map.UnitsPerTile;
@@ -28,7 +25,6 @@ internal sealed class SpriteImporter : AssetPostprocessor {
                 importer.spritePixelsPerUnit = Map.PxPerTile / Map.UnitsPerTile;
 
                 if (path.Contains("RM2K")) {
-                    importer.spriteImportMode = SpriteImportMode.Multiple;
                     var edgeSize = new Vector2Int(96, 96);
                     var index = 0;
                     var spriteData = new List<SpriteMetaData>();
@@ -42,7 +38,19 @@ internal sealed class SpriteImporter : AssetPostprocessor {
                     }
                     importer.spritesheet = spriteData.ToArray();
                 }
+            } else if (path.Contains("Anims")) {
+                importer.spritePixelsPerUnit = Map.PxPerTile / Map.UnitsPerTile;
+                var texSize = EditorUtils.GetPreprocessedImageSize(importer);
+                var edgeSize = new Vector2Int(16, texSize.y);
+                var dirs = new List<OrthoDir>() { OrthoDir.North };
+                var cols = texSize.x / edgeSize.x;
+                var sprites = CreateAllMetadata(assetName, texSize, Vector2Int.zero, edgeSize, dirs, 1, cols);
+                importer.spritesheet = sprites.ToArray();
             } else if (assetPath.Contains("Charas")) {
+                if (importer.spritesheet != null && importer.spritesheet.Count() > 0) {
+                    return;
+                }
+
                 importer.spritePixelsPerUnit = Map.PxPerTile / Map.UnitsPerTile;
                 importer.spriteImportMode = SpriteImportMode.Multiple;
                 importer.isReadable = true;
@@ -62,14 +70,7 @@ internal sealed class SpriteImporter : AssetPostprocessor {
                         }
                     }
                     importer.spritesheet = spriteData.ToArray();
-                } else if (path.Contains("Anims")) {
-                    var texSize = EditorUtils.GetPreprocessedImageSize(importer);
-                    var edgeSize = new Vector2Int(16, texSize.y);
-                    var dirs = new List<OrthoDir>() { OrthoDir.North };
-                    var cols = texSize.x / edgeSize.x;
-                    var sprites = CreateAllMetadata(assetName, texSize, Vector2Int.zero, edgeSize, dirs, 1, cols);
-                    importer.spritesheet = sprites.ToArray();
-                } else if (path.Contains("Ocean")) {
+                }  else if (path.Contains("Ocean")) {
                     var dirs = new List<OrthoDir>() { OrthoDir.East, OrthoDir.North, OrthoDir.West, OrthoDir.South };
                     var edgeSize = new Vector2Int(16, 16);
                     var texSize = EditorUtils.GetPreprocessedImageSize(importer);

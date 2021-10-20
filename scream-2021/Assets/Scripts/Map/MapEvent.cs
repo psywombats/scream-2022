@@ -35,6 +35,7 @@ public class MapEvent : MonoBehaviour {
     // Properties
     public LuaMapEvent LuaObject { get; private set; }
     public bool IsTracking { get; private set; }
+    private float lastCollided;
 
     private bool checkedChara;
     private CharaEvent chara;
@@ -193,7 +194,7 @@ public class MapEvent : MonoBehaviour {
     public Vector3 GetTextPos() {
         var chara = GetComponent<CharaEvent>();
         if (chara != null) {
-            return chara.renderer.transform.position + new Vector3(0, 2.5f, 0);
+            return chara.renderer.transform.position + new Vector3(0, 2f, 0);
         } else {
             return PositionPx + new Vector3(0, .75f, 0);
         }
@@ -299,6 +300,13 @@ public class MapEvent : MonoBehaviour {
     // called when the avatar stumbles into us
     // before the step if impassable, after if passable
     private void OnCollide(AvatarEvent avatar) {
+        if (luaOnCollide.Length == 0) {
+            return;
+        }
+        if (Time.time - lastCollided < .5f) {
+            return;
+        }
+        lastCollided = Time.time;
         LuaObject.Run(PropertyCollide);
     }
 

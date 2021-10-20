@@ -37,3 +37,4 @@ speak("Joey", "If you're ever scared or sad, you can come find Connie. She'll be
 speak("Lia", "Thanks.", 'lia_bot')
 
 setSwitch('day1_06_intro_joey', true)
+play('day1_intro')

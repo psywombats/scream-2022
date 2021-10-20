@@ -36,3 +36,5 @@ speak("Lia", "Y-yeah...", 'd1_lia0')
 speak("Tess", "Here, follow me and I can introduce you to everyone.")
 
 setSwitch('day1_02_intro_lia', true)
+setSwitch('spawn_lia', true)
+play('day1_intro')

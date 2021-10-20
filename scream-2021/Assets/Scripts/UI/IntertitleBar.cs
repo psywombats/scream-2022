@@ -39,6 +39,12 @@ public class IntertitleBar : MonoBehaviour {
     }
 
     public IEnumerator FadeInRoutine(float duration) {
+        redAt = 0;
+        elapsed = 0;
+        tElapsed = 0;
+        fader = 0;
+        outFader = 0;
+        fixes = new List<KeyValuePair<string, int>>();
         while (fader < 1) {
             fader += Time.deltaTime / duration;
             yield return null;

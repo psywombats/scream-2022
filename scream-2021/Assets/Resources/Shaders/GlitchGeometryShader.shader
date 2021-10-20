@@ -173,5 +173,5 @@
         ENDCG
     }
 
-Fallback "Transparent/VertexLit"
+Fallback "Diffuse"
 }

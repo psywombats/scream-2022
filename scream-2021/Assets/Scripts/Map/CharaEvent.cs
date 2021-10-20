@@ -190,7 +190,7 @@ public class CharaEvent : MonoBehaviour {
         var old = lastPosition;
         old.y = 0;
         var delta = position - old;
-        return (delta.sqrMagnitude > 0 && delta.sqrMagnitude < Map.UnitsPerTile)  
+        return (delta.sqrMagnitude > 0.05 * Time.deltaTime && delta.sqrMagnitude < Map.UnitsPerTile)  
             || Event.IsTracking;
     }
 

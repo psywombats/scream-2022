@@ -10,7 +10,15 @@ public class BillboardingSpriteComponent : MonoBehaviour {
     public bool billboardX = true;
     public bool billboardY;
 
-    public void Update() {
+    protected void Update() {
+        Billboard();
+    }
+
+    protected void OnValidate() {
+        //Billboard();
+    }
+
+    public void Billboard() {
         if (GetCamera() == null) {
             return;
         }

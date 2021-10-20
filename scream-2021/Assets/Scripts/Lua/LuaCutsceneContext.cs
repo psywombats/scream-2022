@@ -64,6 +64,9 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["setting"] = (Action<DynValue>)Setting;
         lua.Globals["spawnFollower"] = (Action<DynValue, DynValue>)SpawnFollower;
         lua.Globals["faceToward"] = (Action<DynValue>)FaceToward;
+        lua.Globals["faceOtherToward"] = (Action<DynValue, DynValue>)FaceOtherToward;
+        lua.Globals["setDepthMult"] = (Action<DynValue>)SetDepthMult;
+        lua.Globals["untrackCamera"] = (Action)UntrackCamera;
         lua.Globals["cs_search"] = (Action<DynValue>)Search;
         lua.Globals["cs_pathTo"] = (Action<DynValue>)PathTo;
         lua.Globals["cs_teleport"] = (Action<DynValue, DynValue, DynValue, DynValue>)TargetTeleport;
@@ -119,7 +122,7 @@ public class LuaCutsceneContext : LuaContext {
         }
 
         MapEvent @event = null;
-        if (targetEventString != null) {
+        if (targetEventString != null && !targetEventString.Equals("bottom")) {
             @event = MapManager.Instance.ActiveMap.GetEventNamed(targetEventString);
             if (@event == null) {
                 Debug.LogError("No event named: " + targetEventString);
@@ -129,17 +132,17 @@ public class LuaCutsceneContext : LuaContext {
         } else if (speakerString != null) {
             @event = MapManager.Instance.ActiveMap.GetEventNamed(speakerString);
         }
-        RunTextboxRoutineFromLua(SpeakRoutine(speakerString, textString, @event));
+        RunTextboxRoutineFromLua(SpeakRoutine(speakerString, textString, @event, targetEventString != null && targetEventString.Equals("bottom")));
     }
-    private IEnumerator SpeakRoutine(string speakerString, string textString, MapEvent @event) {
+    private IEnumerator SpeakRoutine(string speakerString, string textString, MapEvent @event, bool bottom = false) {
         var isProtag = speakerString == "Tess";
         if (isProtag) {
             AvatarEvent.Instance.Chara.SetAppearanceByTag("tess_screen");
         }
         if (@event != null) {
-            yield return MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString, @event.GetTextPos(), useTail:!isProtag);
+            yield return MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString, @event.GetTextPos(), useTail:!isProtag, bottom: bottom);
         } else {
-            yield return MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString);
+            yield return MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString, Vector3.zero, bottom: bottom);
         }
         if (speakerString == "Tess") {
             AvatarEvent.Instance.Chara.SetAppearanceByTag("tess");
@@ -212,13 +215,19 @@ public class LuaCutsceneContext : LuaContext {
         AvatarEvent.Instance.Chara.FaceToward(@event);
     }
 
+    private void FaceOtherToward(DynValue eventName, DynValue targetName) {
+        var @event = MapManager.Instance.ActiveMap.GetEventNamed(eventName.String);
+        var target = MapManager.Instance.ActiveMap.GetEventNamed(targetName.String);
+        @event.Chara.FaceToward(target);
+    }
+
     private void Card(DynValue cardName) {
         var cardData = IndexDatabase.Instance.Portraits.GetData(cardName.String);
         RunRoutineFromLua(MapOverlayUI.Instance.Cards.ShowRoutine(cardData));
     }
 
     private void Choice(DynValue a, DynValue b) {
-        RunRoutineFromLua(CoUtils.TaskAsRoutine(ChooseAsync(a.String, b.String)));
+        RunTextboxRoutineFromLua(CoUtils.TaskAsRoutine(ChooseAsync(a.String, b.String)));
     }
     private async Task ChooseAsync(string a, string b) {
         var selection = await MapOverlayUI.Instance.Textbox.ChooseAsync(a, b);
@@ -264,5 +273,13 @@ public class LuaCutsceneContext : LuaContext {
             @event.Chara.FaceToward(AvatarEvent.Instance.Event);
             @event.gameObject.SetActive(true);
         }
+    }
+
+    private void SetDepthMult(DynValue mult) {
+        MapManager.Instance.Camera.GetComponent<DepthCamComponent>().RangeMultTarget = (float)mult.Number;
+    }
+
+    private void UntrackCamera() {
+        MapManager.Instance.Camera.GetComponent<TrackerCam3D>().enabled = false;
     }
 }
