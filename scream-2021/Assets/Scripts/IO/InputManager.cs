@@ -8,6 +8,8 @@ public class InputManager : SingletonBehavior {
     public static InputManager Instance => Global.Instance.Input;
 
     public enum Command {
+        StrafeLeft,
+        StrafeRight,
         Left,
         Right,
         Up,
@@ -36,9 +38,12 @@ public class InputManager : SingletonBehavior {
 
     public void Awake() {
         keybinds = new Dictionary<Command, List<KeyCode>>();
-        keybinds[Command.Left] = new List<KeyCode>(new[] { KeyCode.LeftArrow, KeyCode.A, KeyCode.Keypad4 });
-        keybinds[Command.Right] = new List<KeyCode>(new[] { KeyCode.RightArrow, KeyCode.D, KeyCode.Keypad6 });
-        keybinds[Command.Up] = new List<KeyCode>(new[] { KeyCode.UpArrow, KeyCode.D, KeyCode.Keypad8 });
+        keybinds[Command.StrafeRight] = new List<KeyCode>(new[] { KeyCode.D });
+        keybinds[Command.StrafeLeft] = new List<KeyCode>(new[] { KeyCode.A });
+        keybinds[Command.Left] = new List<KeyCode>(new[] { KeyCode.LeftArrow, KeyCode.Keypad4 });
+        keybinds[Command.Left] = new List<KeyCode>(new[] { KeyCode.LeftArrow, KeyCode.Keypad4 });
+        keybinds[Command.Right] = new List<KeyCode>(new[] { KeyCode.RightArrow, KeyCode.Keypad6 });
+        keybinds[Command.Up] = new List<KeyCode>(new[] { KeyCode.UpArrow, KeyCode.W, KeyCode.Keypad8 });
         keybinds[Command.Down] = new List<KeyCode>(new[] { KeyCode.DownArrow, KeyCode.S, KeyCode.Keypad2 });
         keybinds[Command.Confirm] = new List<KeyCode>(new[] { KeyCode.Space, KeyCode.Z, KeyCode.Return });
         keybinds[Command.Cancel] = new List<KeyCode>(new[] { KeyCode.Escape, KeyCode.B, KeyCode.X });

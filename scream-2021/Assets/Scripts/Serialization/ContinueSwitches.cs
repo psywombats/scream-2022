@@ -23,7 +23,7 @@
     private static readonly string[][] checkpoints = { switchesD1, switchesN1 };
 
     public static void Activate(int checkpoint) {
-        for (var i = 0; i < checkpoint; i += 1 ) {
+        for (var i = 0; i <= checkpoint; i += 1 ) {
             var switches = checkpoints[i];
             foreach (var @switch in switches) {
                 Global.Instance.Data.SetSwitch(@switch, true);

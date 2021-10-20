@@ -76,7 +76,7 @@ public class LuaMapEvent {
     }
 
     public void faceIn() {
-        var renderer = mapEvent.GetComponent<CharaEvent>().renderer;
+        var renderer = mapEvent.GetComponent<CharaEvent>().Renderer;
         renderer.color = new Color(renderer.color.r, renderer.color.b, renderer.color.g, 0f);
         renderer.DOFade(1f, 0f);
     }

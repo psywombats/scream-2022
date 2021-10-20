@@ -22,14 +22,14 @@ public class BillboardingSpriteComponent : MonoBehaviour {
         if (GetCamera() == null) {
             return;
         }
-        if (billboardX || GetCamera().billboardX) {
+        if (!AvatarEvent.Instance.UseFirstPersonControl) {
             Vector3 angles = transform.eulerAngles;
             transform.eulerAngles = new Vector3(
                     GetCamera().GetCameraComponent().transform.eulerAngles.x,
                     angles.y,
                     angles.z);
         }
-        if (billboardY || GetCamera().billboardY) {
+        if (AvatarEvent.Instance.UseFirstPersonControl) {
             Vector3 angles = transform.eulerAngles;
             transform.eulerAngles = new Vector3(
                     angles.x,

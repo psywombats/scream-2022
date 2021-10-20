@@ -91,10 +91,12 @@ public abstract class GenericSelector : MonoBehaviour {
                     InvokeScanner(scanner);
                     break;
                 case InputManager.Command.Left:
+                case InputManager.Command.StrafeLeft:
                     MoveSelectionHorizontal(-1);
                     InvokeScanner(scanner);
                     break;
                 case InputManager.Command.Right:
+                case InputManager.Command.StrafeRight:
                     MoveSelectionHorizontal(1);
                     InvokeScanner(scanner);
                     break;

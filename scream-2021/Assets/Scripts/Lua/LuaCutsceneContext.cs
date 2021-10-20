@@ -128,7 +128,11 @@ public class LuaCutsceneContext : LuaContext {
                 Debug.LogError("No event named: " + targetEventString);
             }
         } else if (speakerString == "Tess") {
-            @event = AvatarEvent.Instance.Event;
+            if (AvatarEvent.Instance.UseFirstPersonControl) {
+                //targetEventString = "bottom";
+            } else {
+                @event = AvatarEvent.Instance.Event;
+            }
         } else if (speakerString != null) {
             @event = MapManager.Instance.ActiveMap.GetEventNamed(speakerString);
         }
@@ -142,7 +146,7 @@ public class LuaCutsceneContext : LuaContext {
         if (@event != null) {
             yield return MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString, @event.GetTextPos(), useTail:!isProtag, bottom: bottom);
         } else {
-            yield return MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString, Vector3.zero, bottom: bottom);
+            yield return MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString, Vector3.zero, useTail:!isProtag, bottom: bottom);
         }
         if (speakerString == "Tess") {
             AvatarEvent.Instance.Chara.SetAppearanceByTag("tess");

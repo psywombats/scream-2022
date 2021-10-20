@@ -31,6 +31,7 @@ public class TitleController : MonoBehaviour {
                 break;
             case 1:
                 var result = await ContinueGameAsync();
+                InputManager.Instance.RemoveListener("continue");
                 if (!result) {
                     await CoUtils.RunTween(continueGroup.DOFade(0f, .25f));
                     await CoUtils.RunTween(selector.GetComponent<CanvasGroup>().DOFade(1f, .25f));
@@ -51,6 +52,7 @@ public class TitleController : MonoBehaviour {
     }
 
     private async Task<bool> ContinueGameAsync() {
+        continueText.text = Continues[continueIndex];
         await CoUtils.RunTween(selector.GetComponent<CanvasGroup>().DOFade(0f, .25f));
         await CoUtils.RunTween(continueGroup.DOFade(1f, .25f));
         var comp = new TaskCompletionSource<bool>();
@@ -58,10 +60,12 @@ public class TitleController : MonoBehaviour {
             if (ev != InputManager.Event.Down) {
                 return true;
             }
-            if (cmd == InputManager.Command.Left) {
+            if (cmd == InputManager.Command.Left || cmd == InputManager.Command.StrafeLeft) {
+                AudioManager.Instance.PlaySFX("cursor");
                 continueIndex -= 1;
             }
-            if (cmd == InputManager.Command.Right) {
+            if (cmd == InputManager.Command.Right || cmd == InputManager.Command.StrafeRight) {
+                AudioManager.Instance.PlaySFX("cursor");
                 continueIndex += 1;
             }
             if (continueIndex < 0) continueIndex = Continues.Length - 1;
@@ -71,8 +75,9 @@ public class TitleController : MonoBehaviour {
                 comp.SetResult(false);
             }
 
-            if (cmd == InputManager.Command.Down) {
-                StartCoroutine(ContinueRoutine());
+            if (cmd == InputManager.Command.Confirm) {
+                AudioManager.Instance.PlaySFX("selection");
+                Global.Instance.StartCoroutine(ContinueRoutine());
                 comp.SetResult(true);
             }
 

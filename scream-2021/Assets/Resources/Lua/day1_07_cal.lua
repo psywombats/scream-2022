@@ -98,7 +98,7 @@ wait(0.6)
 speak("Dr. Cooper", "Thanks for bearing with me.", 'cal')
 speak("Dr. Cooper", "We'll move on and take your vitals and do a basic checkup from here, although...", 'cal')
 speak("Dr. Cooper", "Next time please think a little harder about the questions, okay?", 'cal')
-speak("Dr. Cooper", "It's really important for my research. I'm really really close!", 'cal')
+speak("Dr. Cooper", "It's important for my research. I'm super duper close!", 'cal')
 speak("Tess", "Whatever you say.")
 
 setSwitch('day1_07_cal', true)

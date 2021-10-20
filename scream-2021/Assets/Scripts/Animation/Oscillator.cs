@@ -15,6 +15,7 @@ public class Oscillator : MonoBehaviour {
     };
 
     public float durationSeconds = 1.0f;
+    public float offsetSeconds;
     public Vector3 maxOffset;
     public OscillationMovementMode movementMode = OscillationMovementMode.Sinusoidal;
     public OscillationOffsetMode offsetMode = OscillationOffsetMode.StartsAtMiddle;
@@ -81,6 +82,6 @@ public class Oscillator : MonoBehaviour {
     }
 
     private void Reset() {
-        elapsed = 0;
+        elapsed = offsetSeconds;
     }
 }

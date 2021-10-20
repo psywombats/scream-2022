@@ -194,7 +194,7 @@ public class MapEvent : MonoBehaviour {
     public Vector3 GetTextPos() {
         var chara = GetComponent<CharaEvent>();
         if (chara != null) {
-            return chara.renderer.transform.position + new Vector3(0, 2f, 0);
+            return chara.Renderer.transform.position + new Vector3(0, 2f, 0);
         } else {
             return PositionPx + new Vector3(0, .75f, 0);
         }

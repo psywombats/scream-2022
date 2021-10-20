@@ -13,8 +13,8 @@ public class CharaEvent : MonoBehaviour {
     private const float DesaturationDuration = 0.5f;
     private const float StepsPerSecond = 2.0f;
 
-    [SerializeField] public new SpriteRenderer renderer;
-    [SerializeField] public new Collider collider;
+    [SerializeField] public DollComponent doll;
+    public SpriteRenderer Renderer => Doll.renderer;
 
     private Vector3 lastPosition;
     private Vector3 targetPx;
@@ -25,6 +25,18 @@ public class CharaEvent : MonoBehaviour {
     public MapEvent Event { get { return GetComponent<MapEvent>(); } }
     public Map Map { get { return Event.Map; } }
     public int StepCount => sprites.StepCount;
+
+    public DollComponent Doll {
+        get {
+            if (doll == null) {
+                doll = GetComponentInChildren<DollComponent>();
+            }
+            return doll;
+        }
+        set {
+            doll = value;
+        }
+    }
 
     private bool overrideHide = false;
     public bool OverrideHide {
@@ -61,7 +73,7 @@ public class CharaEvent : MonoBehaviour {
         get {
             if (_renderers == null) {
                 _renderers = new List<SpriteRenderer> {
-                    renderer
+                    Renderer
                 };
             }
             return _renderers;
@@ -69,6 +81,9 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void Start() {
+        Doll.transform.localPosition = Vector3.zero;
+        Doll.transform.rotation = Quaternion.identity;
+
         lastPosition = transform.position;
 
         GetComponent<Dispatch>().RegisterListener(MapEvent.EventEnabled, (object payload) => {
@@ -81,6 +96,9 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void LateUpdate() {
+        if (!Event.IsSwitchEnabled) {
+            return;
+        }
         if (!Event.IsTracking && Event != AvatarEvent.Instance.Event) {
             AutofaceDirection();
         }
@@ -101,7 +119,7 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void UpdateEnabled(bool enabled) {
-        collider.enabled = enabled;
+        doll.collider.enabled = enabled;
         foreach (var renderer in Renderers) {
             renderer.enabled = enabled && !OverrideHide;
         }
@@ -109,10 +127,10 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void UpdateAppearance(bool fixedTime = false) {
-        if (renderer == null) {
+        if (Renderer == null) {
             return;
         }
-        renderer.sprite = SpriteForMain(fixedTime);
+        Renderer.sprite = SpriteForMain(fixedTime);
     }
 
     public void FaceToward(MapEvent other) {
@@ -144,15 +162,15 @@ public class CharaEvent : MonoBehaviour {
 
     public IEnumerator FadeRoutine(float duration, bool inverse = false) {
         float val = inverse ? 1.0f : 0.0f;
-        yield return CoUtils.RunTween(renderer.DOColor(new Color(val, val, val), duration));
+        yield return CoUtils.RunTween(Renderer.DOColor(new Color(val, val, val), duration));
     }
 
     private Sprite SpriteForMain(bool fixedTime) {
         if (!fixedTime) {
             var x = (Mathf.FloorToInt(moveTime * StepsPerSecond) + 1) % Sprites.StepCount;
-            return Sprites.GetFrame(Facing, x);
+            return Sprites.GetFrame(DirectionRelativeToCamera(), x);
         } else {
-            return Sprites.GetFrame(Facing, 1);
+            return Sprites.GetFrame(DirectionRelativeToCamera(), 1);
         }
         
     }
@@ -170,13 +188,13 @@ public class CharaEvent : MonoBehaviour {
 
     private OrthoDir DirectionRelativeToCamera() {
         MapCamera cam = Application.isPlaying ? MapManager.Instance.Camera : FindObjectOfType<MapCamera>();
-        if (!cam) {
+        if (!cam || !AvatarEvent.Instance.UseFirstPersonControl) {
             return Facing;
         }
 
-        Vector3 ourScreen = cam.GetCameraComponent().WorldToScreenPoint(transform.position);
-        Vector3 targetWorld = Event.TileToWorldCoords(Event.Location + Facing.XY3D());
-        targetWorld.y = Event.transform.position.y;
+        Vector3 ourScreen = cam.GetCameraComponent().WorldToScreenPoint(transform.position + new Vector3(.5f, 0, .5f));
+        Vector3 targetWorld = Event.PositionPx + Facing.Px3D();
+        targetWorld.y = Event.PositionPx.y;
         Vector3 targetScreen = cam.GetCameraComponent().WorldToScreenPoint(targetWorld);
         Vector3 delta = targetScreen - ourScreen;
         return OrthoDirExtensions.DirectionOf2D(new Vector2(delta.x, -delta.y));
