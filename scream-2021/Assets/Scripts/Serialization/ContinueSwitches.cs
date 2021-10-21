@@ -29,6 +29,13 @@
         "n1_clear",
     };
 
+    private static readonly string[] switchesN2 = {
+        "day2_01_owen",
+        "day2_03_meeting",
+
+
+    };
+
     private static readonly string[][] checkpoints = { switchesD1, switchesN1, switchesD2 };
 
     public static void Activate(int checkpoint) {

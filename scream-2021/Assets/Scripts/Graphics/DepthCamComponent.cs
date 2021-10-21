@@ -54,7 +54,7 @@ public class DepthCamComponent : FadeComponent {
         if (blitMat != null) {
             blitMat.SetFloat("_UniversalEnable", glitchOn ? 1 : 0);
             blitMat.SetFloat("_DLimitMin", rangeMin * rangeMult);
-            blitMat.SetFloat("_DLimitMax", rangeMax);
+            blitMat.SetFloat("_DLimitMax", rangeMax * rangeMult);
             Graphics.Blit(src, dest, blitMat);
         } else {
             Graphics.Blit(src, dest);

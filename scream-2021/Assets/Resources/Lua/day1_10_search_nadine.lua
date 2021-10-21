@@ -3,9 +3,9 @@ if getSwitch('day1_10_search_nadine') then
     return
 end
 
-faceOtherToward('lia_bot', 'd1_nadine1')
+faceOther('lia_bot', 'd1_nadine1')
 speak("Nadine", "Hey Tess! And ummm...", 'd1_nadine1')
-faceOtherToward('d1_nadine1', 'lia_bot')
+faceOther('d1_nadine1', 'lia_bot')
 speak("Lia", "It's - ", 'lia_bot')
 speak("Nadine", "Lia! I'm right, aren't I?", 'd1_nadine1')
 speak("Lia", "Yeah. That's it.", 'lia_bot')

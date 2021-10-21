@@ -15,6 +15,7 @@ public class IntertitleBar : MonoBehaviour {
     private List<KeyValuePair<string, int>> fixes = new List<KeyValuePair<string, int>>();
     private float[] timings;
 
+    private StringBuilder sb;
     private float redAt;
     private float elapsed;
     private float tElapsed;
@@ -66,7 +67,11 @@ public class IntertitleBar : MonoBehaviour {
     }
 
     public void Randomize() {
-        var sb = new StringBuilder(characterCount);
+        if (sb == null) {
+            sb = new StringBuilder(characterCount * 2);
+        } else {
+            sb.Clear();
+        }
         var at = 0;
         for (var i = 0; i < fixes.Count; i += 1) {
             var r = (tElapsed - redAt) / redTime;

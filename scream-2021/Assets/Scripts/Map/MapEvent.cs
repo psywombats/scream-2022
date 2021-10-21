@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 
 [RequireComponent(typeof(Dispatch))]
@@ -27,7 +26,7 @@ public class MapEvent : MonoBehaviour {
     [SerializeField] public OrthoDir requiredDir = OrthoDir.North;
     [Space]
     [Header("Lua scripting")]
-    [SerializeField] public string luaCondition;
+    [SerializeField] [TextArea(3, 6)] public string luaCondition;
     [SerializeField] [TextArea(3, 6)] public string luaOnInteract;
     [SerializeField] [TextArea(3, 6)] public string luaOnCollide;
     [SerializeField] private GameObject enableChild;
@@ -155,7 +154,9 @@ public class MapEvent : MonoBehaviour {
     }
 
     public void CheckEnabled() {
-        IsSwitchEnabled = LuaObject.EvaluateBool(PropertyCondition, true);
+        if (luaCondition != null && luaCondition.Length > 0) {
+            IsSwitchEnabled = LuaObject.EvaluateBool(PropertyCondition, true);
+        }
     }
 
     public bool IsPassableBy(MapEvent other) {
@@ -319,7 +320,7 @@ public class MapEvent : MonoBehaviour {
             return;
         }
         if (GetComponent<CharaEvent>() != null) {
-            GetComponent<CharaEvent>().Facing = DirectionTo(avatar.GetComponent<MapEvent>());
+            GetComponent<CharaEvent>().FaceToward(AvatarEvent.Instance.Event);
         }
         LuaObject.Run(PropertyInteract);
     }

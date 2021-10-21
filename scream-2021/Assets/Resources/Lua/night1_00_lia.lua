@@ -28,7 +28,7 @@ speak("Lia", "It'll be hard for someone like me, but... I want to follow your ex
 face('n1_lia', 'EAST')
 wait(1.0)
 speak("Tess", "Actually, if I could ask you a question.")
-faceOtherToward('n1_lia', 'hero')
+faceOther('n1_lia', 'hero')
 speak("Lia", "...?", 'n1_lia')
 speak("Tess", "What year is it?")
 speak("Lia", "You don't remember THAT?", 'n1_lia')

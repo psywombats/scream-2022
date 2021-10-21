@@ -1,9 +1,9 @@
 pathTo('d1_target1')
 
 speak("Tess", "What's going on?")
-faceToward('d1_owen1')
+faceTo('d1_owen1')
 speak("Owen", "Joey's throwing a fit.", 'd1_owen1')
-faceToward('d1_nadine1')
+faceTo('d1_nadine1')
 speak("Nadine", "Hey, calm down, calm down. Blow your nose.", 'd1_nadine1')
 speak("Joey", "Someone must've left the hatch open! She could be anywhere!", 'd1_joey1')
 walk('d1_lia1', 2, 'EAST')

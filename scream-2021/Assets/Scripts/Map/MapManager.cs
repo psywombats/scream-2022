@@ -23,6 +23,9 @@ public class MapManager : SingletonBehavior {
     private new MapCamera camera;
     public MapCamera Camera {
         get {
+            if (Avatar != null && Avatar.UseFirstPersonControl) {
+                return Avatar.FPSCam;
+            }
             if (camera == null) {
                 camera = FindObjectOfType<MapCamera>();
             }

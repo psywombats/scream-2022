@@ -13,6 +13,7 @@ public class CharaEvent : MonoBehaviour {
     private const float DesaturationDuration = 0.5f;
     private const float StepsPerSecond = 2.0f;
 
+    [SerializeField] private bool directionFix;
     [SerializeField] public DollComponent doll;
     public SpriteRenderer Renderer => Doll.renderer;
 
@@ -134,6 +135,9 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void FaceToward(MapEvent other) {
+        if (directionFix) {
+            return;
+        }
         Facing = Event.DirectionTo(other);
     }
 

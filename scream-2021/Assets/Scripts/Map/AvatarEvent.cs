@@ -13,6 +13,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     [SerializeField] private GameObject firstPersonParent = null;
     [SerializeField] private GameObject thirdPersonParent = null;
+    [SerializeField] private MapCamera fpsCam = null;
     [Space]
     [SerializeField] private float degreesPerSecond = 120;
     [SerializeField] [Range(0.1f, 9f)] float mouseRotateSensitivity = 2f;
@@ -28,6 +29,8 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     private Rigidbody body;
     public Rigidbody Body => body ?? (body = GetComponent<Rigidbody>());
+
+    public MapCamera FPSCam => fpsCam;
 
     private int pauseCount;
     public bool InputPaused {
@@ -88,8 +91,8 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
             // TODO: don't switch directions if facing is okay
             Chara.Facing = OrthoDirExtensions.DirectionOf3D(velocityThisFrame);
 
-            CheckPhysicsComponent(xcom);
-            CheckPhysicsComponent(ycom);
+            CheckPhysicsComponent(xcom, ycom);
+            CheckPhysicsComponent(ycom, xcom);
         }
 
         Body.velocity = velocityThisFrame;
@@ -193,27 +196,33 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         }
     }
 
-    private void CheckPhysicsComponent(Vector3 delta) {
+    private void CheckPhysicsComponent(Vector3 delta, Vector3 otherDelta) {
         if (delta == Vector3.zero) {
             return;
         }
 
-        delta = delta.normalized;
-        var adjustedPos = transform.localPosition + .7f * delta;
-        var adjustedLoc = MapEvent.WorldPositionToTileCoords(adjustedPos);
-        if (adjustedLoc != Event.Location) {
-            var h1 = Event.Map.Terrain.HeightAt(Event.Location);
-            var h2 = Event.Map.Terrain.HeightAt(adjustedLoc);
-            if ((Mathf.Abs(h1 - h2) == .5f) || (h1 - h2 == 1)) {
-                // these are stairs and we are moving towards them
-                if (!DisableHeightCrossing) {
-                    velocityThisFrame = Vector3.zero;
-                    Chara.Facing = OrthoDirExtensions.DirectionOf3D(delta);
-                    StartCoroutine(Event.LinearStepRoutine(adjustedLoc));
+        Vector3 adjustedPos;
+        Vector2Int adjustedLoc;
+
+        if (delta.sqrMagnitude > otherDelta.sqrMagnitude) {
+            delta = delta.normalized;
+            adjustedPos = transform.localPosition + .7f * delta;
+            adjustedLoc = MapEvent.WorldPositionToTileCoords(adjustedPos);
+            if (adjustedLoc != Event.Location) {
+                var h1 = Event.Map.Terrain.HeightAt(Event.Location);
+                var h2 = Event.Map.Terrain.HeightAt(adjustedLoc);
+                if ((Mathf.Abs(h1 - h2) == .5f) || (h1 - h2 == 1)) {
+                    // these are stairs and we are moving towards them
+                    if (!DisableHeightCrossing) {
+                        velocityThisFrame = Vector3.zero;
+                        Chara.Facing = OrthoDirExtensions.DirectionOf3D(delta);
+                        StartCoroutine(Event.LinearStepRoutine(adjustedLoc));
+                    }
                 }
             }
         }
 
+        delta = delta.normalized;
         adjustedPos = transform.localPosition + .3f * delta;
         adjustedLoc = MapEvent.WorldPositionToTileCoords(adjustedPos);
         if (adjustedLoc != Event.Location) {
@@ -272,8 +281,13 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
         tracking = true;
         var component = dir.Px3D() * Event.tilesPerSecond;
-        var c2 =  Quaternion.AngleAxis(firstPersonParent.transform.localEulerAngles.y, Vector3.up) * component;
-        velocityThisFrame += c2;
+        if (UseFirstPersonControl) {
+            var c2 = Quaternion.AngleAxis(firstPersonParent.transform.localEulerAngles.y, Vector3.up) * component;
+            velocityThisFrame += c2;
+        } else {
+            velocityThisFrame += component;
+        }
+
         return true;
     }
 
@@ -312,7 +326,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         var xQuat = Quaternion.AngleAxis(rotation.x, Vector3.up);
         var yQuat = Quaternion.AngleAxis(rotation.y, Vector3.left);
 
-        firstPersonParent.transform.localRotation = xQuat * yQuat;
+        //firstPersonParent.transform.localRotation = xQuat * yQuat;
 
         if (Input.GetMouseButtonUp(0)) {
             Interact();

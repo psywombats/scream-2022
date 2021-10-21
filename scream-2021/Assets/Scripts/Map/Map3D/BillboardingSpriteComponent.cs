@@ -7,9 +7,6 @@
 [DisallowMultipleComponent]
 public class BillboardingSpriteComponent : MonoBehaviour {
 
-    public bool billboardX = true;
-    public bool billboardY;
-
     protected void Update() {
         Billboard();
     }
@@ -31,9 +28,12 @@ public class BillboardingSpriteComponent : MonoBehaviour {
         }
         if (AvatarEvent.Instance.UseFirstPersonControl) {
             Vector3 angles = transform.eulerAngles;
+            var origX = angles.x;
+            var origY = angles.z;
+            transform.LookAt(AvatarEvent.Instance.transform, Vector3.up);
             transform.eulerAngles = new Vector3(
                     angles.x,
-                    GetCamera().GetCameraComponent().transform.eulerAngles.y,
+                    transform.eulerAngles.y - 180,
                     angles.z);
         }
     }

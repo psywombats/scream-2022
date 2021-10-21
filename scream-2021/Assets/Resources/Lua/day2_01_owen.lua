@@ -4,7 +4,8 @@ if getSwitch('day2_01_owen') then
 end
 
 speak("Owen", "Any luck last night?", 'd2_owen0')
-speak("Tess", "The stairs don't really go anywhere. They lead to the research lab attached to the ward, not the outside world.")
+speak("Tess", "The stairs aren't what you think.")
+speak("Tess", "They lead to the research lab attached to the ward, not the outside world.")
 speak("Owen", "Interesting.", 'd2_owen0')
 speak("Owen", "How much do you know about Allsaints Hospital?", 'd2_owen0')
 speak("Tess", "It's a pediatric hospital, for kids and young adults. It has twelve departments and was founded in - ")
@@ -22,10 +23,13 @@ speak("Owen", "You what? Ugh, of all the - ", 'd2_owen0')
 setSwitch('day2_01_owen', true)
 face('hero', 'WEST')
 face('d2_owen0', 'WEST')
+wait(.1)
 walk('d2_nadine0', 6, 'EAST')
 
 speak("Nadine", "Hey, what're you guys up to?", 'd2_nadine0')
 speak("Owen", "Nothing.", 'd2_owen0')
 speak("Nadine", "You're such a bad liar Owen. You're over here whispering to Tess about something, hmmm?", 'd2_nadine0')
+faceOther('d2_owen0', 'hero')
 speak("Owen", "Never mind.", 'd2_owen0')
+face('d2_owen0')
 speak("Tess", "I've got my checkup with Dr. Cooper now anyway. Talk later.")
