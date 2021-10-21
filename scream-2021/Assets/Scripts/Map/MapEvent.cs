@@ -281,6 +281,8 @@ public class MapEvent : MonoBehaviour {
         if (gameObject.name.Contains("target")) {
             Gizmos.color = new Color(.66f, 1f, 0f, 0.5f);
             fudge *= 2;
+        } else if (gameObject.name.Contains("trigger")) {
+            Gizmos.color = new Color(0, .5f, 1f, 0.5f);
         } else {
             Gizmos.color = new Color(Gizmos.color.r, Gizmos.color.g, Gizmos.color.b, 0.5f);
         }
@@ -313,7 +315,7 @@ public class MapEvent : MonoBehaviour {
     // called when the avatar stumbles into us
     // facing us if impassable, on top of us if passable
     private void OnInteract(AvatarEvent avatar) {
-        if (requiresDir && avatar.Chara.Facing != requiredDir) {
+        if (requiresDir && avatar.FPFacing() != requiredDir) {
             return;
         }
         if (GetComponent<CharaEvent>() != null) {

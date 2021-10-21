@@ -21,6 +21,7 @@ public class KeywordController : MonoBehaviour {
         foreach (var controller in controllers) {
             Destroy(controller.gameObject);
         }
+        controllers.Clear();
 
         yield return CoUtils.RunTween(GetComponent<CanvasGroup>().DOFade(1f, .8f));
         

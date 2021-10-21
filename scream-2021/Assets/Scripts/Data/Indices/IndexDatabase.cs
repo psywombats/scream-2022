@@ -8,8 +8,6 @@ public class IndexDatabase : ScriptableObject {
 
     public TransitionIndexData Transitions;
     public FadeIndexData Fades;
-    public SoundEffectIndexData SFX;
-    public BGMIndexData BGM;
     public FieldSpriteIndexData FieldSprites;
     public PortraitIndexData Portraits;
 

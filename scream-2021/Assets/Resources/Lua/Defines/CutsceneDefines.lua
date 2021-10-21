@@ -50,8 +50,8 @@ function notebook(text)
     await()
 end
 
-function flashcards()
-    cs_flashcards()
+function card(val)
+    cs_card(val)
     await()
 end
 
@@ -75,7 +75,7 @@ function caldeath(version)
     await()
 end
 
-function pathEvent(eventName)
+function pathTo(eventName)
     cs_pathTo(eventName)
     await()
 end
@@ -87,3 +87,17 @@ function walk(event, count, direction, wait)
         await()
     end
 end
+
+function pathEvent(mover, target, wait)
+    if wait == nil then wait = true end
+    cs_pathEvent(mover, target, wait)
+    if wait then
+        await()
+    end
+end
+
+function rotateTo(target)
+    cs_rotateTo(target)
+    await()
+end
+

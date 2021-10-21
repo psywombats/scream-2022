@@ -1,18 +1,17 @@
-﻿using System.Collections;
+﻿using FMOD.Studio;
+using FMODUnity;
+using System.Collections;
 using UnityEngine;
 
 public class AudioManager : SingletonBehavior {
 
     public static AudioManager Instance => Global.Instance.Audio;
 
+    private EventInstance bgmEvent;
+
     public const string NoBGMKey = "none";
     private const string NoChangeBGMKey = "no_change";
     private const float FadeSeconds = 0.5f;
-
-    private AudioSource sfxSource;
-    private AudioSource bgmSource, nextBgmSource;
-    private LoopableAudioClipData currentBgm;
-    private int bgmSets = 0;
 
     private float baseVolume = 1.0f;
     private float bgmVolumeMult = 1.0f;
@@ -22,99 +21,41 @@ public class AudioManager : SingletonBehavior {
     public string CurrentBGMKey { get; private set; }
 
     public void Start() {
-        sfxSource = gameObject.AddComponent<AudioSource>();
-        sfxSource.playOnAwake = false;
-        sfxSource.loop = false;
-
-        bgmSource = gameObject.AddComponent<AudioSource>();
-        bgmSource.playOnAwake = false;
-        nextBgmSource = gameObject.AddComponent<AudioSource>();
-        nextBgmSource.playOnAwake = false;
-
         CurrentBGMKey = NoBGMKey;
-
-        gameObject.AddComponent<AudioListener>();
-        
-        sfxVolumeSetting = Global.Instance.SystemData.SettingSoundEffectVolume;
-        bgmVolumeSetting = Global.Instance.SystemData.SettingMusicVolume;
+        sfxVolumeSetting = Global.Instance.Serialization.SystemData.SettingSoundEffectVolume;
+        bgmVolumeSetting = Global.Instance.Serialization.SystemData.SettingMusicVolume;
         SetVolume();
         sfxVolumeSetting.OnModify += SetVolume;
         bgmVolumeSetting.OnModify += SetVolume;
-    }
-
-    public static void PlayFail() {
-        Instance.PlaySFX("fail");
-    }
-    
-    public void PlaySFX(string key, bool mute = false) {
-        if (key == null || key.Length == 0) return;
-        var data = IndexDatabase.Instance.SFX.GetDataOrNull(key);
-        if (data == null) {
-            Debug.LogWarning("sfx not found: " + key);
-            return;
-        }
-        AudioClip clip = data.clip;
-        sfxSource.clip = clip;
-        sfxSource.Play();
-        StartCoroutine(PlaySFXRoutine(sfxSource, clip, mute));
-    }
-
-    public void PlaySFX(AudioClip sfx, bool mute = false) {
-        sfxSource.clip = sfx;
-        sfxSource.Play();
-        StartCoroutine(PlaySFXRoutine(sfxSource, sfx, mute));
     }
 
     public void PlayBGM(string key) {
         if (Global.Instance.Data.GetSwitch("disable_bgm")) {
             return;
         }
-        if (key != CurrentBGMKey && key != NoChangeBGMKey && key.Length > 0) {
-            bgmSets += 1;
-            CurrentBGMKey = key;
-            bgmSource.Stop();
-            nextBgmSource.Stop();
-            bgmSource.timeSamples = 0;
-            nextBgmSource.timeSamples = 0;
-            if (key == null || key == NoBGMKey) {
-                currentBgm = null;
-            } else {
-                SetVolume();
-                var data = IndexDatabase.Instance.BGM.GetData(key);
-                if (data.track.loopEndSample == 0) {
-                    data.track.loopEndSample = data.track.clip.samples;
-                }
-                if (data == null) return;
-                currentBgm = data.track;
-                bgmSource.clip = currentBgm.clip;
-                nextBgmSource.clip = currentBgm.clip;
-
-                bgmSource.PlayScheduled(0.5f);
-                StartCoroutine(SwapBgmTracks(0.5f));
+        if (key != CurrentBGMKey && key != NoChangeBGMKey && key != null && key.Length > 0) {
+            if (bgmEvent.hasHandle()) {
+                bgmEvent.stop(STOP_MODE.ALLOWFADEOUT);
+                bgmEvent.clearHandle();
             }
+            baseVolume = 1f;
+            SetVolume();
+            CurrentBGMKey = key;
+            bgmEvent = RuntimeManager.CreateInstance($"event:/BGM/{key}");
+            bgmEvent.start();
         }
     }
-    
-    public WaveSource GetWaveSource() {
-        return GetComponent<WaveSource>();
-    }
 
-    public AudioClip GetBGMClip() {
-        return bgmSource.clip;
-    }
-
-    private void ScheduleNextBGMLoop() {
-        var samplesPerSecond = (float) currentBgm.clip.frequency;
-        var delay = (currentBgm.loopEndSample - nextBgmSource.timeSamples) / samplesPerSecond;
-        bgmSource.timeSamples = (int) currentBgm.loopBeginSample;
-        bgmSource.PlayDelayed(delay);
-        StartCoroutine(SwapBgmTracks(delay));
+    public void PlaySFX(string sfxKey) {
+        var @event = RuntimeManager.CreateInstance($"event:/SFX/{sfxKey}");
+        @event.start();
     }
 
     private void SetVolume() {
-        bgmSource.volume = bgmVolumeSetting.Value * baseVolume * bgmVolumeMult;
-        nextBgmSource.volume = bgmVolumeSetting.Value * baseVolume * bgmVolumeMult;
-        sfxSource.volume = sfxVolumeSetting.Value * baseVolume;
+        var sfxBus = RuntimeManager.GetBus("bus:/SFX");
+        var bgmBus = RuntimeManager.GetBus("bus:/BGM");
+        sfxBus.setVolume(sfxVolumeSetting.Value * baseVolume);
+        bgmBus.setVolume(bgmVolumeSetting.Value * baseVolume);
     }
 
     public IEnumerator FadeOutRoutine(float durationSeconds) {
@@ -138,20 +79,6 @@ public class AudioManager : SingletonBehavior {
         PlayBGM(tag);
     }
 
-    private IEnumerator PlaySFXRoutine(AudioSource source, AudioClip clip, bool mutes = false) {
-        while (clip != null && clip.loadState == AudioDataLoadState.Loading) {
-            yield return null;
-        }
-        if (clip.loadState == AudioDataLoadState.Loaded) {
-            source.clip = clip;
-            if (mutes) {
-                source.PlayDelayed(0.2f);
-                var muteDuration = clip.length;
-                StartCoroutine(MuteRoutine(muteDuration));
-            }
-        }
-    }
-
     private IEnumerator MuteRoutine(float muteDuration) {
         muteDuration += 0.2f;
         bgmVolumeMult = 0.0f;
@@ -165,16 +92,5 @@ public class AudioManager : SingletonBehavior {
             yield return null;
         }
         bgmVolumeMult = 1.0f;
-    }
-
-    private IEnumerator SwapBgmTracks(float delay) {
-        var oldBgmSets = bgmSets;
-        yield return CoUtils.Wait(delay);
-        if (oldBgmSets == bgmSets) {
-            var temp = nextBgmSource;
-            nextBgmSource = bgmSource;
-            bgmSource = temp;
-            ScheduleNextBGMLoop();
-        }
     }
 }

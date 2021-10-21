@@ -188,13 +188,14 @@ public class CharaEvent : MonoBehaviour {
 
     private OrthoDir DirectionRelativeToCamera() {
         MapCamera cam = Application.isPlaying ? MapManager.Instance.Camera : FindObjectOfType<MapCamera>();
-        if (!cam || !AvatarEvent.Instance.UseFirstPersonControl) {
+        if (!cam || !Application.isPlaying || !AvatarEvent.Instance.UseFirstPersonControl) {
             return Facing;
         }
 
-        Vector3 ourScreen = cam.GetCameraComponent().WorldToScreenPoint(transform.position + new Vector3(.5f, 0, .5f));
-        Vector3 targetWorld = Event.PositionPx + Facing.Px3D();
-        targetWorld.y = Event.PositionPx.y;
+        var pos = transform.position + new Vector3(.5f, 0, .5f);
+        Vector3 ourScreen = cam.GetCameraComponent().WorldToScreenPoint(pos);
+        Vector3 targetWorld = pos + Facing.Px3D() * .3f;
+        targetWorld.y = pos.y;
         Vector3 targetScreen = cam.GetCameraComponent().WorldToScreenPoint(targetWorld);
         Vector3 delta = targetScreen - ourScreen;
         return OrthoDirExtensions.DirectionOf2D(new Vector2(delta.x, -delta.y));

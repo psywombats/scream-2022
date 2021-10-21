@@ -20,7 +20,16 @@
         "d1_clear",
     };
 
-    private static readonly string[][] checkpoints = { switchesD1, switchesN1 };
+    private static readonly string[] switchesD2 = {
+        "night1_00_lia",
+        "night1_01_owen",
+        "night1_lever",
+        "night1_lever_2",
+        "night1_04_cal",
+        "n1_clear",
+    };
+
+    private static readonly string[][] checkpoints = { switchesD1, switchesN1, switchesD2 };
 
     public static void Activate(int checkpoint) {
         for (var i = 0; i <= checkpoint; i += 1 ) {

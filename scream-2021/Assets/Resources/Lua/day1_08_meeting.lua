@@ -1,4 +1,4 @@
-pathEvent('hero', 'd1_target1')
+pathTo('d1_target1')
 
 speak("Tess", "What's going on?")
 faceToward('d1_owen1')

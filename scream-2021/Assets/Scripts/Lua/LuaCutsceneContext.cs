@@ -5,6 +5,7 @@ using MoonSharp.Interpreter;
 using System.Threading.Tasks;
 using DG.Tweening;
 using System.Linq;
+using FMODUnity;
 
 public class LuaCutsceneContext : LuaContext {
 
@@ -67,8 +68,12 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["faceOtherToward"] = (Action<DynValue, DynValue>)FaceOtherToward;
         lua.Globals["setDepthMult"] = (Action<DynValue>)SetDepthMult;
         lua.Globals["untrackCamera"] = (Action)UntrackCamera;
+        lua.Globals["triggerSFX"] = (Action<DynValue>)TriggerSFX;
+        lua.Globals["setHeightcrossing"] = (Action<DynValue>)SetHeightcrossing;
+        lua.Globals["setSprite"] = (Action<DynValue, DynValue>)SetSprite;
         lua.Globals["cs_search"] = (Action<DynValue>)Search;
         lua.Globals["cs_pathTo"] = (Action<DynValue>)PathTo;
+        lua.Globals["cs_pathEvent"] = (Action<DynValue, DynValue>)PathEvent;
         lua.Globals["cs_teleport"] = (Action<DynValue, DynValue, DynValue, DynValue>)TargetTeleport;
         lua.Globals["cs_fadeOutBGM"] = (Action<DynValue>)FadeOutBGM;
         lua.Globals["cs_fade"] = (Action<DynValue>)Fade;
@@ -81,6 +86,8 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_choice"] = (Action<DynValue, DynValue>)Choice;
         lua.Globals["cs_caldeath"] = (Action<DynValue>)Caldeath;
         lua.Globals["cs_walk"] = (Action<DynValue, DynValue, DynValue, DynValue>)Walk;
+        lua.Globals["cs_rotateTo"] = (Action<DynValue>)RotateToward;
+        lua.Globals["cs_leverLights"] = (Action)LeverLights;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -202,8 +209,19 @@ public class LuaCutsceneContext : LuaContext {
         RunRoutineFromLua(AvatarEvent.Instance.Event.LinearStepRoutine(@event.PositionPx));
     }
 
+    private void PathEvent(DynValue moverVal, DynValue targetVal) {
+        var target = MapManager.Instance.ActiveMap.GetEventNamed(targetVal.String);
+        if (targetVal == null) {
+            RunRoutineFromLua(CoUtils.Wait(0f));
+            Debug.LogError("No event: " + targetVal.String);
+        }
+        var @event = MapManager.Instance.ActiveMap.GetEventNamed(moverVal.String);
+        RunRoutineFromLua(@event.LinearStepRoutine(@event.PositionPx));
+    }
+
     private void Search(DynValue text) {
-        RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine("SYSTEM", text.String, AvatarEvent.Instance.Event.PositionPx));
+        RunTextboxRoutineFromLua(MapOverlayUI.Instance.Textbox.SpeakRoutine("SYSTEM", text.String, 
+            AvatarEvent.Instance.UseFirstPersonControl ? Vector3.zero : AvatarEvent.Instance.Event.PositionPx));
     }
 
     private void Notebook(DynValue text) {
@@ -217,6 +235,12 @@ public class LuaCutsceneContext : LuaContext {
     private void FaceToward(DynValue eventName) {
         var @event = MapManager.Instance.ActiveMap.GetEventNamed(eventName.String);
         AvatarEvent.Instance.Chara.FaceToward(@event);
+    }
+
+
+    private void RotateToward(DynValue eventName) {
+        var @event = MapManager.Instance.ActiveMap.GetEventNamed(eventName.String);
+        RunRoutineFromLua(AvatarEvent.Instance.RotateTowardRoutine(@event));
     }
 
     private void FaceOtherToward(DynValue eventName, DynValue targetName) {
@@ -285,5 +309,23 @@ public class LuaCutsceneContext : LuaContext {
 
     private void UntrackCamera() {
         MapManager.Instance.Camera.GetComponent<TrackerCam3D>().enabled = false;
+    }
+
+    private void TriggerSFX(DynValue eventName) {
+        var @event = MapManager.Instance.ActiveMap.GetEventNamed(eventName.String);
+        @event.GetComponent<StudioEventEmitter>().Play();
+    }
+
+    private void SetHeightcrossing(DynValue val) {
+        AvatarEvent.Instance.DisableHeightCrossing = !val.Boolean;
+    }
+
+    private void LeverLights() {
+        RunRoutineFromLua(UnityEngine.Object.FindObjectOfType<SleeperLightController>().ShowRoutine());
+    }
+
+    private void SetSprite(DynValue targetName, DynValue spriteTag) {
+        var @event = MapManager.Instance.ActiveMap.GetEventNamed(targetName.String);
+        @event.Chara.SetAppearanceByTag(spriteTag.String);
     }
 }

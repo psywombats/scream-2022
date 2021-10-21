@@ -27,6 +27,6 @@ speak("Owen", "Oh, right, Tess. I need to talk to you. I might have an idea abou
 faceOtherToward('d1_owen2', 'lia_bot')
 wait(1.0)
 faceOtherToward('d1_owen2', 'hero')
-speak("Owen", "Never mind. Meet me tonight at the usual spot and we can talk when there are less ears around.", 'd1_owen2')
+speak("Owen", "Never mind. Meet me tonight at my room and we can talk when there are less ears around.", 'd1_owen2')
 
 setSwitch('day1_11_search_owen', true)

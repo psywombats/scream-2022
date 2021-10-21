@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -46,6 +48,8 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         }
     }
 
+    public bool DisableHeightCrossing { get; set; }
+
     private Vector3 velocityThisFrame;
     private Vector3 lastMousePos;
     private Vector2Int lastLoc;
@@ -70,11 +74,12 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         firstPersonParent.SetActive(UseFirstPersonControl);
         thirdPersonParent.SetActive(!UseFirstPersonControl);
         if (UseFirstPersonControl != fpLastFrame) {
-            MapManager.Instance.Camera = null;
+            //MapManager.Instance.Camera = null;
         }
         if (UseFirstPersonControl) {
             HandleFPC();
         }
+        lastMousePos = Input.mousePosition;
 
         if (velocityThisFrame != Vector3.zero) {
             var xcom = new Vector3(velocityThisFrame.x, 0, 0);
@@ -159,6 +164,35 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         return trackingLastFrame || tracking;
     }
 
+    public IEnumerator RotateTowardRoutine(MapEvent other) {
+        var targetPos = other.PositionPx + new Vector3(.5f, 0, .5f);
+        var dir = (targetPos - transform.position).normalized;
+        var lookRotation = Quaternion.LookRotation(dir);
+
+        return CoUtils.RunTween(firstPersonParent.transform.DORotateQuaternion(lookRotation, .5f));
+    }
+
+    public OrthoDir FPFacing() {
+        if (!UseFirstPersonControl) {
+            return chara.Facing;
+        }
+
+        var a = firstPersonParent.transform.localEulerAngles.y;
+        while (a < -180) a += 360;
+        while (a > 180) a -= 360;
+        if (a >= -45 && a <= 45) {
+            return OrthoDir.North;
+        } else if (a >= 45 && a <= 135) {
+            return OrthoDir.East;
+        } else if (a >= 135 || a <= -135) {
+            return OrthoDir.South;
+        } else if (a >= -135 && a <= -45) {
+            return OrthoDir.West;
+        } else {
+            throw new ArgumentException();
+        }
+    }
+
     private void CheckPhysicsComponent(Vector3 delta) {
         if (delta == Vector3.zero) {
             return;
@@ -172,9 +206,11 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
             var h2 = Event.Map.Terrain.HeightAt(adjustedLoc);
             if ((Mathf.Abs(h1 - h2) == .5f) || (h1 - h2 == 1)) {
                 // these are stairs and we are moving towards them
-                velocityThisFrame = Vector3.zero;
-                Chara.Facing = OrthoDirExtensions.DirectionOf3D(delta);
-                StartCoroutine(Event.LinearStepRoutine(adjustedLoc));
+                if (!DisableHeightCrossing) {
+                    velocityThisFrame = Vector3.zero;
+                    Chara.Facing = OrthoDirExtensions.DirectionOf3D(delta);
+                    StartCoroutine(Event.LinearStepRoutine(adjustedLoc));
+                }
             }
         }
 
@@ -196,24 +232,33 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     private void Interact() {
-        var reach = UseFirstPersonControl ? 1f : .75f;
-        var target = Event.PositionPx + Chara.Facing.Px3D() * reach;
-        List<MapEvent> targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(target);
-        foreach (MapEvent tryTarget in targetEvents) {
-            if (tryTarget.IsSwitchEnabled && !tryTarget.IsPassableBy(Event) && tryTarget != Event) {
-                tryTarget.GetComponent<Dispatch>().Signal(MapEvent.EventInteract, this);
-                return;
-            }
+        if (TryInteractWithReach(.75f)) {
+            return;
         }
-
-        target = Event.PositionPx;
-        targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(target);
+        if (UseFirstPersonControl && TryInteractWithReach(1.4f)) {
+            return;
+        }
+        
+        var target = Event.PositionPx;
+        var targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(target);
         foreach (MapEvent tryTarget in targetEvents) {
             if (tryTarget.IsSwitchEnabled && tryTarget.IsPassableBy(Event)) {
                 tryTarget.GetComponent<Dispatch>().Signal(MapEvent.EventInteract, this);
                 return;
             }
         }
+    }
+
+    private bool TryInteractWithReach(float reach) {
+        var target = Event.PositionPx + Chara.Facing.Px3D() * reach;
+        List<MapEvent> targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(target);
+        foreach (MapEvent tryTarget in targetEvents) {
+            if (tryTarget.IsSwitchEnabled && !tryTarget.IsPassableBy(Event) && tryTarget != Event) {
+                tryTarget.GetComponent<Dispatch>().Signal(MapEvent.EventInteract, this);
+                return true;
+            }
+        }
+        return false;
     }
 
     private bool TryStep(OrthoDir dir) {
@@ -257,17 +302,20 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         if (Input.mousePosition != lastMousePos) {
             mouseLastMovedAt = Time.time;
         }
-        lastMousePos = Input.mousePosition;
-        if (Time.time - mouseLastMovedAt > 3) {
+        if (Time.time - mouseLastMovedAt > .5) {
             return;
         }
 
         rotation.x += Input.GetAxis(xAxis) * mouseRotateSensitivity;
         rotation.y += Input.GetAxis(yAxis) * mouseRotateSensitivity;
-        rotation.y = Mathf.Clamp(rotation.y, -20, 6);
+        rotation.y = Mathf.Clamp(rotation.y, -26, 15);
         var xQuat = Quaternion.AngleAxis(rotation.x, Vector3.up);
         var yQuat = Quaternion.AngleAxis(rotation.y, Vector3.left);
 
         firstPersonParent.transform.localRotation = xQuat * yQuat;
+
+        if (Input.GetMouseButtonUp(0)) {
+            Interact();
+        }
     }
 }

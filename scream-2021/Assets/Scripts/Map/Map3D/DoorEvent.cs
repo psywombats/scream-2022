@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using FMODUnity;
 
 [RequireComponent(typeof(MapEvent))]
 public class DoorEvent : MonoBehaviour {
@@ -17,6 +18,14 @@ public class DoorEvent : MonoBehaviour {
     public MapEvent Event => @event ?? (@event = GetComponent<MapEvent>());
 
     private void Start() {
+        if (dir == OrthoDir.South) {
+            if (AvatarEvent.Instance.UseFirstPersonControl) {
+                animator.transform.localEulerAngles = new Vector3(0, 180, 0);
+                var c = animator.GetComponent<SpriteRenderer>().color;
+                animator.GetComponent<SpriteRenderer>().color = new Color(c.r, c.g, c.b, 1);
+            }
+        }
+
         GetComponent<Dispatch>().RegisterListener(MapEvent.EventCollide, (object payload) => {
             Global.Instance.StartCoroutine(TeleportRoutine(AvatarEvent.Instance));
         });
@@ -27,7 +36,10 @@ public class DoorEvent : MonoBehaviour {
     }
 
     public virtual IEnumerator TeleportRoutine(AvatarEvent avatar, bool force = false) {
-        if (avatar.GetComponent<CharaEvent>().Facing != dir) {
+        if (avatar.GetComponent<CharaEvent>().Facing != dir && !avatar.UseFirstPersonControl) {
+            yield break;
+        }
+        if (avatar.UseFirstPersonControl && AvatarEvent.Instance.FPFacing() != dir) {
             yield break;
         }
         if (!GetComponent<MapEvent>().IsSwitchEnabled) {
@@ -35,7 +47,8 @@ public class DoorEvent : MonoBehaviour {
         }
         if (lockedCondition.Length > 0 && !Event.LuaObject.EvaluateBool("door")) {
             if (force) {
-                yield return Event.LuaObject.Evaluate(lockedLua);
+                Event.LuaObject.Set("locked", lockedLua);
+                Event.LuaObject.Run("locked");
             }
             yield break;
         }
@@ -46,13 +59,16 @@ public class DoorEvent : MonoBehaviour {
             yield break;
         }
 
-        Global.Instance.Audio.PlaySFX("door");
+        GetComponent<StudioEventEmitter>().Play();
 
         avatar.PauseInput();
         avatar.CancelCollisions = true;
         if (force && dist > .7f) {
             yield return avatar.Event.LinearStepRoutine(transform.localPosition);
         }
+        //if (avatar.UseFirstPersonControl) {
+        //    StartCoroutine(avatar.RotateTowardRoutine(Event));
+        //}
         yield return animator.PlayRoutine();
         yield return CoUtils.Wait(animator.frameDuration * 2);
         Vector3 targetPx = avatar.Event.PositionPx + dir.Px3D();

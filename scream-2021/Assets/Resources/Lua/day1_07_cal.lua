@@ -71,7 +71,7 @@ speak("Dr. Cooper", "Moving on...")
 speak("Dr. Cooper", "Can you tell me your place of birth?")
 setDepthMult(.75)
 
-choice("Allsaints' Hospital.", "I don't know.")
+choice("Allsaints Hospital.", "I don't know.")
 if choice_result == 0 then
     speak("Dr. Cooper", "No, that's the hospital you're in now. We don't even have a maternity ward.", 'bottom')
 else

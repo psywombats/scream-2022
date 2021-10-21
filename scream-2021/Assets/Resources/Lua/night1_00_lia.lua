@@ -1,3 +1,11 @@
+rotateTo('n1_lia')
+
+if getSwitch('night1_00_lia') then
+    speak("Tess", "I promised I'd meet up with Owen tonight.")
+    speak("Tess", "Don't wait up for me, and if some nurse tries to check up on us, say I'm in the bathroom or somewhere.")
+    return
+end
+
 speak("Lia", "Thanks for showing me around today.", 'n1_lia')
 speak("Tess", "No problem. Thanks for helping us all look for Connie.")
 speak("Lia", "It was fun! Seeing Joey so thrilled to have her back...", 'n1_lia')
@@ -6,7 +14,7 @@ speak("Lia", "I've... never really fit in anywhere.", 'n1_lia')
 speak("Lia", "Since I found out I had caught N9, no one wanted anything to do with me. Even if I covered my eyes.", 'n1_lia')
 speak("Lia", "I sort of wondered, you know, what if the acid really had blinded me? Could I go back to normal?", 'n1_lia')
 speak("Tess", "Even if we can't spread N9, we're still cursed with it.")
-speak("Lia", "It was just a dumb dream.", 'n1_lia')
+speak("Lia", "Maybe it's only a daydream...", 'n1_lia')
 speak("Lia", "But everyone here seems so alive even if you've all got it way worse than me. It's almost nice here.", 'n1_lia')
 wait(.8)
 speak("Lia", "Were you ever bullied before you came here?", 'n1_lia')
