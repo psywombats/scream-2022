@@ -20,6 +20,8 @@ public class AudioManager : SingletonBehavior {
 
     public string CurrentBGMKey { get; private set; }
 
+    private EventInstance sfxEvent;
+
     public void Start() {
         CurrentBGMKey = NoBGMKey;
         sfxVolumeSetting = Global.Instance.Serialization.SystemData.SettingSoundEffectVolume;
@@ -47,8 +49,12 @@ public class AudioManager : SingletonBehavior {
     }
 
     public void PlaySFX(string sfxKey) {
-        var @event = RuntimeManager.CreateInstance($"event:/SFX/{sfxKey}");
-        @event.start();
+        sfxEvent = RuntimeManager.CreateInstance($"event:/SFX/{sfxKey}");
+        sfxEvent.start();
+    }
+
+    public void StopSFX() {
+        sfxEvent.stop(STOP_MODE.ALLOWFADEOUT);
     }
 
     private void SetVolume() {

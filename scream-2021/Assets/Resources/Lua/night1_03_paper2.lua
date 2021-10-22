@@ -1,7 +1,8 @@
+playSFX('document')
 keywords(
     "Minkowski violation\n" ..
     "counterfactual contributory causes\n" ..
-    "Compatibilism paradox\n" ..
+    "compatibilism paradox\n" ..
     "non-deterministic causal calculus\n" ..
     "observer effect\n" ..
     "Laplace's demon\n" ..

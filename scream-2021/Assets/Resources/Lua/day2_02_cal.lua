@@ -15,9 +15,11 @@ speak("Dr. Cooper", "Let's just get on with the checkup, shall we?", 'd2_cal0')
 wait(.9)
 speak("Tess", "Yes Dr. Cooper.")
 
+fadeOutBGM(1)
 fade('fade_long')
 setSwitch('exam_cal_appears', true)
 teleport('LabA', 'chair_target', 'SOUTH')
+playBGM('extraroom')
 wait(1.5)
 
 speak("Dr. Cooper", "Now then...", 'cal')

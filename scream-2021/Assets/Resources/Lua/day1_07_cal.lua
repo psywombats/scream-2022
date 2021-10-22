@@ -8,12 +8,14 @@ speak("Dr. Cooper", "It's Cal! I see Tess has been filling your head with weird 
 faceTo('d1_cal1')
 speak("Tess", "Let's just go.")
 speak("Dr. Cooper", "Your wish is my command.", 'd1_cal1')
+fadeOutBGM(1.5)
 untrackCamera()
 walk('hero', 7, 'EAST', false)
 walk('d1_cal1', 7, 'EAST')
 
 setSwitch('exam_cal_appears', true)
 teleport('LabA', 'chair_target', 'SOUTH')
+playBGM('extraroom')
 wait(1.5)
 
 speak("Dr. Cooper", "Alright. Are you comfortable?", 'bottom')

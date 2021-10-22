@@ -1,9 +1,12 @@
 ﻿using DG.Tweening;
+using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class IntertitleController : MonoBehaviour {
+
+    private const string SfxParameter = "intertitle_sentence finish";
 
     [SerializeField] private List<IntertitleBar> bars = null;
     [SerializeField] private CanvasGroup canvas = null;
@@ -11,6 +14,8 @@ public class IntertitleController : MonoBehaviour {
     [SerializeField] private float delay = .7f;
     [SerializeField] private float fadeDuration = 2f;
     [SerializeField] private float interleaveDuration = .8f;
+    [Space]
+    [SerializeField] private StudioEventEmitter sfx = null;
 
     public void Autostart() {
         foreach (var bar in bars) {
@@ -40,12 +45,14 @@ public class IntertitleController : MonoBehaviour {
             toRun.Add(bar.FadeOutAllRoutine(fadeDuration));
         }
         yield return CoUtils.RunParallel(this, toRun.ToArray());
+        sfx.Stop();
     }
 
     public IEnumerator DisplayRoutine(string text) {
         gameObject.SetActive(true);
         yield return CoUtils.RunTween(canvas.DOFade(1f, fadeDuration));
         yield return CoUtils.Wait(interleaveDuration);
+        sfx.Play();
         yield return FadeInRoutine();
 
         var lines = new List<string>(text.Split('\n'));
@@ -72,13 +79,16 @@ public class IntertitleController : MonoBehaviour {
                 yield return CoUtils.Wait(delay);
             }
         }
-
+        
         yield return CoUtils.Wait(interleaveDuration);
+        sfx.SetParameter(SfxParameter, 1);
         yield return FadeOutRoutine();
         yield return CoUtils.Wait(interleaveDuration * 2);
+        sfx.SetParameter(SfxParameter, 2);
         yield return FadeOutAllRoutine();
         yield return CoUtils.RunTween(canvas.DOFade(0f, fadeDuration));
         gameObject.SetActive(false);
+        sfx.Stop();
     }
 
     private int ToGo(int from, string[] words) {

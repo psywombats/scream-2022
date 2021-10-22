@@ -64,7 +64,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["debug"] = (Action<DynValue>)DebugLog;
         lua.Globals["setting"] = (Action<DynValue>)Setting;
         lua.Globals["spawnFollower"] = (Action<DynValue, DynValue>)SpawnFollower;
-        lua.Globals["faceToward"] = (Action<DynValue>)FaceToward;
+        lua.Globals["faceTo"] = (Action<DynValue>)FaceToward;
         lua.Globals["faceOther"] = (Action<DynValue, DynValue>)FaceOtherToward;
         lua.Globals["setDepthMult"] = (Action<DynValue>)SetDepthMult;
         lua.Globals["untrackCamera"] = (Action)UntrackCamera;

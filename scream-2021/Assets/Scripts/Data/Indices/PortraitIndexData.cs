@@ -11,5 +11,6 @@ public class PortraitData : GenericDataObject {
 
     public Sprite portrait;
     public int offset;
-
+    public string sfxName;
+    public bool sudden;
 }

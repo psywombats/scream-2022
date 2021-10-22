@@ -18,13 +18,15 @@ public class DepthCamComponent : FadeComponent {
     private float rangeMult = 1f;
     public float RangeMultTarget { get; set; } = 1f;
     private const float rangeMultRate = .05f;
+    private float fader;
 
     protected void Start() {
         GetComponent<Camera>().depthTextureMode = DepthTextureMode.Depth;
         if (!staticInited) {
             staticInited = true;
             if (blitMat != null) {
-                blitMat.SetFloat("_XFade", Application.isEditor ? 0 : 1);
+                fader = Application.isEditor ? 0 : 1;
+                blitMat.SetFloat("_XFade", fader);
             }
         }
     }
@@ -35,11 +37,13 @@ public class DepthCamComponent : FadeComponent {
 
     public override IEnumerator FadeRoutine(FadeData fade, bool invert = false, float timeMult = 1) {
         var elapsed = 0f;
+        var origFade = fader;
+        var target = invert ? 0 : 1;
         while (elapsed < fade.delay) {
             if (blitMat != null) {
-                var val = elapsed / fade.delay;
-                if (invert) val = 1f - val;
-                blitMat.SetFloat("_XFade", val);
+                var t = elapsed / fade.delay;
+                fader = origFade * (1f - t) + target * t;
+                blitMat.SetFloat("_XFade", fader);
             }
             elapsed += Time.deltaTime;
             yield return null;

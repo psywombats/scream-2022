@@ -1,3 +1,4 @@
+playSFX('document')
 keywords(
     "autosomal dominant disorder\n" ..
     "memetic disease vector\n" ..

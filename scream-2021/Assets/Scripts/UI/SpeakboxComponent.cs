@@ -158,6 +158,11 @@ public class SpeakboxComponent : TextAutotyper {
         }
 
         textbox.GetComponent<CanvasGroup>().alpha = 1f;
+        if (speakerName == "Tess") {
+            AudioManager.Instance.PlaySFX("talk_MC");
+        } else {
+            AudioManager.Instance.PlaySFX("talk_NPC");
+        }
         yield return TypeRoutine(text);
     }
 
