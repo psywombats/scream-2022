@@ -14,7 +14,7 @@ public class TitleController : MonoBehaviour {
     [SerializeField] private Text continueText = null;
     [SerializeField] private GameObject canvasParent = null;
 
-    private static readonly string[] Continues = { "DAY_1", "NIGHT_1", "DAY_2", "NIGHT_2", };
+    private static readonly string[] Continues = { "DAY_1", "NIGHT_1", "DAY_2", "NIGHT_2", "DAY_3", "NIGHT_3" };
     private int continueIndex = 0;
 
     public void Start() {

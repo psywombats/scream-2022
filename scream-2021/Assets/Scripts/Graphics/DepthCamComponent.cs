@@ -12,8 +12,10 @@ public class DepthCamComponent : FadeComponent {
     [SerializeField] private RenderTexture depthDumpTex = null;
     [Space]
     [SerializeField] private bool glitchOn = false;
-    [SerializeField] private float rangeMin = 10f;
-    [SerializeField] private float rangeMax = 12f;
+    [SerializeField] public float rangeMin = 10f;
+    [SerializeField] public float rangeMax = 12f;
+
+    public bool GlitchFromSwitch { get; set; }
 
     private float rangeMult = 1f;
     public float RangeMultTarget { get; set; } = 1f;
@@ -57,7 +59,7 @@ public class DepthCamComponent : FadeComponent {
 
     protected void OnRenderImage(RenderTexture src, RenderTexture dest) {
         if (blitMat != null) {
-            blitMat.SetFloat("_UniversalEnable", glitchOn ? 1 : 0);
+            blitMat.SetFloat("_UniversalEnable", (GlitchFromSwitch || glitchOn) ? 1 : 0);
             blitMat.SetFloat("_DLimitMin", rangeMin * rangeMult);
             blitMat.SetFloat("_DLimitMax", rangeMax * rangeMult);
             Graphics.Blit(src, dest, blitMat);

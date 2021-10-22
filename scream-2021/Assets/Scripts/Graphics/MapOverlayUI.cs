@@ -26,5 +26,5 @@ public class MapOverlayUI : MonoBehaviour {
     public NotebookBox Notes;
     public CardController Cards;
     public KeywordController Keywords;
-    public CanvasGroup Pupils;
+    public CalDeathController Pupils;
 }

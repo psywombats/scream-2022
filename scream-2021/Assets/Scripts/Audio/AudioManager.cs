@@ -57,7 +57,7 @@ public class AudioManager : SingletonBehavior {
         sfxEvent.stop(STOP_MODE.ALLOWFADEOUT);
     }
 
-    private void SetVolume() {
+    public void SetVolume() {
         var sfxBus = RuntimeManager.GetBus("bus:/SFX");
         var bgmBus = RuntimeManager.GetBus("bus:/BGM");
         sfxBus.setVolume(sfxVolumeSetting.Value * BaseVolume);
@@ -74,7 +74,12 @@ public class AudioManager : SingletonBehavior {
             SetVolume();
             yield return null;
         }
+        if (bgmEvent.hasHandle()) {
+            bgmEvent.stop(STOP_MODE.ALLOWFADEOUT);
+            bgmEvent.clearHandle();
+        }
         BaseVolume = 1.0f;
+        SetVolume();
         PlayBGM(NoBGMKey);
     }
 

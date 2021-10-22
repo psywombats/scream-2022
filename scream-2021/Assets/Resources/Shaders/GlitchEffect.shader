@@ -1,7 +1,7 @@
 ﻿Shader "Scream2021/GlitchEffect" {
     Properties {
         [PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
-        [MaterialToggle][PerRendererData] _UniversalEnable("Universal enable", Float) = 0
+        [MaterialToggle] _UniversalEnable("Universal enable", Float) = 0
         _Color("Tint", Color) = (1,1,1,1)
         [MaterialToggle] PixelSnap("Pixel snap", Float) = 0
         _Alpha("Alpha", Float) = 1.0

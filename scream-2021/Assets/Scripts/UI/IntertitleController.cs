@@ -50,6 +50,7 @@ public class IntertitleController : MonoBehaviour {
 
     public IEnumerator DisplayRoutine(string text) {
         AudioManager.Instance.BaseVolume = 1f;
+        AudioManager.Instance.SetVolume();
         gameObject.SetActive(true);
         yield return CoUtils.RunTween(canvas.DOFade(1f, fadeDuration));
         yield return CoUtils.Wait(interleaveDuration);
@@ -84,7 +85,7 @@ public class IntertitleController : MonoBehaviour {
         yield return CoUtils.Wait(interleaveDuration);
         sfx.SetParameter(SfxParameter, 1);
         yield return FadeOutRoutine();
-        yield return CoUtils.Wait(interleaveDuration * 2);
+        yield return CoUtils.Wait(interleaveDuration * 3);
         sfx.SetParameter(SfxParameter, 2);
         yield return FadeOutAllRoutine();
         yield return CoUtils.RunTween(canvas.DOFade(0f, fadeDuration));

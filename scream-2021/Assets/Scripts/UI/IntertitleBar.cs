@@ -74,7 +74,7 @@ public class IntertitleBar : MonoBehaviour {
         }
         var at = 0;
         for (var i = 0; i < fixes.Count; i += 1) {
-            var r = (tElapsed - redAt) / redTime;
+            var r = (tElapsed - redAt) / (redTime * 2);
             var red = (i == fixes.Count - 1) && (r < 1);
             var incr = fixes[i].Value - at;
             AppendGarbage(sb, incr, at);

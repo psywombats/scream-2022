@@ -268,14 +268,8 @@ public class LuaCutsceneContext : LuaContext {
     }
 
     private void Caldeath(DynValue version) {
-        RunRoutineFromLua(CaldeathRoutine((int)version.Number));
-    }
-    private IEnumerator CaldeathRoutine(int version) {
         var pupils = MapOverlayUI.Instance.Pupils;
-        pupils.alpha = 0f;
-        pupils.gameObject.SetActive(true);
-        yield return CoUtils.RunTween(pupils.DOFade(1f, .5f));
-        yield return CoUtils.Wait(2f);
+        RunRoutineFromLua(pupils.ShowRoutine((int)version.Number));
     }
 
     private void Walk(DynValue eventLua, DynValue steps, DynValue directionLua, DynValue waitLua) {

@@ -20,6 +20,8 @@ public class Map : MonoBehaviour {
     [Space]
     [SerializeField] private string bgmKey = null;
     [SerializeField] private List<string> settings = null;
+    [SerializeField] private float glitchRangeMin = 10;
+    [SerializeField] private float glitchRangeMax = 12f;
     
     // true if the tile in question is passable at x,y
     private Dictionary<Tilemap, bool[,]> passabilityMap;
@@ -155,6 +157,11 @@ public class Map : MonoBehaviour {
             foreach (var setting in settings) {
                 MapOverlayUI.Instance.Setting.Show(setting);
             }
+        }
+        if (glitchRangeMin > 0) {
+            var cam = AvatarEvent.Instance.FPSCam.GetCameraComponent().GetComponent<DepthCamComponent>();
+            cam.rangeMin = glitchRangeMin;
+            cam.rangeMax = glitchRangeMax;
         }
     }
 
