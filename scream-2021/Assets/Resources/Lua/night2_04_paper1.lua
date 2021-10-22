@@ -15,3 +15,5 @@ keywords(
     "frontal lobe epilepsy\n" ..
     "several notable outliers")
 speak("This is a psychology research paper. It looks pretty dubious.")
+
+setSwitch('night2_04_paper1', true)

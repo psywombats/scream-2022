@@ -1,2 +1,5 @@
-speak("No sign of Owen. But I swear he told me to meet up tonight.")
-speak("Where could he have gone?")
+if not getSwitch('night2_01_owenroom') then
+    rotateTo('target_piano')
+    speak("No sign of Owen...")
+    setSwitch('night2_01_owenroom', true)
+end

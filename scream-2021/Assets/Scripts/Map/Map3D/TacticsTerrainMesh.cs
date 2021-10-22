@@ -89,7 +89,7 @@ public class TacticsTerrainMesh : MonoBehaviour, ISerializationCallbackReceiver 
     }
     public float HeightAt(int x, int y) {
         if (x < 0 || x >= size.x || y < 0 || y >= size.y) {
-            return 0;
+            return -5;
         } else {
             return heights[y * size.x + x];
             

@@ -34,7 +34,6 @@ public class InputManager : SingletonBehavior {
     private List<IInputListener> disabledListeners;
     private Dictionary<Command, float> holdStartTimes;
     private Dictionary<string, IInputListener> anonymousListeners;
-    private bool simulatedAdvance;
 
     public void Awake() {
         keybinds = new Dictionary<Command, List<KeyCode>>();
@@ -121,31 +120,16 @@ public class InputManager : SingletonBehavior {
         }
     }
 
-    // simulates the user pushing a command
-    // called by input listeners usually when interpreting clicks as answers to AwaitAdvance
-    public void SimulateCommand(Command simulatedCommand) {
-        simulatedAdvance = true;
-        IInputListener listener = listeners[listeners.Count - 1];
-        if (!disabledListeners.Contains(listener)) {
-            listener.OnCommand(simulatedCommand, Event.Down);
-            listener.OnCommand(simulatedCommand, Event.Up);
-        }
-    }
-
-    public IEnumerator AwaitConfirm() {
-        bool advance = false;
-        simulatedAdvance = false;
-        while (advance == false) {
-            foreach (KeyCode code in keybinds[Command.Confirm]) {
-                if (Input.GetKeyDown(code)) {
-                    advance = true;
-                }
+    public IEnumerator ConfirmRoutine() {
+        var id = "confirm";
+        var done = false;
+        PushListener(id, (command, type) => {
+            if (type == Event.Down) {
+                RemoveListener(id);
+                done = true;
             }
-            if (simulatedAdvance) {
-                advance = true;
-            }
-            yield return null;
-        }
-        simulatedAdvance = false;
+            return true;
+        });
+        while (!done) yield return null;
     }
 }

@@ -1,7 +1,16 @@
-speak("Joey", "Connie...")
+if getSwitch('day2_07_post_joey') then
+    speak("Joey", "I'll never forget you, Connie.", 'd2_joey4')
+    return
+end
+
+speak("Joey", "Connie...", 'd2_joey4')
 speak("Tess", "I'm sorry. She was a good bunny.")
 speak("Tess", "Maybe we can convince Dr. Cooper to find a new ward pet.")
-speak("Joey", "You can't replace her.")
-speak("Tess", "No. I suppose not.")
-speak("Tess", "Keep her memory with you. There were a lot of good times.")
-speak("Joey", "I'll never forget you, Connie.")
+faceTo('d2_joey4', 'hero')
+speak("Joey", "You can't replace her.", 'd2_joey4')
+speak("Tess", "No. You can't.")
+speak("Tess", "Keep her memory with you. She couldn't have asked for a better friend than you.")
+wait(.7)
+speak("Joey", "I'll never forget you, Connie.", 'd2_joey4')
+
+setSwitch('day2_07_post_joey', true)

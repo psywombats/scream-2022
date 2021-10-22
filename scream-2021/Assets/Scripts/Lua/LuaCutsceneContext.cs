@@ -71,9 +71,10 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["triggerSFX"] = (Action<DynValue>)TriggerSFX;
         lua.Globals["setHeightcrossing"] = (Action<DynValue>)SetHeightcrossing;
         lua.Globals["setSprite"] = (Action<DynValue, DynValue>)SetSprite;
+        lua.Globals["alert"] = (Action)Alert;
         lua.Globals["cs_search"] = (Action<DynValue>)Search;
         lua.Globals["cs_pathTo"] = (Action<DynValue>)PathTo;
-        lua.Globals["cs_pathEvent"] = (Action<DynValue, DynValue>)PathEvent;
+        lua.Globals["cs_pathEvent"] = (Action<DynValue, DynValue, DynValue>)PathEvent;
         lua.Globals["cs_teleport"] = (Action<DynValue, DynValue, DynValue, DynValue>)TargetTeleport;
         lua.Globals["cs_fadeOutBGM"] = (Action<DynValue>)FadeOutBGM;
         lua.Globals["cs_fade"] = (Action<DynValue>)Fade;
@@ -209,14 +210,18 @@ public class LuaCutsceneContext : LuaContext {
         RunRoutineFromLua(AvatarEvent.Instance.Event.LinearStepRoutine(@event.PositionPx));
     }
 
-    private void PathEvent(DynValue moverVal, DynValue targetVal) {
+    private void PathEvent(DynValue moverVal, DynValue targetVal, DynValue shouldWait) {
         var target = MapManager.Instance.ActiveMap.GetEventNamed(targetVal.String);
         if (targetVal == null) {
             RunRoutineFromLua(CoUtils.Wait(0f));
             Debug.LogError("No event: " + targetVal.String);
         }
         var @event = MapManager.Instance.ActiveMap.GetEventNamed(moverVal.String);
-        RunRoutineFromLua(@event.LinearStepRoutine(@event.PositionPx));
+        if (shouldWait.Boolean) {
+            RunRoutineFromLua(@event.LinearStepRoutine(target.PositionPx));
+        } else {
+            Global.Instance.StartCoroutine(@event.LinearStepRoutine(target.PositionPx));
+        }
     }
 
     private void Search(DynValue text) {
@@ -327,5 +332,9 @@ public class LuaCutsceneContext : LuaContext {
     private void SetSprite(DynValue targetName, DynValue spriteTag) {
         var @event = MapManager.Instance.ActiveMap.GetEventNamed(targetName.String);
         @event.Chara.SetAppearanceByTag(spriteTag.String);
+    }
+
+    private void Alert() {
+        Global.Instance.StartCoroutine(UnityEngine.Object.FindObjectOfType<NightAlertController>().AlertRoutine());
     }
 }

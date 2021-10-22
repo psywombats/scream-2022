@@ -1,5 +1,5 @@
 if getSwitch('day2_04_owen') then
-    speak("Owen", "Well? Any luck?")
+    speak("Owen", "Well? Any luck?", 'd2_owen2')
     return
 end
 

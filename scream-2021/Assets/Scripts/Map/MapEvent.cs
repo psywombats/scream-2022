@@ -266,7 +266,9 @@ public class MapEvent : MonoBehaviour {
         IsTracking = true;
         var elapsed = 0f;
         var goal = (target - transform.localPosition).magnitude / tilesPerSecond * 2f;
+        var map = Map;
         while (transform.localPosition != target && elapsed < goal) {
+            if (Map != map) break;
             transform.localPosition = Vector3.MoveTowards(transform.localPosition, target, tilesPerSecond * Time.deltaTime);
             elapsed += Time.deltaTime;
             yield return null;
@@ -318,9 +320,6 @@ public class MapEvent : MonoBehaviour {
     private void OnInteract(AvatarEvent avatar) {
         if (requiresDir && avatar.FPFacing() != requiredDir) {
             return;
-        }
-        if (GetComponent<CharaEvent>() != null) {
-            GetComponent<CharaEvent>().FaceToward(AvatarEvent.Instance.Event);
         }
         LuaObject.Run(PropertyInteract);
     }

@@ -49,6 +49,7 @@ public class IntertitleController : MonoBehaviour {
     }
 
     public IEnumerator DisplayRoutine(string text) {
+        AudioManager.Instance.BaseVolume = 1f;
         gameObject.SetActive(true);
         yield return CoUtils.RunTween(canvas.DOFade(1f, fadeDuration));
         yield return CoUtils.Wait(interleaveDuration);

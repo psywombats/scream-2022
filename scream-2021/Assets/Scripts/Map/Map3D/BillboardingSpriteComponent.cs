@@ -30,7 +30,7 @@ public class BillboardingSpriteComponent : MonoBehaviour {
             Vector3 angles = transform.eulerAngles;
             var origX = angles.x;
             var origY = angles.z;
-            transform.LookAt(AvatarEvent.Instance.transform, Vector3.up);
+            transform.LookAt(AvatarEvent.Instance.FPSCam.transform, Vector3.up);
             transform.eulerAngles = new Vector3(
                     angles.x,
                     transform.eulerAngles.y - 180,

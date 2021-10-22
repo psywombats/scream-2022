@@ -13,7 +13,7 @@ public class AudioManager : SingletonBehavior {
     private const string NoChangeBGMKey = "no_change";
     private const float FadeSeconds = 0.5f;
 
-    private float baseVolume = 1.0f;
+    public float BaseVolume { get; set; } = 1.0f;
     private float bgmVolumeMult = 1.0f;
     private Setting<float> bgmVolumeSetting;
     private Setting<float> sfxVolumeSetting;
@@ -40,7 +40,7 @@ public class AudioManager : SingletonBehavior {
                 bgmEvent.stop(STOP_MODE.ALLOWFADEOUT);
                 bgmEvent.clearHandle();
             }
-            baseVolume = 1f;
+            BaseVolume = 1f;
             SetVolume();
             CurrentBGMKey = key;
             bgmEvent = RuntimeManager.CreateInstance($"event:/BGM/{key}");
@@ -60,21 +60,21 @@ public class AudioManager : SingletonBehavior {
     private void SetVolume() {
         var sfxBus = RuntimeManager.GetBus("bus:/SFX");
         var bgmBus = RuntimeManager.GetBus("bus:/BGM");
-        sfxBus.setVolume(sfxVolumeSetting.Value * baseVolume);
-        bgmBus.setVolume(bgmVolumeSetting.Value * baseVolume);
+        sfxBus.setVolume(sfxVolumeSetting.Value * BaseVolume);
+        bgmBus.setVolume(bgmVolumeSetting.Value * BaseVolume);
     }
 
     public IEnumerator FadeOutRoutine(float durationSeconds) {
         CurrentBGMKey = NoBGMKey;
-        while (baseVolume > 0.0f) {
-            baseVolume -= Time.deltaTime / durationSeconds;
-            if (baseVolume < 0.0f) {
-                baseVolume = 0.0f;
+        while (BaseVolume > 0.0f) {
+            BaseVolume -= Time.deltaTime / durationSeconds;
+            if (BaseVolume < 0.0f) {
+                BaseVolume = 0.0f;
             }
             SetVolume();
             yield return null;
         }
-        baseVolume = 1.0f;
+        BaseVolume = 1.0f;
         PlayBGM(NoBGMKey);
     }
 

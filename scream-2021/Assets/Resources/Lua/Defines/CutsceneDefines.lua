@@ -65,11 +65,6 @@ function choice(a, b)
     await()
 end
 
-function card(data)
-    cs_card(data)
-    await()
-end
-
 function caldeath(version)
     cs_caldeath(version)
     await()

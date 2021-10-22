@@ -17,7 +17,9 @@ public class SimpleSpriteAnimator : MonoBehaviour {
     }
 
     public void OnEnable() {
-        UpdateSprite();
+        if (autoplay) {
+            UpdateSprite();
+        }
     }
 
     public void ResetFrame() {
@@ -26,9 +28,9 @@ public class SimpleSpriteAnimator : MonoBehaviour {
     }
 
     public void OnValidate() {
-        if (frames != null && frames.Count > 0 && GetComponent<SpriteRenderer>().sprite == null) {
-            GetComponent<SpriteRenderer>().sprite = frames[0];
-        }
+        //if (frames != null && frames.Count > 0 && GetComponent<SpriteRenderer>().sprite == null) {
+        //    GetComponent<SpriteRenderer>().sprite = frames[0];
+        //}
     }
 
     public IEnumerator PlayRoutine() {

@@ -31,12 +31,24 @@
 
     private static readonly string[] switchesN2 = {
         "day2_01_owen",
+        "day2_02_cal",
         "day2_03_meeting",
-
-
+        "day2_05_connie",
+        "day2_06_gray",
+        "day2_09_post_owen",
+        "d2_clear",
     };
 
-    private static readonly string[][] checkpoints = { switchesD1, switchesN1, switchesD2 };
+    private static readonly string[] switchesD3 = {
+        "night2_01_owenroom",
+        "night2_02_joey",
+        "night2_04_paper1",
+        "night2_06_cal",
+        "night2_alert",
+        "n2_clear",
+    };
+
+    private static readonly string[][] checkpoints = { switchesD1, switchesN1, switchesD2, switchesN2 };
 
     public static void Activate(int checkpoint) {
         for (var i = 0; i <= checkpoint; i += 1 ) {

@@ -72,6 +72,7 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
             }
         }
         textbox.text = text;
+        AudioManager.Instance.StopSFX();
 
         if (waitForConfirm) {
             confirmed = false;
