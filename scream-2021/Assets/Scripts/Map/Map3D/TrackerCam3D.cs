@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using FMODUnity;
+using UnityEngine;
 
 public class TrackerCam3D : MapCamera3D {
     
@@ -7,6 +8,7 @@ public class TrackerCam3D : MapCamera3D {
     void Start() {
         if (target == null) {
             target = FindObjectOfType<AvatarEvent>()?.Event;
+            GetComponent<StudioListener>().attenuationObject = target.gameObject;
         }
     }
 

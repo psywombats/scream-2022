@@ -12,6 +12,11 @@
         _ResolutionX("Resolution X (px)", Float) = 1280
         _ResolutionY("Resolution Y (px)", Float) = 720
         
+        [Space(25)][MaterialToggle] _CSplitEnabled(" === CMYK Split === ", Float) = 0.0
+        _CSplitRate("Rate", Range(0, 2)) = .5
+        _CSplitStart("Start depth", Range(0, 100)) = 10
+        _CSplitMax("Max split depth", Range(0, 100)) = 40
+        
         [Space(25)][MaterialToggle] _DLimitEnabled(" === Depth limit === ", Float) = 0.0
         _DLimitMin("Min depth", Range(0, 100)) = 10
         _DLimitMax("Max depth", Range(0, 100)) = 20
@@ -173,7 +178,7 @@
             
             float2 xy = IN.uv_MainTex;
             float4 pxXY = float4(xy[0] * (float)_ResolutionX, xy[1] * (float)_ResolutionY, 0.0, 0.0);
-            fixed4 c = glitchFragFromCoords(xy, pxXY) * IN.color;
+            fixed4 c = glitchFragFromCoords(xy, pxXY, IN.screenPos.w) * IN.color;
             
             if (_DLimitEnabled > 0) {
                 float4 origVal = tex2D(_MainTex, xy);

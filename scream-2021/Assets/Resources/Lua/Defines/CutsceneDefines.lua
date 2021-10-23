@@ -96,3 +96,8 @@ function rotateTo(target)
     await()
 end
 
+function clippy(portrait, text)
+    cs_clippy(portrait, text)
+    await()
+end
+

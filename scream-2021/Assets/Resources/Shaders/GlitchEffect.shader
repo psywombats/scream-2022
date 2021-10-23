@@ -7,6 +7,12 @@
         _Alpha("Alpha", Float) = 1.0
         _XFade("Fade", Range(0, 1)) = 0.0
         
+        [Space(25)][MaterialToggle] _CSplitEnabled(" === CMYK Split === ", Float) = 0.0
+        _CSplitRate("Rate", Range(0, 2)) = .5
+        _CSplitStart("Start depth", Range(0, 100)) = 10
+        _CSplitMax("Max split depth", Range(0, 100)) = 40
+        _CSplitFix("Fixed split depth", Range(0, .1)) = .01
+        
         [Space(25)][MaterialToggle] _DLimitEnabled(" === Depth limit === ", Float) = 0.0
         _DLimitDepthTex("Depth tex", 2D) = "white" {}
         _DLimitMin("Min depth", Range(0, 100)) = 10
@@ -168,16 +174,16 @@
             fixed4 frag(v2f IN) : SV_Target {
                 float2 xy = IN.texcoord;
                 float4 pxXY = IN.vertex;
+                float depth = tex2D(_DLimitDepthTex, xy) * _DLimitFar;
                 fixed4 orig = tex2D(_MainTex, xy);
                 fixed4 c;
                 if (_UniversalEnable) {
-                    c = glitchFragFromCoords(xy, pxXY);
+                    c = glitchFragFromCoords(xy, pxXY, depth);
                 } else {
                     c = orig;
                 }
                 
                 if (_DLimitEnabled > 0 && _UniversalEnable) {
-                    float depth = tex2D(_DLimitDepthTex, xy) * _DLimitFar;
                     float blend = saturate(smoothstep(_DLimitMin, _DLimitMax, depth));
                     c = (1 - blend) * orig + (blend) * c;
                 }

@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using FMODUnity;
+using UnityEngine;
 
 public class DollComponent : MonoBehaviour {
     public new SpriteRenderer renderer;
     public new CapsuleCollider collider;
+    public StudioEventEmitter emitter;
 
     protected void Start() {
         if (AvatarEvent.Instance.UseFirstPersonControl) {

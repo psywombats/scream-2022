@@ -30,4 +30,5 @@ public class MapOverlayUI : MonoBehaviour {
     public CanvasGroup endgamer;
     public CanvasGroup subendgamer;
     public ControlController controls;
+    public ClippyController clippy;
 }

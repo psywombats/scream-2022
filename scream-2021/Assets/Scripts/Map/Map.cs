@@ -22,6 +22,9 @@ public class Map : MonoBehaviour {
     [SerializeField] private List<string> settings = null;
     [SerializeField] private float glitchRangeMin = 10;
     [SerializeField] private float glitchRangeMax = 12f;
+    [Space]
+    [SerializeField] private float roominess = 0f;
+    [SerializeField] public int matIndex = 0;
     
     // true if the tile in question is passable at x,y
     private Dictionary<Tilemap, bool[,]> passabilityMap;
@@ -163,6 +166,9 @@ public class Map : MonoBehaviour {
             cam.rangeMin = glitchRangeMin;
             cam.rangeMax = glitchRangeMax;
         }
+
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("RoomSize", roominess);
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Floor_Type2", matIndex);
     }
 
     public void OnTeleportAway(Map nextMap) {

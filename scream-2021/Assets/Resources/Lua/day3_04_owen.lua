@@ -3,6 +3,7 @@ if getSwitch('day3_04') then
     return
 end
 
+startle()
 faceOther('d3_owen0', 'lia_bot')
 speak("Owen", "Oh, it's you, Lia. I was wondering who interrupted my practice.", 'd3_owen0')
 speak("Lia", "S-sorry. There's someone I'd like you to meet.", 'lia_bot')

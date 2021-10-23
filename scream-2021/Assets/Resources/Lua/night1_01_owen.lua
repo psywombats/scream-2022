@@ -5,7 +5,8 @@ if getSwitch('night1_01_owen') then
     speak("Tess", "I won't let you down.")
     return
 end
-    
+
+startle()
 speak("Owen", "Oh. Tess. You're early.", 'n1_owen0')
 speak("Tess", "No. It's midnight.")
 speak("Owen", "Really? I guess so. But you could at least knock next time...", 'n1_owen0')

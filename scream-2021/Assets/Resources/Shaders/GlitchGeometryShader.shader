@@ -166,7 +166,7 @@
         void surf(Input IN, inout SurfaceOutput o) {
             float2 xy = IN.uv_MainTex;
             float4 pxXY = float4(xy[0] * (float)_ResolutionX, xy[1] * (float)_ResolutionY, 0.0, 0.0);
-            fixed4 c = glitchFragFromCoords(xy, pxXY) * IN.color;
+            fixed4 c = glitchFragFromCoords(xy, pxXY, 0) * IN.color;
             o.Albedo = c.rgb * c.a;
             o.Alpha = c.a * _Alpha * IN.color.a;
         }

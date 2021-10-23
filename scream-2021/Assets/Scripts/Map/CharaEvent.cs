@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
+using FMODUnity;
 
 [RequireComponent(typeof(FieldSpritesheetComponent))]
 [RequireComponent(typeof(MapEvent))]
@@ -17,6 +18,8 @@ public class CharaEvent : MonoBehaviour {
     [SerializeField] public bool useRelativeFix;
     [SerializeField] public OrthoDir relativeFixDir;
     [SerializeField] public DollComponent doll;
+    public bool skipWalks = false;
+    public StudioEventEmitter Emitter => Doll.emitter;
     public SpriteRenderer Renderer => Doll.renderer;
 
     private Vector3 lastPosition;
@@ -111,10 +114,18 @@ public class CharaEvent : MonoBehaviour {
         bool steppingThisFrame = IsSteppingThisFrame();
         stepping = steppingThisFrame || wasSteppingLastFrame;
         if (steppingThisFrame && !wasSteppingLastFrame) {
+            Emitter.SetParameter("Floor_Type", Map.matIndex);
+            if (Emitter != null && !Emitter.IsPlaying() && !skipWalks) {
+                Emitter.Play();
+            }
             moveTime += 1f / StepsPerSecond;
-        } else if (!steppingThisFrame && !wasSteppingLastFrame) {
+        } else if (Emitter != null && !steppingThisFrame && !wasSteppingLastFrame) {
             moveTime = 0.0f;
+            Emitter.Stop();
         } else {
+            if (Emitter != null && !Emitter.IsPlaying() && !skipWalks) {
+                Emitter.Play();
+            }
             moveTime += Time.deltaTime;
         }
         wasSteppingLastFrame = steppingThisFrame;

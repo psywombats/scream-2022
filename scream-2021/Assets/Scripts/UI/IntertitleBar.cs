@@ -110,6 +110,9 @@ public class IntertitleBar : MonoBehaviour {
         }
         var to = Random.Range(at + 1, characterCount - fullLength - 1);
         fixes.Add(new KeyValuePair<string, int>(word, to));
+        //StartCoroutine(CoUtils.RunAfterDelay(.3f, () => {
+        //    AudioManager.Instance.PlaySFX("intertitle_highlight");
+        //}));
     }
 
     private void AppendGarbage(StringBuilder sb, int count, int at) {

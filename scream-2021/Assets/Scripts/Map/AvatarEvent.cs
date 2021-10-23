@@ -264,7 +264,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     private void Interact() {
-        if (TryInteractWithReach(.45f)) {
+        if (TryInteractWithReach(.65f)) {
             return;
         }
         if (UseFirstPersonControl && TryInteractWithReach(.8f)) {
@@ -282,8 +282,14 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     private bool TryInteractWithReach(float reach) {
-        Vector3 faceVec = UseFirstPersonControl ? (firstPersonParent.transform.rotation * Vector3.forward) : Chara.Facing.Px3D();
-        var target = firstPersonParent.transform.position + faceVec * reach;
+        Vector3 target;
+        if (UseFirstPersonControl) {
+            target = firstPersonParent.transform.position + (firstPersonParent.transform.rotation * Vector3.forward) * reach;
+            target -= new Vector3(.5f, 0, .5f);
+        } else {
+            target = Event.PositionPx + Chara.Facing.Px3D() * reach;
+        }
+        
         List<MapEvent> targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(target);
         foreach (MapEvent tryTarget in targetEvents) {
             if (tryTarget.IsSwitchEnabled && !tryTarget.IsPassableBy(Event) && tryTarget != Event) {

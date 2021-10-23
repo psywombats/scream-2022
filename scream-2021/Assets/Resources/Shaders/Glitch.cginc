@@ -120,6 +120,12 @@ float _PEdgePower;
 float _PEdgeDistanceGrain;
 float _PEdgeAmplitude;
 
+float _CSplitEnabled;
+float _CSplitRate;
+float _CSplitStart;
+float _CSplitMax;
+float _CSplitFix;
+
 // for when 0.0001 and 0.1 are equally valid
 // source is from a slider, usually 0-1
 float cubicEase(float source,  float newMax) {
@@ -280,7 +286,46 @@ fixed4 maxChannel(fixed4 source, int channelIndex, float chance, float seed) {
     return result;
 }
 
-fixed4 glitchFragFromCoords(float2 xy, float4 pxXY) {
+fixed3 CMYKtoRGB (fixed4 cmyk) {
+    float c = cmyk.x;
+    float m = cmyk.y;
+    float y = cmyk.z;
+    float k = cmyk.w;
+
+    float invK = 1.0 - k;
+    float r = 1.0 - min(1.0, c * invK + k);
+    float g = 1.0 - min(1.0, m * invK + k);
+    float b = 1.0 - min(1.0, y * invK + k);
+    return clamp(fixed3(r, g, b), 0.0, 1.0);
+}
+
+fixed4 RGBtoCMYK (fixed3 rgb) {
+    float r = rgb.r;
+    float g = rgb.g;
+    float b = rgb.b;
+    float k = min(1.0 - r, min(1.0 - g, 1.0 - b));
+    fixed3 cmy = fixed3(0, 0, 0);
+    float invK = 1.0 - k;
+    if (invK != 0.0) {
+        cmy.x = (1.0 - r - k) / invK;
+        cmy.y = (1.0 - g - k) / invK;
+        cmy.z = (1.0 - b - k) / invK;
+    }
+    return fixed4(cmy[0], cmy[1], cmy[2], k);
+}
+fixed4 cmykAverage(fixed4 source, fixed2 coords, int channel) {
+    fixed4 smp = SampleSpriteTexture(coords);
+    fixed4 s1 = source;
+    fixed4 s2 = smp;
+    s1[channel] = (s1[channel] + s2[channel] / 2);
+    //fixed3 back = CMYKtoRGB(s1);
+    return s1;
+    
+    //fixed4 result = fixed4(back.r, back.g, back.b, source.a);
+    //return result;
+}
+
+fixed4 glitchFragFromCoords(float2 xy, float4 pxXY, float depth) {
     float t = _Time[1] + 500.0;
     
     // horizontal chunk displacement
@@ -347,7 +392,16 @@ fixed4 glitchFragFromCoords(float2 xy, float4 pxXY) {
         }
     }
     
+    // taking the sample!!!
     fixed4 c = SampleSpriteTexture(xy);
+    
+    // CMYK split
+    if (_CSplitEnabled > 0.0) {
+        float offset = (depth - _CSplitStart) * _CSplitRate;
+        offset = clamp(offset, 0, _CSplitMax);
+        c = cmykAverage(c, fixed2(xy[0] + offset / 100 + _CSplitFix, xy[1]), 0);
+        c = cmykAverage(c, fixed2(xy[0] - offset / 100 - _CSplitFix, xy[1]), 1);
+    }
     
     // rectangular displacement
     if (_RDispEnabled > 0.0) {
@@ -619,7 +673,7 @@ fixed4 glitchFragFromCoords(float2 xy, float4 pxXY) {
 fixed4 glitchFrag(v2f IN) : SV_Target {
     float2 xy = IN.texcoord;
     float4 pxXY = IN.vertex;
-    return glitchFragFromCoords(xy, pxXY) * IN.color;
+    return glitchFragFromCoords(xy, pxXY, 0) * IN.color;
 }
 
 v2f glitchVert(appdata_t IN) {

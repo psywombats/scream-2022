@@ -72,6 +72,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["setHeightcrossing"] = (Action<DynValue>)SetHeightcrossing;
         lua.Globals["setSprite"] = (Action<DynValue, DynValue>)SetSprite;
         lua.Globals["alert"] = (Action)Alert;
+        lua.Globals["startle"] = (Action)Startle;
         lua.Globals["cs_endgame"] = (Action)EndGame;
         lua.Globals["cs_search"] = (Action<DynValue>)Search;
         lua.Globals["cs_pathTo"] = (Action<DynValue>)PathTo;
@@ -91,6 +92,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_rotateTo"] = (Action<DynValue>)RotateToward;
         lua.Globals["cs_leverLights"] = (Action)LeverLights;
         lua.Globals["cs_resettleCamera"] = (Action)ResettleCamera;
+        lua.Globals["cs_clippy"] = (Action<DynValue, DynValue>)Clippy;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -252,6 +254,10 @@ public class LuaCutsceneContext : LuaContext {
         RunRoutineFromLua(MapOverlayUI.Instance.Notes.NotebookRoutine(text.String));
     }
 
+    private void Clippy(DynValue portrait, DynValue text) {
+        RunRoutineFromLua(MapOverlayUI.Instance.clippy.ShowRoutine(portrait.String, text.String));
+    }
+
     private void Keywords(DynValue text) {
         RunRoutineFromLua(MapOverlayUI.Instance.Keywords.ShowRoutine(text.String.Split('\n')));
     }
@@ -399,5 +405,9 @@ public class LuaCutsceneContext : LuaContext {
         yield return CoUtils.RunTween(sg.DOFade(0f, 3f));
         Application.Quit();
         UnityEngine.SceneManagement.SceneManager.LoadScene("Title");
+    }
+
+    private void Startle() {
+        UnityEngine.Object.FindObjectOfType<OwenPianoEmitter>().Startle();
     }
 }

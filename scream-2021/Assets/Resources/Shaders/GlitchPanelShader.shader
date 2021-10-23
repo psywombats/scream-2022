@@ -168,7 +168,7 @@
 			{
                 float2 xy = IN.texcoord;
                 float4 pxXY = IN.vertex;
-                fixed4 c = glitchFragFromCoords(xy, pxXY) * IN.color;
+                fixed4 c = glitchFragFromCoords(xy, pxXY, 0) * IN.color;
 				c.rgb *= c.a;
 				return c;
 			}

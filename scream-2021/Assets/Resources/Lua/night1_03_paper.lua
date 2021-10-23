@@ -1,18 +1,18 @@
 playSFX('document')
 keywords(
-    "autosomal dominant disorder\n" ..
-    "memetic disease vector\n" ..
-    "leucine-poor kinase2\n" ..
-    "dissociation-induced artificial memory\n" ..
-    "depersonalization / ego death\n" ..
-    "Mandela effect\n" ..
-    "presupposition-induced extrapolation\n" ..
-    "staged naturalistic events\n" ..
-    "Deese-Roediger-McDermott paradigm\n" ..
-    "trauma related suggestibility\n" ..
-    "prion decay in adolescents\n" ..
-    "lysosomal storage disorder\n" ..
-    "dimensia, vision loss, shortened lifespan\n" ..
-    "specific recall modulator gene\n" ..
-    "proteinopathy-linked suicide cases")
-speak("This is a neuroscience research paper. Even the abstract is beyond my understanding.")
+    "intense dissociative disorder\n" ..
+    "sleep deprivation\n" ..
+    "complex-partial seizure\n" ..
+    "interoceptive exposure\n" ..
+    "cannabis, hallucinogens, ketamine, MDMA\n" ..
+    "interoceptive exposure\n" ..
+    "sensory deprivation\n" ..
+    "ego death\n" ..
+    "renunciation of reality\n" ..
+    "irreversible end of identification\n" ..
+    "loss of subjective self-identity\n" ..
+    "inducement via beta-inhibitor\n" ..
+    "radical pluralism\n" ..
+    "gnosis of the self\n" ..
+    "jettison the ego");
+speak("This is a psychology research paper. Or at least, the details of an experiment.")
