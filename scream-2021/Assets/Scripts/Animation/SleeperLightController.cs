@@ -28,8 +28,10 @@ public class SleeperLightController : MonoBehaviour {
     private async Task ShowLightAsync(Light light) {
         light.intensity = .01f;
         light.range = 13f;
+        AudioManager.Instance.PlaySFX("lever");
         await CoUtils.RunTween(MapManager.Instance.Camera.transform.DOShakePosition(shakeDuration, new Vector3(.05f, .3f, .05f), 10, 30));
         await CoUtils.Wait(pauseDuration);
+        AudioManager.Instance.PlaySFX("sleeper_lights");
         await CoUtils.RunTween(light.DOIntensity(endIntensity, intensityDuration).SetEase(Ease.OutCubic));
         for (var i = 0; i < flickerCount; i += 1) {
             await CoUtils.RunTween(light.DOIntensity(0, flickerDuration).SetEase(Ease.Linear));

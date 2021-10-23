@@ -21,9 +21,9 @@ public class SwitchGlitchControl : MonoBehaviour {
     }
 
     void OnDrawGizmosSelected() {
-        // Draw a yellow sphere at the transform's position
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(transform.position, Cam.rangeMin);
-        Gizmos.DrawWireSphere(transform.position, Cam.rangeMax);
+        //// Draw a yellow sphere at the transform's position
+        //Gizmos.color = Color.yellow;
+        //Gizmos.DrawSphere(transform.position, Cam.rangeMin);
+        //Gizmos.DrawWireSphere(transform.position, Cam.rangeMax);
     }
 }

@@ -64,6 +64,8 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     private bool trackingLastFrame;
     private bool fpLastFrame;
 
+    private static bool seen3P, seen1P;
+
     public void Start() {
         if (MapManager.Instance.Avatar == null) {
             MapManager.Instance.Avatar = this;
@@ -71,6 +73,17 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     public virtual void Update() {
+
+        var cons = MapOverlayUI.Instance.controls;
+        if (!seen1P && UseFirstPersonControl) {
+            seen1P = true;
+            cons.StartCoroutine(cons.Trigger(cons.set2));
+        }
+        if (!seen3P && !UseFirstPersonControl) {
+            seen3P = true;
+            //cons.StartCoroutine(cons.Trigger(cons.set1));
+        }
+
         trackingLastFrame = tracking;
         tracking = false;
         lastMap = MapManager.Instance.ActiveMap;
@@ -251,10 +264,10 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     private void Interact() {
-        if (TryInteractWithReach(.75f)) {
+        if (TryInteractWithReach(.45f)) {
             return;
         }
-        if (UseFirstPersonControl && TryInteractWithReach(1.4f)) {
+        if (UseFirstPersonControl && TryInteractWithReach(.8f)) {
             return;
         }
         
@@ -269,7 +282,8 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     private bool TryInteractWithReach(float reach) {
-        var target = Event.PositionPx + Chara.Facing.Px3D() * reach;
+        Vector3 faceVec = UseFirstPersonControl ? (firstPersonParent.transform.rotation * Vector3.forward) : Chara.Facing.Px3D();
+        var target = firstPersonParent.transform.position + faceVec * reach;
         List<MapEvent> targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(target);
         foreach (MapEvent tryTarget in targetEvents) {
             if (tryTarget.IsSwitchEnabled && !tryTarget.IsPassableBy(Event) && tryTarget != Event) {
