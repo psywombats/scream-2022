@@ -14,6 +14,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     [SerializeField] private GameObject firstPersonParent = null;
     [SerializeField] private GameObject thirdPersonParent = null;
     [SerializeField] private MapCamera fpsCam = null;
+    [SerializeField] private bool fpsOverride = false;
     [Space]
     [SerializeField] private float degreesPerSecond = 120;
     [SerializeField] [Range(0.1f, 9f)] float mouseRotateSensitivity = 2f;
@@ -47,7 +48,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     public bool UseFirstPersonControl {
         get {
-            return Global.Instance.Data.GetSwitch("fp_only") || Global.Instance.Data.GetSwitch("night");
+            return Global.Instance.Data.GetSwitch("fp_only") || Global.Instance.Data.GetSwitch("night") || fpsOverride;
         }
     }
 

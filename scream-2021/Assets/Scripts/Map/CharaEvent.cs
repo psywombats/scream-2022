@@ -14,6 +14,8 @@ public class CharaEvent : MonoBehaviour {
     private const float StepsPerSecond = 2.0f;
 
     [SerializeField] public bool directionFix;
+    [SerializeField] public bool useRelativeFix;
+    [SerializeField] public OrthoDir relativeFixDir;
     [SerializeField] public DollComponent doll;
     public SpriteRenderer Renderer => Doll.renderer;
 
@@ -102,7 +104,7 @@ public class CharaEvent : MonoBehaviour {
         if (!Event.IsSwitchEnabled) {
             return;
         }
-        if (!Event.IsTracking && Event != AvatarEvent.Instance.Event) {
+        if (!Event.IsTracking && Event != AvatarEvent.Instance.Event && !directionFix) {
             AutofaceDirection();
         }
 
@@ -168,6 +170,12 @@ public class CharaEvent : MonoBehaviour {
         yield return CoUtils.RunTween(Renderer.DOColor(new Color(val, val, val), duration));
     }
 
+    public bool IsVisible() {
+        var pos = doll.renderer.transform.position + new Vector3(0, 1f, 0);
+        var vp = MapManager.Instance.Camera.GetCameraComponent().WorldToViewportPoint(pos);
+        return vp.x >= 0 && vp.x <= 1 && vp.y >= 0 && vp.y <= 1 && vp.z >= 0 && vp.z > 0;
+    }
+
     private Sprite SpriteForMain(bool fixedTime) {
         if (!fixedTime) {
             var x = (Mathf.FloorToInt(moveTime * StepsPerSecond) + 1) % Sprites.StepCount;
@@ -195,13 +203,17 @@ public class CharaEvent : MonoBehaviour {
             return Facing;
         }
 
-        var pos = transform.position + new Vector3(.5f, 0, .5f);
-        Vector3 ourScreen = cam.GetCameraComponent().WorldToScreenPoint(pos);
-        Vector3 targetWorld = pos + Facing.Px3D() * .3f;
-        targetWorld.y = pos.y;
-        Vector3 targetScreen = cam.GetCameraComponent().WorldToScreenPoint(targetWorld);
-        Vector3 delta = targetScreen - ourScreen;
-        return OrthoDirExtensions.DirectionOf2D(new Vector2(delta.x, -delta.y));
+        if (useRelativeFix) {
+            return relativeFixDir;
+        }
+
+        var pos = doll.renderer.transform.position;
+        var dirToAva = OrthoDirExtensions.DirectionOf3D(pos - AvatarEvent.Instance.FPSCam.transform.position);
+        var toAdd = (((int)dirToAva) * -1);
+        while (toAdd < 0) toAdd += 4;
+        toAdd %= 4;
+        var newFace = (OrthoDir)(((int)Facing + toAdd) % 4);
+        return newFace;
     }
 
     private bool IsSteppingThisFrame() {
