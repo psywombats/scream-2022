@@ -72,6 +72,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["setHeightcrossing"] = (Action<DynValue>)SetHeightcrossing;
         lua.Globals["setSprite"] = (Action<DynValue, DynValue>)SetSprite;
         lua.Globals["alert"] = (Action)Alert;
+        lua.Globals["cs_endgame"] = (Action)EndGame;
         lua.Globals["cs_search"] = (Action<DynValue>)Search;
         lua.Globals["cs_pathTo"] = (Action<DynValue>)PathTo;
         lua.Globals["cs_pathEvent"] = (Action<DynValue, DynValue, DynValue>)PathEvent;
@@ -89,6 +90,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_walk"] = (Action<DynValue, DynValue, DynValue, DynValue>)Walk;
         lua.Globals["cs_rotateTo"] = (Action<DynValue>)RotateToward;
         lua.Globals["cs_leverLights"] = (Action)LeverLights;
+        lua.Globals["cs_resettleCamera"] = (Action)ResettleCamera;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -128,6 +130,9 @@ public class LuaCutsceneContext : LuaContext {
             textString = speakerString.Split(':')[1].Substring(2);
             speakerString = speakerString.Split(':')[0];
         }
+        if (textString != null) {
+            textString = textString.Replace("TWIN", GetTwinName());
+        }
 
         MapEvent @event = null;
         if (targetEventString != null && !targetEventString.Equals("bottom")) {
@@ -148,6 +153,13 @@ public class LuaCutsceneContext : LuaContext {
     }
     private IEnumerator SpeakRoutine(string speakerString, string textString, MapEvent @event, bool bottom = false) {
         var isProtag = speakerString == "Tess";
+        var isTwin = speakerString == "TWIN";
+        if (isTwin) {
+            speakerString = GetTwinName();
+            if (!Global.Instance.Data.GetSwitch("spoken_lines")) {
+                @event.Chara.SetAppearanceByTag("tess_screen");
+            }
+        }
         if (isProtag) {
             AvatarEvent.Instance.Chara.SetAppearanceByTag("tess_screen");
         }
@@ -156,9 +168,16 @@ public class LuaCutsceneContext : LuaContext {
         } else {
             yield return MapOverlayUI.Instance.Textbox.SpeakRoutine(speakerString, textString, Vector3.zero, useTail:!isProtag, bottom: bottom);
         }
-        if (speakerString == "Tess") {
+        if (isProtag) {
             AvatarEvent.Instance.Chara.SetAppearanceByTag("tess");
         }
+        if (isTwin) {
+            @event.Chara.SetAppearanceByTag("tess");
+        }
+    }
+    private string GetTwinName() {
+        return   Global.Instance.Data.GetSwitch("use_cecily")   ? "Cecily"  :
+                 Global.Instance.Data.GetSwitch("use_tess")     ? "Tess"    : "???";
     }
 
     private void SpeakPortrait(DynValue portraitTagValue, DynValue textValue) {
@@ -293,7 +312,7 @@ public class LuaCutsceneContext : LuaContext {
 
     private void SpawnFollower(DynValue follower, DynValue target) {
         var followerName = follower.String;
-        var @event = MapManager.Instance.ActiveMap.GetEventNamed(followerName);
+        var @event = MapManager.Instance.ActiveMap.GetEventNamed(followerName, includeDisabled: true);
         if (!@event.gameObject.activeSelf) {
             var targetEvent = MapManager.Instance.ActiveMap.GetEventNamed(target.String);
             @event.SetLocation(targetEvent.Location);
@@ -308,6 +327,10 @@ public class LuaCutsceneContext : LuaContext {
 
     private void UntrackCamera() {
         MapManager.Instance.Camera.GetComponent<TrackerCam3D>().enabled = false;
+        var trailer = UnityEngine.Object.FindObjectOfType<AvatarTrailComponent>();
+        if (trailer != null) {
+            trailer.enabled = false;
+        }
     }
 
     private void TriggerSFX(DynValue eventName) {
@@ -330,5 +353,51 @@ public class LuaCutsceneContext : LuaContext {
 
     private void Alert() {
         Global.Instance.StartCoroutine(UnityEngine.Object.FindObjectOfType<NightAlertController>().AlertRoutine());
+    }
+
+    private void ResettleCamera() {
+        RunRoutineFromLua(ResettleCameraRoutine());
+    }
+    private IEnumerator ResettleCameraRoutine() {
+        yield return null;
+        var oldHero = AvatarEvent.Instance;
+        oldHero.gameObject.SetActive(false);
+        var twin = MapManager.Instance.ActiveMap.GetEventNamed("d4_twin0", includeDisabled: true);
+        twin.gameObject.SetActive(true);
+        var @event = MapManager.Instance.ActiveMap.GetEventNamed("backupHero", includeDisabled: true);
+        @event.gameObject.SetActive(true);
+        var backupAva = @event.GetComponent<AvatarEvent>();
+        var toCam = backupAva.FPSCam.GetCameraComponent();
+        var fromCam = MapManager.Instance.Camera.GetCameraComponent();
+
+        var duration = 2f;
+        yield return CoUtils.RunParallel(Global.Instance, new IEnumerator[] {
+            CoUtils.RunTween(fromCam.transform.DOMove(toCam.transform.position, duration)),
+            CoUtils.RunTween(fromCam.transform.DORotate(toCam.transform.eulerAngles, duration)),
+            CoUtils.RunTween(fromCam.DOFieldOfView(toCam.fieldOfView, duration)),
+        });
+
+        Global.Instance.Data.SetSwitch("always_fp", true);
+        
+        AvatarEvent.Instance.gameObject.name = "hero (old)";
+        MapManager.Instance.Avatar = backupAva;
+        backupAva.name = "hero";
+
+        foreach (var ev in MapManager.Instance.ActiveMap.GetEvents<DoorEvent>()) {
+            ev.RefreshDoor();
+        }
+    }
+
+    private void EndGame() {
+        RunRoutineFromLua(EndGameRoutine());
+    }
+    private IEnumerator EndGameRoutine() {
+        var eg = MapOverlayUI.Instance.endgamer;
+        var sg = MapOverlayUI.Instance.subendgamer;
+        yield return CoUtils.RunTween(eg.DOFade(1f, 3f));
+        yield return InputManager.Instance.ConfirmRoutine();
+        yield return CoUtils.RunTween(sg.DOFade(0f, 3f));
+        Application.Quit();
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Title");
     }
 }

@@ -27,4 +27,6 @@ public class MapOverlayUI : MonoBehaviour {
     public CardController Cards;
     public KeywordController Keywords;
     public CalDeathController Pupils;
+    public CanvasGroup endgamer;
+    public CanvasGroup subendgamer;
 }

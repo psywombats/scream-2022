@@ -134,10 +134,10 @@ public class Map : MonoBehaviour {
         return GetComponentsInChildren<Tilemap>()[layerIndex];
     }
 
-    public MapEvent GetEventNamed(string eventName) {
+    public MapEvent GetEventNamed(string eventName, bool includeDisabled = false) {
         foreach (ObjectLayer layer in GetComponentsInChildren<ObjectLayer>()) {
-            foreach (MapEvent mapEvent in layer.GetComponentsInChildren<MapEvent>(includeInactive: true)) {
-                if (mapEvent.name == eventName && mapEvent.IsSwitchEnabled) {
+            foreach (MapEvent mapEvent in layer.GetComponentsInChildren<MapEvent>(includeInactive: includeDisabled)) {
+                if (mapEvent.name == eventName && (mapEvent.IsSwitchEnabled || includeDisabled)) {
                     return mapEvent;
                 }
             }

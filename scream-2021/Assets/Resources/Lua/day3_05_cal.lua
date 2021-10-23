@@ -1,5 +1,5 @@
 speak("Dr. Cooper", "Ahh if it isn't Tess. There you are!", 'd3_cal0')
-speak("Lia", "Hey Cal. You already know Tess?")
+speak("Lia", "Hi Cal. You already know Tess?", 'lia_bot')
 speak("Dr. Cooper", "Yep, I know she's late for our 4 o'clock. Haha! This way, Tess. And catch you later, ummm...", 'd3_cal0')
 speak("Lia", "I'm Lia.", 'lia_bot')
 speak("Dr. Cooper", "Right, Lia. See you later Lia! Haha!", 'd3_cal0')
@@ -51,13 +51,13 @@ speak("Dr. Cooper", "Could you please tell me the second question?", 'cal')
 
 choice("What is the current year?", "I don't know.")
 if choice_result == 0 then
-    speak("Dr. Cooper", "That's one of many smaller, pettier details that I've exchanged for truer knowledge of the nature of reality.", 'cal')
+    speak("Dr. Cooper", "That's one of many petty details that I've exchanged for truer knowledge of the nature of reality.", 'cal')
     speak("Dr. Cooper", "Or something like that!", 'cal')
 else
     speak("Dr. Cooper", "Spooky. I don't know it either.", 'cal')
 end
 
-speak("Dr. Cooper", "Ahaha. Just pulling your leg. Of course I know that.", 'cal')
+speak("Dr. Cooper", "Ahaha. Just pulling your leg. Of course I know the year.", 'cal')
 speak("Dr. Cooper", "Now, the moment of truth. The razor's edge! The final question. The final answer.", 'cal')
 setDepthMult(.5)
 walk('cal', 1, 'NORTH')
@@ -97,6 +97,7 @@ fade('black')
 fadeOutBGM(1)
 wait(1)
 setSwitch('spawn_lia', false)
+setSwitch('exam_cal_appears', false)
 intertitle("THOUGH STARS NUMBER IN THE TRILLIONS\nAND GRAINS OF DUST STRETCH INFINITE\nTHERE IS ONLY ONE TRUTH\n\nTHAT OF THE\nI AM\n\n\nNIGHT_3")
 setSwitch('night', true)
 setSwitch('d3_clear', true)

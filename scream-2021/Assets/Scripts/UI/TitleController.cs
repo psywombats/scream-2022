@@ -14,7 +14,7 @@ public class TitleController : MonoBehaviour {
     [SerializeField] private Text continueText = null;
     [SerializeField] private GameObject canvasParent = null;
 
-    private static readonly string[] Continues = { "DAY_1", "NIGHT_1", "DAY_2", "NIGHT_2", "DAY_3", "NIGHT_3" };
+    private static readonly string[] Continues = { "DAY_1", "NIGHT_1", "DAY_2", "NIGHT_2", "DAY_3", "NIGHT_3", "DAY_4", "TWILIGHT" };
     private int continueIndex = 0;
 
     public void Start() {
@@ -94,7 +94,12 @@ public class TitleController : MonoBehaviour {
         StartCoroutine(AudioManager.Instance.FadeOutRoutine(1));
         yield return FadeOutRoutine();
         ContinueSwitches.Activate(continueIndex);
-        yield return Global.Instance.Serialization.StartGameRoutine("RoomYours", "start");
+        if (continueIndex == Continues.Length - 1) {
+            yield return Global.Instance.Serialization.StartGameRoutine("Office1", "target");
+        } else {
+            yield return Global.Instance.Serialization.StartGameRoutine("RoomYours", "start");
+        }
+        
     }
 
     private IEnumerator StartRoutine() {

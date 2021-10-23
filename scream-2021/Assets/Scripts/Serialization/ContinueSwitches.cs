@@ -60,10 +60,20 @@
 
     private static readonly string[] switchesD4 = {
         "night3_00_lia",
+        "night2_02_joey",
         "night3_connie",
+        "n3_clear",
     };
 
-    private static readonly string[][] checkpoints = { switchesD1, switchesN1, switchesD2, switchesN2, switchesD3, switchesN3 };
+    private static readonly string[] switchesN4 = {
+        "day4_04_twin",
+        "day4_05_twin",
+        "fp_only",
+        "spoken_lines",
+        "d4_clear",
+    };
+
+    private static readonly string[][] checkpoints = { switchesD1, switchesN1, switchesD2, switchesN2, switchesD3, switchesN3, switchesD4, switchesN4 };
 
     public static void Activate(int checkpoint) {
         for (var i = 0; i <= checkpoint; i += 1 ) {
@@ -72,7 +82,7 @@
                 Global.Instance.Data.SetSwitch(@switch, true);
             }
         }
-        if (checkpoint % 2 == 1) {
+        if (checkpoint % 2 == 1 && checkpoint != checkpoints.Length - 1) {
             Global.Instance.Data.SetSwitch("night", true);
         }
     }

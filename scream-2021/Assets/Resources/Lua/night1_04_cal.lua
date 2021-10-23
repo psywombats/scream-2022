@@ -15,7 +15,7 @@ speak("Dr. Cooper", "This is my lab. I'm allowed to be here past midnight if I w
 speak("Dr. Cooper", "You aren't though. I can't have you running around here pulling power switches.", 'n1_cal')
 speak("Dr. Cooper", "I'm extreeemely close, and that'd really set my progress back! Haha.", 'n1_cal')
 speak("Tess", "I'll go back to my room then.")
-speak("Dr. Cooper", "Think you'll get off the hook so quickly?", 'n1_cal')
+speak("Dr. Cooper", "Think you'll get off the hook so easily?", 'n1_cal')
 speak("Dr. Cooper", "Follow me.", 'n1_cal')
 wait(.8)
 speak("Dr. Cooper", "Oh come on. You know me. It's me, Cal. Here, I'll explain on the way.", 'n1_cal')

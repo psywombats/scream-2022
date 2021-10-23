@@ -109,4 +109,6 @@ speak("Tess", "I hope you weren't analyzing my brain waves for that one. They pr
 speak("Dr. Cooper", "Haha, got you. Let's get the rest of this over with and then you can get back to your day.", 'cal')
 
 setSwitch('day2_02_cal', true)
+fadeOutBGM(.5)
 teleport('HallA', 'd2_target')
+playBGM('day')

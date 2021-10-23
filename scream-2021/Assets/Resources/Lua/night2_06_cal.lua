@@ -19,7 +19,7 @@ speak("Dr. Cooper", "Say something! Anything!", 'n2_cal')
 speak("Tess", "Dr. Cooper, please just read the screen. You know I can't speak.")
 walk('n2_cal', 1, 'NORTH')
 faceOther('n2_cal', 'hero')
-speak("Dr. Cooper", "You're lying! You're lying! You - ")
+speak("Dr. Cooper", "You're lying! You're lying! You - ", 'n2_cal')
 speak("Owen", "Tess! He's not right! Get out of here!", 'n2_owen')
 
 rotateTo('n2_target1')

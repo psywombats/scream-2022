@@ -47,8 +47,23 @@ public class SpeakboxComponent : TextAutotyper {
         choice.meshB.gameObject.SetActive(!enabled);
     }
 
+    public static Vector3 ViewportToCanvasPosition(Canvas canvas, Vector3 viewportPosition) {
+        var centerBasedViewPortPosition = viewportPosition;
+        var canvasRect = canvas.GetComponent<RectTransform>();
+        var scale = canvasRect.sizeDelta;
+        return Vector3.Scale(centerBasedViewPortPosition, scale);
+    }
+
+    public static Vector3 ScreenToCanvasPosition(Canvas canvas, Vector3 screenPosition) {
+        var viewportPosition = new Vector3(screenPosition.x / Screen.width,
+                                           screenPosition.y / Screen.height,
+                                           0);
+        return ViewportToCanvasPosition(canvas, viewportPosition);
+    }
+
     public IEnumerator SetupForPos(Vector3 pos, float duration, bool useTail = true, bool bottom = false) {
         var screen = MapManager.Instance.Camera.GetCameraComponent().WorldToScreenPoint(pos);
+        screen = ScreenToCanvasPosition(transform.parent.GetComponent<Canvas>(), screen);
         screen += new Vector3(0, 88f, 0);
         var rect = GetComponent<RectTransform>();
 
@@ -159,7 +174,7 @@ public class SpeakboxComponent : TextAutotyper {
 
         namebox.GetComponent<CanvasGroup>().alpha = 1f;
         textbox.GetComponent<CanvasGroup>().alpha = 1f;
-        if (speakerName == "Tess") {
+        if ((speakerName == "Tess" || speakerName == "???") && !Global.Instance.Data.GetSwitch("spoken_lines")) {
             AudioManager.Instance.PlaySFX("talk_MC");
         } else {
             AudioManager.Instance.PlaySFX("talk_NPC");

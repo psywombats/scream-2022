@@ -12,7 +12,7 @@ speak("Lia", "Uhm, well, welcome to Ward #6. It looks like we'll be roommates, s
 speak("Lia", "Your name is Tess, right?", 'd3_lia0')
 speak("Tess", "Yes.")
 speak("Lia", "I'm sorry I haven't cleaned out all the stuff that's still here from my old roommate.", 'd3_lia0')
-speak("Tess", "These are mine. Don't touch them.")
+speak("Tess", "Those are my books. Don't touch them.")
 speak("Tess", "I'm worried about you. You should probably see Dr. Cooper.")
 speak("Lia", "You mean... Cal? I'm not sure what you're talking about.", 'd3_lia0')
 speak("Lia", "Let me know when you're ready and I can give you a tour of Ward #6.", 'd3_lia0')

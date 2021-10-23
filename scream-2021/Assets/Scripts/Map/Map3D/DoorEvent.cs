@@ -18,13 +18,7 @@ public class DoorEvent : MonoBehaviour {
     public MapEvent Event => @event ?? (@event = GetComponent<MapEvent>());
 
     private void Start() {
-        if (dir == OrthoDir.South) {
-            if (AvatarEvent.Instance.UseFirstPersonControl) {
-                animator.transform.localEulerAngles = new Vector3(0, 180, 0);
-                var c = animator.GetComponent<SpriteRenderer>().color;
-                animator.GetComponent<SpriteRenderer>().color = new Color(c.r, c.g, c.b, 1);
-            }
-        }
+        RefreshDoor();
 
         GetComponent<Dispatch>().RegisterListener(MapEvent.EventCollide, (object payload) => {
             Global.Instance.StartCoroutine(TeleportRoutine(AvatarEvent.Instance));
@@ -33,6 +27,17 @@ public class DoorEvent : MonoBehaviour {
             Global.Instance.StartCoroutine(TeleportRoutine(AvatarEvent.Instance, force: true));
         });
         Event.LuaObject.Set("door", lockedCondition);
+    }
+
+    public void RefreshDoor() {
+        if (dir == OrthoDir.South) {
+            if (AvatarEvent.Instance.UseFirstPersonControl) {
+                animator.transform.localEulerAngles = new Vector3(0, 180, 0);
+                animator.transform.localPosition = new Vector3(.5f, 1.325f, .01f);
+                var c = animator.GetComponent<SpriteRenderer>().color;
+                animator.GetComponent<SpriteRenderer>().color = new Color(c.r, c.g, c.b, 1);
+            }
+        }
     }
 
     public virtual IEnumerator TeleportRoutine(AvatarEvent avatar, bool force = false) {

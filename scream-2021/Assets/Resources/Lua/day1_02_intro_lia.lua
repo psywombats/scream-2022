@@ -1,17 +1,20 @@
-speak("Tess", "Hi. I'm Tess. Patient #2876.")
-speak("Lia", "I-I'm Lia.", 'd1_lia0')
-speak("Tess", "Are you doing alright?")
-if day1_02_intro_lia then
+if getSwitch('day1_02_intro_lia') then
     speak("Tess", "Follow me to the hall.")
     return
 end
 
+speak("Tess", "Hi. I'm Tess. Patient #2876.")
+speak("Lia", "I-I'm Lia.", 'd1_lia0')
+speak("Tess", "Are you doing alright?")
 speak("Lia", "Just a bit nervous.", 'd1_lia0')
 speak("Tess", "That's alright. You're doing fine.")
 speak("Tess", "Here's your half of the room there.")
 face('hero', 'EAST')
+wait(.3)
+face('d1_lia0', 'EAST')
 wait(1)
 faceTo('d1_lia0')
+faceOther('d1_lia0', 'hero')
 speak("Tess", "I'll clear out my old roommate's things later, sorry about that.")
 speak("Lia", "So uhm, do you have a cold? Is that why you can't talk?", 'd1_lia0')
 speak("Tess", "No. I'm physically able. But my brain's forgotten how.")

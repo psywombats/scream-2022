@@ -9,7 +9,7 @@ public class SwitchGlitchControl : MonoBehaviour {
     private DepthCamComponent cam;
     private DepthCamComponent Cam => cam ?? (cam = GetComponent<DepthCamComponent>());
 
-    public void Start() {
+    public void Update() {
         var use = true;
         foreach (var switchName in switchNames) {
             if (!Global.Instance.Data.GetSwitch(switchName)) {

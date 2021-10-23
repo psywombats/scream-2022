@@ -32,7 +32,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     public MapCamera FPSCam => fpsCam;
 
-    private int pauseCount;
+    private static int pauseCount;
     public bool InputPaused {
         get {
             return pauseCount > 0;
@@ -47,7 +47,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     public bool UseFirstPersonControl {
         get {
-            return Global.Instance.Data.GetSwitch("night");
+            return Global.Instance.Data.GetSwitch("fp_only") || Global.Instance.Data.GetSwitch("night");
         }
     }
 
@@ -64,8 +64,9 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     private bool fpLastFrame;
 
     public void Start() {
-        MapManager.Instance.Avatar = this;
-        InputManager.Instance.PushListener(this);
+        if (MapManager.Instance.Avatar == null) {
+            MapManager.Instance.Avatar = this;
+        }
     }
 
     public virtual void Update() {
@@ -98,6 +99,14 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         Body.velocity = velocityThisFrame;
         velocityThisFrame = Vector3.zero;
         fpLastFrame = UseFirstPersonControl;
+    }
+
+    public void OnEnable() {
+        InputManager.Instance.PushListener(this);
+    }
+
+    public void OnDisable() {
+        InputManager.Instance.RemoveListener(this);
     }
 
     public bool OnCommand(InputManager.Command command, InputManager.Event eventType) {
@@ -169,10 +178,10 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     public IEnumerator RotateTowardRoutine(MapEvent other) {
         var targetPos = other.PositionPx + new Vector3(.5f, 0, .5f);
-        var dir = (targetPos - transform.position).normalized;
-        var lookRotation = Quaternion.LookRotation(dir);
+        var dir = (targetPos - firstPersonParent.transform.position).normalized;
+        var lookAngles = Quaternion.LookRotation(dir).eulerAngles;
 
-        return CoUtils.RunTween(firstPersonParent.transform.DORotateQuaternion(lookRotation, .5f));
+        return CoUtils.RunTween(firstPersonParent.transform.DORotate(lookAngles, .5f));
     }
 
     public OrthoDir FPFacing() {

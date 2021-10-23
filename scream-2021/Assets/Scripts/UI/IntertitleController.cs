@@ -85,7 +85,7 @@ public class IntertitleController : MonoBehaviour {
         yield return CoUtils.Wait(interleaveDuration);
         sfx.SetParameter(SfxParameter, 1);
         yield return FadeOutRoutine();
-        yield return CoUtils.Wait(interleaveDuration * 3);
+        yield return CoUtils.Wait(interleaveDuration * 4);
         sfx.SetParameter(SfxParameter, 2);
         yield return FadeOutAllRoutine();
         yield return CoUtils.RunTween(canvas.DOFade(0f, fadeDuration));

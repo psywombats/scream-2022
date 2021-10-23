@@ -105,5 +105,7 @@ speak("Tess", "Whatever you say.")
 
 setSwitch('day1_07_cal', true)
 setSwitch('spawn_lia', false)
+fadeOutBGM(.5)
 teleport('CommonRoom', 'in')
+playBGM('day')
 setSwitch('exam_cal_appears', false)

@@ -308,6 +308,9 @@ public class MapEvent : MonoBehaviour {
         if (luaOnCollide.Length == 0) {
             return;
         }
+        if (requiresDir && avatar.Chara.Facing != requiredDir) {
+            return;
+        }
         if (Time.time - lastCollided < .5f) {
             return;
         }

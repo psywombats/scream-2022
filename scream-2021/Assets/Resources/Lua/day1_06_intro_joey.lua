@@ -1,5 +1,6 @@
 if getSwitch('day1_06_intro_joey') then
     speak("Joey", "But if you're ever scared or sad, you can come find Connie. She'll be right here.", 'd1_joey0')
+    return
 end
 
 speak("Tess", "Hi Joey.")
@@ -27,7 +28,7 @@ speak("Lia", "O-okay.", 'lia_bot')
 speak("Joey", "So what happened to your face?", 'd1_joey0')
 speak("Tess", "Don't be rude, Joey.")
 speak("Lia", "It's alright...", 'lia_bot')
-speak("Lia", "Everyone knows the disease spread through eye contact, so uhm, someone attacked me.", 'lia_bot')
+speak("Lia", "Everyone knows the disease spreads through eye contact, so uhm, someone attacked me.", 'lia_bot')
 speak("Lia", "They found out I had Neural-9 and uhm, tried to blind me with acid. So I couldn't spread it.", 'lia_bot')
 speak("Joey", "Did it work?", 'd1_joey0')
 speak("Lia", "My right eye doesn't work, but, I'm used to being blindfolded. I don't mind.", 'lia_bot')

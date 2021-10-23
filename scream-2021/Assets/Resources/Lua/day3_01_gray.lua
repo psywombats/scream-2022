@@ -2,7 +2,7 @@ spawnFollower('lia_bot', 'room_yours')
 wait(.1)
 face('lia_bot', 'NORTH')
 
-speak("Dr. Gray", "Ah. Lia. Patient #2902 and... #2867 was it?", 'd3_gray0')
+speak("Dr. Gray", "Ah. Lia. Patient #2902 and... #2876 was it?", 'd3_gray0')
 speak("Tess", "It's Tess.")
 speak("Dr. Gray", "Right. I was just checking to make sure you were adjusting well.", 'd3_gray0')
 speak("Dr. Gray", "Lia will show you around and introduce you to the other patients.", 'd3_gray0')
