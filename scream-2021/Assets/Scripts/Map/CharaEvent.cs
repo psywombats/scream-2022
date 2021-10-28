@@ -114,18 +114,13 @@ public class CharaEvent : MonoBehaviour {
         bool steppingThisFrame = IsSteppingThisFrame();
         stepping = steppingThisFrame || wasSteppingLastFrame;
         if (steppingThisFrame && !wasSteppingLastFrame) {
-            Emitter.SetParameter("Floor_Type", Map.matIndex);
-            if (Emitter != null && !Emitter.IsPlaying() && !skipWalks) {
-                Emitter.Play();
-            }
+            PlaySFX();
             moveTime += 1f / StepsPerSecond;
         } else if (Emitter != null && !steppingThisFrame && !wasSteppingLastFrame) {
             moveTime = 0.0f;
             Emitter.Stop();
         } else {
-            if (Emitter != null && !Emitter.IsPlaying() && !skipWalks) {
-                Emitter.Play();
-            }
+      PlaySFX();
             moveTime += Time.deltaTime;
         }
         wasSteppingLastFrame = steppingThisFrame;
@@ -133,6 +128,15 @@ public class CharaEvent : MonoBehaviour {
 
         UpdateAppearance();
     }
+
+  private void PlaySFX()
+  {
+    Emitter.SetParameter( "Floor_Type", Map.matIndex );
+    if ( Emitter != null && !Emitter.IsPlaying() && !skipWalks && Event.IsSwitchEnabled )
+    {
+      Emitter.Play();
+    }
+  }
 
     public void UpdateEnabled(bool enabled) {
         doll.collider.enabled = enabled;

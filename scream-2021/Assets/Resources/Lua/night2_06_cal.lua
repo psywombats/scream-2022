@@ -22,9 +22,7 @@ faceOther('n2_cal', 'hero')
 speak("Dr. Cooper", "You're lying! You're lying! You - ", 'n2_cal')
 speak("Owen", "Tess! He's not right! Get out of here!", 'n2_owen')
 
-rotateTo('n2_target1')
-pathTo('n2_target1')
-rotateTo('n2_target2')
+
 walk('hero', 8, 'NORTH', false)
 fade('black')
 teleport('Connector', 'in')

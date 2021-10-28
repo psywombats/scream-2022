@@ -30,9 +30,7 @@ public class MapEvent : MonoBehaviour {
     [SerializeField] [TextArea(3, 6)] public string luaOnInteract;
     [SerializeField] [TextArea(3, 6)] public string luaOnCollide;
     [SerializeField] private GameObject enableChild;
-
-    // Properties
-    public LuaMapEvent LuaObject { get; private set; }
+  
     public bool IsTracking { get; private set; }
     private float lastCollided;
 
@@ -116,6 +114,8 @@ public class MapEvent : MonoBehaviour {
             isSwitchEnabled = value;
         }
     }
+
+  public LuaMapEvent LuaObject { get; private set; }
 
     public void Awake() {
         LuaObject = new LuaMapEvent(this);
@@ -302,9 +302,14 @@ public class MapEvent : MonoBehaviour {
             new Vector3((size.x - 0.1f), fudge, (size.y - 0.1f)));
     }
 
-    // called when the avatar stumbles into us
-    // before the step if impassable, after if passable
+  // called when the avatar stumbles into us
+  // before the step if impassable, after if passable
+  private bool triggered = false;
     private void OnCollide(AvatarEvent avatar) {
+    if (avatar.InputPaused)
+    {
+      return;
+    }
         if (luaOnCollide.Length == 0) {
             return;
         }

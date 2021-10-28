@@ -1,6 +1,6 @@
 if getSwitch('day5_03_joey') then
     rotateTo('d5_twin')
-    speak("TWIN", "Just make sure she doesn't get out again.")
+    speak("TWIN", "Just make sure she doesn't get out again.", 'd5_twin')
     return
 end
 

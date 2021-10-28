@@ -157,7 +157,6 @@ public class LuaContext {
         lua.Globals["playSound"] = (Action<DynValue, DynValue>)PlaySFX;
         lua.Globals["getSwitch"] = (Func<DynValue, DynValue>)GetSwitch;
         lua.Globals["setSwitch"] = (Action<DynValue, DynValue>)SetSwitch;
-        lua.Globals["eventNamed"] = (Func<DynValue, LuaMapEvent>)EventNamed;
         lua.Globals["getAvatar"] = (Func<DynValue>)GetAvatar;
         lua.Globals["cs_wait"] = (Action<DynValue>)Wait;
         lua.Globals["cs_play"] = (Action<DynValue>)Play;
@@ -169,15 +168,6 @@ public class LuaContext {
     }
 
     // === LUA CALLABLE ============================================================================
-
-    protected LuaMapEvent EventNamed(DynValue eventName) {
-        MapEvent mapEvent = Global.Instance.Maps.ActiveMap.GetEventNamed(eventName.String);
-        if (mapEvent == null) {
-            return null;
-        } else {
-            return mapEvent.LuaObject;
-        }
-    }
 
     protected DynValue GetSwitch(DynValue switchName) {
         bool value = Global.Instance.Data.GetSwitch(switchName.String);

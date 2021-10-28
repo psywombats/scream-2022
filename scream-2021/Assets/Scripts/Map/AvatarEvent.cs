@@ -183,8 +183,12 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     public void UnpauseInput() {
-        pauseCount -= 1;
+        if (pauseCount > 0)
+    {
+      pauseCount -= 1;
     }
+
+  }
 
     public bool WantsToTrack() {
         return trackingLastFrame || tracking;
