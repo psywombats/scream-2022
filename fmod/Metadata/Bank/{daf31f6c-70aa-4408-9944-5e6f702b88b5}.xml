@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="Bank" id="{daf31f6c-70aa-4408-9944-5e6f702b88b5}">
+		<property name="name">
+			<value>LateSFX</value>
+		</property>
+		<relationship name="folder">
+			<destination>{ff87349d-e6d1-46d6-b477-e7f5117ce63b}</destination>
+		</relationship>
+	</object>
+</objects>

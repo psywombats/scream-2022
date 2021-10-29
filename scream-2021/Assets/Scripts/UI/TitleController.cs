@@ -13,6 +13,7 @@ public class TitleController : MonoBehaviour {
     [SerializeField] private CanvasGroup continueGroup = null;
     [SerializeField] private Text continueText = null;
     [SerializeField] private GameObject canvasParent = null;
+    [SerializeField] private ControlController controls = null;
 
     private static readonly string[] Continues = { "DAY_1", "NIGHT_1", "DAY_2", "NIGHT_2", "DAY_3", "NIGHT_3", "DAY_4", "TWILIGHT" };
     private int continueIndex = 0;
@@ -20,6 +21,7 @@ public class TitleController : MonoBehaviour {
     public void Start() {
         intertitle.Autostart();
         DoMenu();
+        StartCoroutine(CoUtils.Delay(2.5f, controls.Trigger(controls.set1)));
     }
 
     private async void DoMenu() { await DoMenuAsync(); }

@@ -19,6 +19,7 @@ public class CharaEvent : MonoBehaviour {
     [SerializeField] public OrthoDir relativeFixDir;
     [SerializeField] public DollComponent doll;
     public bool skipWalks = false;
+    public bool noAnimate = false;
     public StudioEventEmitter Emitter => Doll.emitter;
     public SpriteRenderer Renderer => Doll.renderer;
 
@@ -129,14 +130,15 @@ public class CharaEvent : MonoBehaviour {
         UpdateAppearance();
     }
 
-  private void PlaySFX()
-  {
-    Emitter.SetParameter( "Floor_Type", Map.matIndex );
-    if ( Emitter != null && !Emitter.IsPlaying() && !skipWalks && Event.IsSwitchEnabled )
+    private void PlaySFX()
     {
-      Emitter.Play();
+        if (Emitter != null) {
+            Emitter.SetParameter("Floor_Type", Map.matIndex);
+            if (Emitter != null && !Emitter.IsPlaying() && !skipWalks && Event.IsSwitchEnabled) {
+                Emitter.Play();
+            }
+        }
     }
-  }
 
     public void UpdateEnabled(bool enabled) {
         doll.collider.enabled = enabled;
@@ -192,7 +194,7 @@ public class CharaEvent : MonoBehaviour {
     }
 
     private Sprite SpriteForMain(bool fixedTime) {
-        if (!fixedTime) {
+        if (!fixedTime && !noAnimate) {
             var x = (Mathf.FloorToInt(moveTime * StepsPerSecond) + 1) % Sprites.StepCount;
             return Sprites.GetFrame(DirectionRelativeToCamera(), x);
         } else {
@@ -232,6 +234,7 @@ public class CharaEvent : MonoBehaviour {
     }
 
     private bool IsSteppingThisFrame() {
+        if (noAnimate) return false;
         var ava = GetComponent<AvatarEvent>();
         if (ava != null) return Event.IsTracking || ava.WantsToTrack();
         var position = transform.position;

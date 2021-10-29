@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerReturn" id="{1108a758-d0e7-4916-b7ae-bcce8270588f}">
+		<property name="name">
+			<value>FootReverb</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{2a6cdec5-a747-4e75-8c77-a5e51fe27bc5}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{78e08d71-212f-4d5f-a1e6-7e94df442645}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{5af502cd-8836-4d9c-b345-8f72735fb99f}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{2a6cdec5-a747-4e75-8c77-a5e51fe27bc5}">
+		<relationship name="effects">
+			<destination>{71d871a0-542a-4f0b-8ded-cb90a81363df}</destination>
+			<destination>{cafea711-67f1-4b15-a460-d3ebd685c29f}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{78e08d71-212f-4d5f-a1e6-7e94df442645}" />
+	<object class="MixerBusFader" id="{71d871a0-542a-4f0b-8ded-cb90a81363df}" />
+	<object class="SFXReverbEffect" id="{cafea711-67f1-4b15-a460-d3ebd685c29f}">
+		<property name="decayTime">
+			<value>2000</value>
+		</property>
+		<relationship name="automators">
+			<destination>{8057e621-3a2a-4222-ace4-d298e167dfe0}</destination>
+		</relationship>
+	</object>
+	<object class="Automator" id="{8057e621-3a2a-4222-ace4-d298e167dfe0}">
+		<property name="nameOfPropertyBeingAutomated">
+			<value>decayTime</value>
+		</property>
+		<relationship name="automationCurves">
+			<destination>{870061c1-1250-4eca-88e2-eed52fd0a18d}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationCurve" id="{870061c1-1250-4eca-88e2-eed52fd0a18d}">
+		<relationship name="parameter">
+			<destination>{e91e8c06-04da-4071-bec4-8ff74013dd63}</destination>
+		</relationship>
+		<relationship name="automationPoints">
+			<destination>{7a538402-fb92-4dde-934a-a706ba5d6284}</destination>
+			<destination>{7148adf6-8366-4584-8cfe-cfeb4f5f634b}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationPoint" id="{7a538402-fb92-4dde-934a-a706ba5d6284}">
+		<property name="position">
+			<value>0.038135593220338986</value>
+		</property>
+		<property name="value">
+			<value>3123.80981</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{7148adf6-8366-4584-8cfe-cfeb4f5f634b}">
+		<property name="position">
+			<value>1</value>
+		</property>
+		<property name="value">
+			<value>5999.99902</value>
+		</property>
+	</object>
+</objects>

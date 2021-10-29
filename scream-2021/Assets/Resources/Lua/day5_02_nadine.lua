@@ -1,7 +1,7 @@
 rotateTo('d5_nadine')
 
 if getSwitch('day5_02_nadine') then
-    speak("Allen's finally coming to visit tomorrow!", 'd5_nadine')
+    speak("Nadine", "Allen's finally coming to visit tomorrow!", 'd5_nadine')
     return
 end
 
