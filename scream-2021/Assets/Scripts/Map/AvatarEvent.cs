@@ -314,7 +314,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         }
 
         tracking = true;
-        var component = dir.Px3D() * Event.tilesPerSecond;
+        var component = dir.Px3D() * Event.tilesPerSecond * 1.2f;
         if (UseFirstPersonControl) {
             var c2 = Quaternion.AngleAxis(firstPersonParent.transform.localEulerAngles.y, Vector3.up) * component;
             velocityThisFrame += c2;

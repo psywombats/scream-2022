@@ -372,6 +372,7 @@ public class LuaCutsceneContext : LuaContext {
         twin.gameObject.SetActive(true);
         var @event = MapManager.Instance.ActiveMap.GetEventNamed("backupHero", includeDisabled: true);
         @event.gameObject.SetActive(true);
+        Global.Instance.Data.SetSwitch("always_fp", true);
         var backupAva = @event.GetComponent<AvatarEvent>();
         var toCam = backupAva.FPSCam.GetCameraComponent();
         var fromCam = MapManager.Instance.Camera.GetCameraComponent();
@@ -383,8 +384,6 @@ public class LuaCutsceneContext : LuaContext {
             CoUtils.RunTween(fromCam.DOFieldOfView(toCam.fieldOfView, duration)),
         });
 
-        Global.Instance.Data.SetSwitch("always_fp", true);
-        
         AvatarEvent.Instance.gameObject.name = "hero (old)";
         MapManager.Instance.Avatar = backupAva;
         backupAva.name = "hero";

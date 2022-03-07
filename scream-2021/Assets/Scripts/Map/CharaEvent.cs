@@ -12,7 +12,7 @@ public class CharaEvent : MonoBehaviour {
 
     public const float HitThick = .4f;
     private const float DesaturationDuration = 0.5f;
-    private const float StepsPerSecond = 2.0f;
+    private const float StepsPerSecond = 3.0f;
 
     [SerializeField] public bool directionFix;
     [SerializeField] public bool useRelativeFix;
@@ -26,7 +26,7 @@ public class CharaEvent : MonoBehaviour {
     private Vector3 lastPosition;
     private Vector3 targetPx;
     private bool stepping;
-    private bool wasSteppingLastFrame;
+    private float lastMoveTime;
     private float moveTime;
 
     public MapEvent Event { get { return GetComponent<MapEvent>(); } }
@@ -106,6 +106,7 @@ public class CharaEvent : MonoBehaviour {
 
     public void LateUpdate() {
         if (!Event.IsSwitchEnabled) {
+            Emitter.Stop();
             return;
         }
         if (!Event.IsTracking && Event != AvatarEvent.Instance.Event && !directionFix) {
@@ -113,18 +114,23 @@ public class CharaEvent : MonoBehaviour {
         }
 
         bool steppingThisFrame = IsSteppingThisFrame();
+        if (steppingThisFrame) {
+            lastMoveTime = Time.time;
+        }
+        var wasSteppingLastFrame = (Time.time - lastMoveTime) < .05f;
         stepping = steppingThisFrame || wasSteppingLastFrame;
         if (steppingThisFrame && !wasSteppingLastFrame) {
             PlaySFX();
             moveTime += 1f / StepsPerSecond;
         } else if (Emitter != null && !steppingThisFrame && !wasSteppingLastFrame) {
-            moveTime = 0.0f;
-            Emitter.Stop();
+            if (moveTime > 0f) {
+                moveTime = 0.0f;
+                Emitter.Stop();
+            }
         } else {
-      PlaySFX();
+            PlaySFX();
             moveTime += Time.deltaTime;
         }
-        wasSteppingLastFrame = steppingThisFrame;
         lastPosition = transform.position;
 
         UpdateAppearance();
@@ -242,7 +248,7 @@ public class CharaEvent : MonoBehaviour {
         var old = lastPosition;
         old.y = 0;
         var delta = position - old;
-        return (delta.sqrMagnitude > 0.05 * Time.deltaTime && delta.sqrMagnitude < Map.UnitsPerTile)  
+        return (delta.sqrMagnitude > 0.02 * Time.deltaTime && delta.sqrMagnitude < Map.UnitsPerTile)  
             || Event.IsTracking;
     }
 
@@ -252,14 +258,7 @@ public class CharaEvent : MonoBehaviour {
         if (delta.sqrMagnitude / Time.deltaTime < .05) {
             return;
         }
-        var xcom = new Vector3(delta.x, 0, 0);
-        if (xcom != Vector3.zero && OrthoDirExtensions.DirectionOf3D(xcom) == Facing) {
-            return;
-        }
-        var zcom = new Vector3(0, 0, delta.z);
-        if (zcom != Vector3.zero && OrthoDirExtensions.DirectionOf3D(zcom) == Facing) {
-            return;
-        }
+
         Facing = OrthoDirExtensions.DirectionOf3D(delta);
     }
 }

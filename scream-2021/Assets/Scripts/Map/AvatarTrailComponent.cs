@@ -18,20 +18,22 @@ public class AvatarTrailComponent : MonoBehaviour {
     private Vector3 velocityAcc;
 
     protected void Update() {
+        var t = Time.deltaTime / .2f;
+        if (t > 1) t = 1;
         if (!Event.IsSwitchEnabled) return;
-        velocityAcc /= 2f;
+        velocityAcc *= (1f - t);
         var target = AvatarEvent.Instance.Event.PositionPx;
         var delta = target - Event.PositionPx;
 
         if (phengoDistance > 0 && GetComponent<CharaEvent>().IsVisible() && delta.sqrMagnitude < phengoDistance * phengoDistance) {
-            var v = -1 * delta.normalized * Event.tilesPerSecond;
-            velocityAcc += v / 2f;
+            var v = -1 * delta.normalized * Event.tilesPerSecond * 1.2f;
+            velocityAcc += v * t;
         } if (desiredDistance > 0 && delta.sqrMagnitude > desiredDistance * desiredDistance) {
-            var v = delta.normalized * Event.tilesPerSecond;
-            velocityAcc += v / 2f;
+            var v = delta.normalized * Event.tilesPerSecond * 1.2f;
+            velocityAcc += v * t;
         } else if (runawayDistance > 0 && delta.sqrMagnitude < runawayDistance * runawayDistance) {
-            var v = -1 * delta.normalized * Event.tilesPerSecond;
-            velocityAcc += v / 2f;
+            var v = -1 * delta.normalized * Event.tilesPerSecond * 1.2f;
+            velocityAcc += v * t;
         }
         
         
