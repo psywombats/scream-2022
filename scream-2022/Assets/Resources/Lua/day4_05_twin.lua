@@ -1,0 +1,8 @@
+faceOther('d4_twin1', 'hero')
+rotateTo('d4_twin1')
+wait(.6)
+setSprite('d4_twin1', 'tess_screen')
+speak("Tess", "Come.", 'd4_twin1')
+setSprite('d4_twin1', 'tess')
+walk('d4_twin1', 13, 'EAST')
+setSwitch('day4_05_twin', true)
