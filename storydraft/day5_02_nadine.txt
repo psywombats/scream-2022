@@ -1,6 +1,0 @@
-NADINE: "TWIN! TWIN!"
-TWIN: "What's up Nadine?"
-NADINE: "You won't believe it! Allen's finally coming to visit tomorrow!"
-TWIN: "That's great news."
-NADINE: "You wanna meet him? He's only two years older than me, and he's really handsome! You'll like him!"
-TWIN: "Haha, I wouldn't want to get in your way. You guys enjoy catching up."

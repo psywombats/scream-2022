@@ -1,7 +1,0 @@
-LIA: "I just wanted to say thank you, TWIN."
-LIA: "I've... never really fit in anywhere."
-LIA: "Since I found out I had caught N9, no one wanted anything to do with me."
-TWIN: "You must've been brave to endure that."
-LIA: "No, I wasn't. I'm a bit of a coward."
-TWIN: "You don't have to worry. We'll look after you."
-LIA: "I know you will. I feel safe here."

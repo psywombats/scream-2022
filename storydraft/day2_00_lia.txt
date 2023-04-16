@@ -1,7 +1,0 @@
-LIA: "Oh, uhm, you're awake."
-TESS: "I overslept. Sorry."
-LIA: "You were out really late, weren't you?"
-TESS: "Something like that."
-LIA: "I know we only just met yesterday, but uhm, if there's anything I can help with..."
-TESS: "Don't worry about. Just take it easy and focus on getting used to life here."
-
