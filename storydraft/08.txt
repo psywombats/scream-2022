@@ -1,0 +1,5 @@
+ARIEL: "Sumi?"
+SUMI: "Ahaha, you startled me. I was just admiring the lab."
+ARIEL: "You asked for a mirroring demo. Noemi and Dr. Kowalski are setting up Gazer right now. Are you ready?"
+SUMI: "Absolutely. I'm thrilled."
+ARIEL: "Then let's go."
