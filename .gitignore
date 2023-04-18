@@ -14,7 +14,6 @@ Thumbs.db
 
 # Unity garbage #
 #################
-solochara/Library
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
@@ -76,8 +75,8 @@ crashlytics-build.properties
 /[Aa]ssets/Plugins/FMOD/Cache/*
                     
 # Ignore bank files in the StreamingAssets folder.
-/[Aa]ssets/StreamingAssets/**/*.bank
-/[Aa]ssets/StreamingAssets/**/*.bank.meta
+scream-2022/[Aa]ssets/StreamingAssets/**/*.bank
+scream-2022/[Aa]ssets/StreamingAssets/**/*.bank.meta
                     
 # If the source bank files are kept outside of the StreamingAssets folder then these can be ignored.
 # Log files can be ignored.

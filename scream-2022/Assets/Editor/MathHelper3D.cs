@@ -39,38 +39,39 @@ public class MathHelper3D {
     public static Vector2[] AdjustZ(Vector2[] origUVs, Tilemap tileset, float lowerHeight, bool xMode) {
         if (tileset == null) {
             return origUVs;
-        }
+        }        
+
         float unit = 1.0f / tileset.size.y;
         if (xMode) {
             if (Mathf.Abs(Mathf.Round(lowerHeight) - lowerHeight) > 0.1f) {
                 return new Vector2[] {
                     origUVs[0],
-                    origUVs[1],
-                    new Vector2(origUVs[2].x, origUVs[2].y + unit / 2.0f),
+                    new Vector2(origUVs[1].x, origUVs[1].y + unit / 2.0f),
+                    origUVs[2],
                     new Vector2(origUVs[3].x, origUVs[3].y + unit / 2.0f),
                 };
             } else {
                 return new Vector2[] {
                     new Vector2(origUVs[0].x, origUVs[0].y - unit / 2.0f),
-                    new Vector2(origUVs[1].x, origUVs[1].y - unit / 2.0f),
-                    origUVs[2],
+                    origUVs[1],
+                    new Vector2(origUVs[2].x, origUVs[2].y - unit / 2.0f),
                     origUVs[3],
                 };
             }
         } else {
-            if (Math.Abs(Mathf.Round(lowerHeight) - lowerHeight) < 0.1f) {
+            if (Mathf.Abs(Mathf.Round(lowerHeight) - lowerHeight) > 0.1f) {
                 return new Vector2[] {
-                    new Vector2(origUVs[2].x, origUVs[2].y),
-                    new Vector2(origUVs[0].x, origUVs[0].y - unit / 2.0f),
-                    new Vector2(origUVs[3].x, origUVs[3].y),
-                    new Vector2(origUVs[1].x, origUVs[1].y - unit / 2.0f),
+                    new Vector2(origUVs[3].x, origUVs[3].y + unit / 2.0f),
+                    origUVs[2],
+                    origUVs[0],
+                    new Vector2(origUVs[1].x, origUVs[1].y + unit / 2.0f),
                 };
             } else {
                 return new Vector2[] {
-                    new Vector2(origUVs[2].x, origUVs[2].y + unit / 2.0f),
-                    new Vector2(origUVs[0].x, origUVs[0].y),
-                    new Vector2(origUVs[3].x, origUVs[3].y + unit / 2.0f),
-                    new Vector2(origUVs[1].x, origUVs[1].y),
+                    origUVs[3],
+                    new Vector2(origUVs[2].x, origUVs[2].y - unit / 2.0f),
+                    new Vector2(origUVs[0].x, origUVs[0].y - unit / 2.0f),
+                    origUVs[1],
                 };
             }
         }

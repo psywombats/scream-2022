@@ -7,7 +7,7 @@ using UnityEngine.Tilemaps;
 public class Map : MonoBehaviour {
 
     /// <summary>The number of pixels a tile takes up</summary>
-    public const int PxPerTile = 16;
+    public const int PxPerTile = 166;
     /// <summary>The number of pixels that make up a tile</summary>
     public const float UnitsPerTile = 1;
 
@@ -20,8 +20,6 @@ public class Map : MonoBehaviour {
     [Space]
     [SerializeField] private string bgmKey = null;
     [SerializeField] private List<string> settings = null;
-    [SerializeField] private float glitchRangeMin = 10;
-    [SerializeField] private float glitchRangeMax = 12f;
     [Space]
     [SerializeField] private float roominess = 0f;
     [SerializeField] public int matIndex = 0;
@@ -157,14 +155,6 @@ public class Map : MonoBehaviour {
             firstMap = false;
         } else {
             firstMap = false;
-            foreach (var setting in settings) {
-                MapOverlayUI.Instance.Setting.Show(setting);
-            }
-        }
-        if (glitchRangeMin > 0) {
-            var cam = AvatarEvent.Instance.FPSCam.GetCameraComponent().GetComponent<DepthCamComponent>();
-            cam.rangeMin = glitchRangeMin;
-            cam.rangeMax = glitchRangeMax;
         }
 
         FMODUnity.RuntimeManager.StudioSystem.setParameterByName("RoomSize", roominess);

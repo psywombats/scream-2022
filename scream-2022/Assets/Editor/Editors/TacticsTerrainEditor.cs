@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -11,6 +10,8 @@ using Random = UnityEngine.Random;
 public class TacticsTerrainEditor : Editor {
 
     private static readonly string GenericPrefabPath = "Assets/Resources/Prefabs/MapEvent/MapEvent3D.prefab";
+
+    private static float tilesetScale = .096f;
 
     private enum EditMode {
         None,
@@ -35,7 +36,7 @@ public class TacticsTerrainEditor : Editor {
     private List<int> tris;
 
     private List<TerrainQuad> selectedQuads = new List<TerrainQuad>();
-    private TerrainQuad primarySelection;
+    private TerrainQuad primarySelection, dragStartQuad;
     private Vector3 paintingNormal;
     private float selectedHeight;
     private Vector2 selectionSize = new Vector2Int(1, 1);
@@ -107,10 +108,10 @@ public class TacticsTerrainEditor : Editor {
                 EditorGUILayout.BeginHorizontal();
 
                 for (int x = 0; x < tileset.size.x; x += 1) {
-                    Rect selectRect = EditorGUILayout.BeginHorizontal(GUILayout.Width(Map.PxPerTile), GUILayout.Height(Map.PxPerTile));
+                    Rect selectRect = EditorGUILayout.BeginHorizontal(GUILayout.Width(Map.PxPerTile * tilesetScale), GUILayout.Height(Map.PxPerTile * tilesetScale));
                     Tile tile = tileset.GetTile<Tile>(new Vector3Int(x, y, 0));
 
-                    GUILayout.Box("", style, GUILayout.Width(Map.PxPerTile), GUILayout.Height(Map.PxPerTile));
+                    GUILayout.Box("", style, GUILayout.Width(Map.PxPerTile * tilesetScale), GUILayout.Height(Map.PxPerTile * tilesetScale));
                     Rect r = GUILayoutUtility.GetLastRect();
 
                     if (r.Contains(Event.current.mousePosition)) {
@@ -137,9 +138,11 @@ public class TacticsTerrainEditor : Editor {
                         }
                     }
 
-                    Rect rect = new Rect(tile.sprite.uv[0].x, tile.sprite.uv[3].y,
-                        tile.sprite.uv[3].x - tile.sprite.uv[0].x,
-                        tile.sprite.uv[0].y - tile.sprite.uv[3].y);
+                    Rect rect = new Rect(
+                        tile.sprite.uv[2].x, 
+                        tile.sprite.uv[3].y,
+                        tile.sprite.uv[3].x - tile.sprite.uv[2].x,
+                        tile.sprite.uv[2].y - tile.sprite.uv[3].y);
 
                     GUI.DrawTextureWithTexCoords(r, tile.sprite.texture, rect, true);
                     if (r.Contains(Event.current.mousePosition)) {
@@ -218,6 +221,7 @@ public class TacticsTerrainEditor : Editor {
                     case SelectionTool.Paint:
                         if (selectedQuads.Count > 0) {
                             ConsumeEvent(controlId);
+                            dragStartQuad = GetSelectedQuad();
                             PaintTileIfNeeded();
                             mode = EditMode.Painting;
                             paintingNormal = primarySelection.normal;
@@ -357,7 +361,7 @@ public class TacticsTerrainEditor : Editor {
                                         paletteBuffer[(int)(paletteBufferSize.x * (2.0f * (y - y1)) + (z - z1))] = at.tile;
                                     }
                                 }
-                            } else if (x1 != x2 && y1 != y2) {
+                            } else if (y1 != y2 && (x1 != x2 || z1 == z2 )) {
                                 paletteBufferSize = new Vector2Int((int)(x2 - x1 + 1), (int)((y2 - y1 + 0.5f) * 2.0f));
                                 paletteBuffer = new Tile[paletteBufferSize.x * paletteBufferSize.y];
                                 for (float x = x1; x <= x2; x += 1.0f) {
@@ -525,20 +529,20 @@ public class TacticsTerrainEditor : Editor {
         TacticsTerrainMesh terrain = (TacticsTerrainMesh)target;
         foreach (TerrainQuad quad in selectedQuads) {
             if (quad.normal.y > 0.0f) {
-                int originX = (int)primarySelection.pos.x - Mathf.FloorToInt(Mathf.RoundToInt(selectionSize.x) / 2.0f);
-                int originY = (int)primarySelection.pos.z - Mathf.FloorToInt(Mathf.RoundToInt(selectionSize.y) / 2.0f);
+                int originX = (int)dragStartQuad.pos.x - Mathf.CeilToInt((int)selectionSize.x / 2.0f) - 1;
+                int originY = (int)dragStartQuad.pos.z - Mathf.CeilToInt((int)selectionSize.y / 2.0f);
                 Tile tile = TileForSelection((int)(quad.pos.x - originX), (int)(quad.pos.z - originY));
                 UpdateTile(quad, tile);
             } else {
                 Tile tile;
                 if (quad.normal.x != 0.0f) {
-                    int originX = (int)primarySelection.pos.z - Mathf.FloorToInt(Mathf.RoundToInt(selectionSize.x) / 2.0f);
-                    int originY = (int)primarySelection.pos.y - Mathf.FloorToInt(Mathf.RoundToInt(selectionSize.y) / 2.0f);
-                    tile = TileForSelection((int)(quad.pos.z - originX), (int)(quad.pos.y - originY));
+                    int originX = (int)dragStartQuad.pos.z - Mathf.CeilToInt((int)selectionSize.x / 2.0f) - 1;
+                    float originY = dragStartQuad.pos.y - Mathf.CeilToInt((int)selectionSize.y / 2.0f) - 1;
+                    tile = TileForSelection((int)(quad.pos.z - originX), (int)((quad.pos.y - originY) * 2));
                 } else {
-                    int originX = (int)primarySelection.pos.x - Mathf.FloorToInt(Mathf.RoundToInt(selectionSize.x) / 2.0f);
-                    int originY = (int)primarySelection.pos.y - Mathf.FloorToInt(Mathf.RoundToInt(selectionSize.y) / 2.0f);
-                    tile = TileForSelection((int)(quad.pos.x - originX), (int)(quad.pos.y - originY));
+                    int originX = (int)dragStartQuad.pos.x - Mathf.CeilToInt((int)selectionSize.x / 2.0f) - 1;
+                    float originY = dragStartQuad.pos.y - Mathf.CeilToInt((int)selectionSize.y / 2.0f) - 1;
+                    tile = TileForSelection((int)(quad.pos.x - originX), (int)((quad.pos.y - originY) * 2));
                 }
                 if (wraparoundPaintMode) {
                     foreach (OrthoDir dir in Enum.GetValues(typeof(OrthoDir))) {

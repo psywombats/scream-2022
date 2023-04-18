@@ -13,7 +13,10 @@ internal sealed class SpriteImporter : AssetPostprocessor {
         var assetName = path.Substring(path.LastIndexOf("/") + 1, path.LastIndexOf(".") - path.LastIndexOf("/") - 1);
 
         if (path.Contains("Sprites") || path.Contains("UI") || path.Contains("tilesets")) {
-            importer.filterMode = FilterMode.Point;
+            if (!path.Contains("tilesets")) {
+                importer.filterMode = FilterMode.Point;
+            }
+            
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.textureType = TextureImporterType.Sprite;
 

@@ -44,8 +44,8 @@ public class TerrainQuad {
 
         Debug.Assert(tile != null);
         Vector2[] spriteUVs = tile.sprite.uv;
-        var fudgeX = .002f;
-        var fudgeY = .002f;
+        var fudgeX = .00f;
+        var fudgeY = .00f;
         spriteUVs[0] += new Vector2(fudgeX, -fudgeY);
         spriteUVs[1] += new Vector2(-fudgeX, -fudgeY);
         spriteUVs[2] += new Vector2(fudgeX, fudgeY);
@@ -55,11 +55,12 @@ public class TerrainQuad {
         }
 
         ourUVs = new Vector2[4] {
-            spriteUVs[2],
-            spriteUVs[0],
-            spriteUVs[3],
-            spriteUVs[1],
-        };
+                spriteUVs[3],
+                spriteUVs[0],
+                spriteUVs[1],
+                spriteUVs[2],
+            };
+
         uvs.AddRange(ourUVs);
 
         tris.Add(i);
@@ -77,11 +78,11 @@ public class TerrainQuad {
         }
 
         ourUVs = new Vector2[4] {
-            spriteUVs[2],
-            spriteUVs[0],
-            spriteUVs[3],
-            spriteUVs[1],
-        };
+                spriteUVs[3],
+                spriteUVs[0],
+                spriteUVs[1],
+                spriteUVs[2],
+            };
     }
 
     public void CopyUVs(Vector2[] uvs) {
