@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 [RequireComponent(typeof(MapEvent))]
 [RequireComponent(typeof(Rigidbody))]
@@ -11,7 +13,6 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     public static AvatarEvent Instance => MapManager.Instance.Avatar;
 
     [SerializeField] private GameObject firstPersonParent = null;
-    [SerializeField] private GameObject thirdPersonParent = null;
     [SerializeField] private MapCamera fpsCam = null;
     [SerializeField] private bool fpsOverride = false;
     [Space]
@@ -47,7 +48,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     public bool DisableHeightCrossing { get; set; }
 
     private Vector3 velocityThisFrame;
-    private Vector3 lastMousePos;
+    private Vector2Control lastMousePos;
     private Vector2Int lastLoc;
     private Vector3 rotation;
     private Map lastMap;
@@ -70,14 +71,13 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         lastLoc = Event.Location;
 
         firstPersonParent.SetActive(UseFirstPersonControl);
-        thirdPersonParent.SetActive(!UseFirstPersonControl);
         if (UseFirstPersonControl != fpLastFrame) {
             //MapManager.Instance.Camera = null;
         }
         if (UseFirstPersonControl) {
             HandleFPC();
         }
-        lastMousePos = Input.mousePosition;
+        lastMousePos = Mouse.current.position;
 
         if (velocityThisFrame != Vector3.zero) {
             var xcom = new Vector3(velocityThisFrame.x, 0, 0);
@@ -280,7 +280,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         if (!Input.mousePresent) {
             return;
         }
-        if (Input.mousePosition != lastMousePos) {
+        if (Mouse.current.position != lastMousePos) {
             mouseLastMovedAt = Time.time;
         }
         if (Time.time - mouseLastMovedAt > .5) {

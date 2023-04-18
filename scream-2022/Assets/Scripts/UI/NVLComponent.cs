@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ADVComponent : MonoBehaviour {
+public class NVLComponent : MonoBehaviour {
 
     private static float bgTime = 0.5f;
 
@@ -18,7 +18,6 @@ public class ADVComponent : MonoBehaviour {
     public LineAutotyper text;
     public Text nameText;
     public CanvasGroup fader;
-    public Image background;
 
     public Dictionary<SpeakerData, string> speakerNames = new Dictionary<SpeakerData, string>();
 
@@ -30,7 +29,6 @@ public class ADVComponent : MonoBehaviour {
     public IEnumerator ShowRoutine(bool dontClear = false) {
         backer.Hide();
         fader.alpha = 0.0f;
-        background.color = new Color(1, 1, 1, 0);
         if (!dontClear)
         {
             foreach (var portrait in GetPortraits())
@@ -38,8 +36,7 @@ public class ADVComponent : MonoBehaviour {
                 portrait.Clear();
             }
         }
-
-        StartCoroutine(CoUtils.RunTween(background.DOColor(new Color(1, 1, 1, 1), bgTime)));
+        
         yield return backer.ShowRoutine();
         text.Clear();
         Wipe();
@@ -56,19 +53,8 @@ public class ADVComponent : MonoBehaviour {
         routines.Clear();
         routines.Add(backer.HideRoutine());
         routines.Add(CoUtils.RunTween(fader.DOFade(0.0f, backer.duration)));
-        routines.Add(CoUtils.RunTween(background.DOColor(new Color(1, 1, 1, 0), bgTime)));
         yield return CoUtils.RunParallel(routines.ToArray(), this);
         Wipe();
-    }
-
-    public IEnumerator SetBGRoutine(Sprite bg) {
-        if (background.color.a > 0) {
-            yield return StartCoroutine(CoUtils.RunTween(background.DOColor(new Color(0.0f, 0.0f, 0.0f, 1.0f), bgTime)));
-            background.overrideSprite = bg;
-            yield return StartCoroutine(CoUtils.RunTween(background.DOColor(new Color(1.0f, 1.0f, 1.0f, 1.0f), bgTime)));
-        } else {
-            background.overrideSprite = bg;
-        }
     }
 
     public IEnumerator EnterRoutine(SpeakerData speaker, string slot, bool alt = false) {

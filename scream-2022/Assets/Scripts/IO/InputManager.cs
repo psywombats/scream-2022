@@ -35,7 +35,13 @@ public class InputManager : SingletonBehavior {
     private HashSet<Command> axesDownLastFrame = new HashSet<Command>();
 
     private bool endProcessing;
-    
+
+    public void Awake() {
+        foreach (Command cmd in Enum.GetValues(typeof(Command))) {
+            SetDefaultKeybindsForCommand(cmd);
+        }
+    }
+
     public void Update() {
 
         if (actions.Count == 0) {

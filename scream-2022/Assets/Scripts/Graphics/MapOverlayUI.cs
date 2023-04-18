@@ -20,5 +20,5 @@ public class MapOverlayUI : MonoBehaviour {
         }
     }
 
-    public ADVComponent adv;
+    public NVLComponent adv;
 }
