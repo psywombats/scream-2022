@@ -20,15 +20,5 @@ public class MapOverlayUI : MonoBehaviour {
         }
     }
 
-    public SpeakboxComponent Textbox;
-    public IntertitleController Intertitle;
-    public SettingBox Setting;
-    public NotebookBox Notes;
-    public CardController Cards;
-    public KeywordController Keywords;
-    public CalDeathController Pupils;
-    public CanvasGroup endgamer;
-    public CanvasGroup subendgamer;
-    public ControlController controls;
-    public ClippyController clippy;
+    public ADVComponent adv;
 }

@@ -1,5 +1,4 @@
-﻿using DG.Tweening;
-using MoonSharp.Interpreter;
+﻿using MoonSharp.Interpreter;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +10,6 @@ public class LuaMapEvent {
 
     private MapEvent mapEvent;
     private Dictionary<string, DynValue> values;
-
     
     public LuaMapEvent(MapEvent mapEvent) {
         this.mapEvent = mapEvent;
@@ -20,18 +18,14 @@ public class LuaMapEvent {
 
     // meant to be called with the key/value of a lualike property on a Tiled object
     // accepts nil and zero-length as no-ops
+    
     public void Set(string name, string luaChunk) {
         if (luaChunk != null && luaChunk.Length > 0) {
             var context = Global.Instance.Maps.Lua;
-            try {
-                values[name] = context.Load(luaChunk);
-            } catch (Exception e) {
-                Debug.LogError("Bad lua from " + mapEvent.name + ": " + luaChunk + "\n\n" + e);
-            }
-            
+            values[name] = context.Load(luaChunk);
         }
     }
-  
+    
     public void Run(string eventName, bool canBlock = true) {
         if (values.ContainsKey(eventName) && values[eventName] != null) {
             var context = Global.Instance.Maps.Lua;
@@ -39,7 +33,7 @@ public class LuaMapEvent {
             Global.Instance.StartCoroutine(script.RunRoutine(canBlock));
         }
     }
-  
+    
     public DynValue Evaluate(string propertyName) {
         if (!values.ContainsKey(propertyName)) {
             return DynValue.Nil;
@@ -48,7 +42,7 @@ public class LuaMapEvent {
             return context.Evaluate(values[propertyName]);
         }
     }
-  
+    
     public bool EvaluateBool(string propertyName, bool defaultValue = false) {
         if (!values.ContainsKey(propertyName)) {
             return defaultValue;

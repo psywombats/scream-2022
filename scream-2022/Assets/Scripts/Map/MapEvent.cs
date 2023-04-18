@@ -22,7 +22,6 @@ public class MapEvent : MonoBehaviour {
     [Header("Movement")]
     [SerializeField] public float tilesPerSecond = 2.0f;
     [SerializeField] public bool passable = true;
-    [SerializeField] public bool requiresDir = false;
     [SerializeField] public OrthoDir requiredDir = OrthoDir.North;
     [Space]
     [Header("Lua scripting")]
@@ -33,18 +32,6 @@ public class MapEvent : MonoBehaviour {
   
     public bool IsTracking { get; private set; }
     private float lastCollided;
-
-    private bool checkedChara;
-    private CharaEvent chara;
-    public CharaEvent Chara {
-        get {
-            if (!checkedChara) {
-                checkedChara = true;
-                chara = GetComponent<CharaEvent>();
-            }
-            return chara;
-        }
-    }
     
     public Vector3 PositionPx {
         get { return transform.localPosition; }
@@ -175,32 +162,15 @@ public class MapEvent : MonoBehaviour {
     }
 
     public bool ContainsPosition(Vector3 pos) {
-        if (Chara != null) {
-            return Vector3.Distance(
-                new Vector3(pos.x, 0, pos.z),
-                new Vector3(PositionPx.x, 0, PositionPx.z))
-            <= .62f;
-        } else {
-            var p1 = PositionPx + new Vector3(-.5f, 0 , -.5f);
-            var p2 = p1 + new Vector3(size.x * Map.UnitsPerTile, 0, size.y * Map.UnitsPerTile);
-            var res =   pos.x >= p1.x && /*pos.y >= p1.y &&*/ pos.z >= p1.z &&
-                        pos.x <= p2.x && /*pos.y <= p2.y &&*/ pos.z <= p2.z;
-            if (res == true)
-                return true;
-            else return false;
-        }
-
+        var p1 = PositionPx + new Vector3(-.5f, 0 , -.5f);
+        var p2 = p1 + new Vector3(size.x * Map.UnitsPerTile, 0, size.y * Map.UnitsPerTile);
+        var res =   pos.x >= p1.x && /*pos.y >= p1.y &&*/ pos.z >= p1.z &&
+                    pos.x <= p2.x && /*pos.y <= p2.y &&*/ pos.z <= p2.z;
+        if (res == true)
+            return true;
+        else return false;
     }
-
-    public Vector3 GetTextPos() {
-        var chara = GetComponent<CharaEvent>();
-        if (chara != null) {
-            return chara.Renderer.transform.position + new Vector3(0, 2f, 0);
-        } else {
-            return PositionPx + new Vector3(0, .75f, 0);
-        }
-    }
-
+    
     public void SetLocation(Vector2Int location) {
         parent = null;
         Location = location;
@@ -260,9 +230,6 @@ public class MapEvent : MonoBehaviour {
         return LinearStepRoutine(TileToWorldCoords(target));
     }
     public IEnumerator LinearStepRoutine(Vector3 target) {
-        if (Chara != null) {
-            Chara.Facing = DirectionTo(target);
-        }
         IsTracking = true;
         var elapsed = 0f;
         var goal = (target - transform.localPosition).magnitude / tilesPerSecond * 2f * 1.2f;
@@ -313,9 +280,6 @@ public class MapEvent : MonoBehaviour {
         if (luaOnCollide.Length == 0) {
             return;
         }
-        if (requiresDir && avatar.Chara.Facing != requiredDir) {
-            return;
-        }
         if (Time.time - lastCollided < .5f) {
             return;
         }
@@ -326,9 +290,6 @@ public class MapEvent : MonoBehaviour {
     // called when the avatar stumbles into us
     // facing us if impassable, on top of us if passable
     private void OnInteract(AvatarEvent avatar) {
-        if (requiresDir && avatar.FPFacing() != requiredDir) {
-            return;
-        }
         LuaObject.Run(PropertyInteract);
     }
 

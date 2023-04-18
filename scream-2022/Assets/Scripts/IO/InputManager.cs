@@ -2,96 +2,96 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
+using UnityEngine.InputSystem;
 
 public class InputManager : SingletonBehavior {
 
     public static InputManager Instance => Global.Instance.Input;
 
     public enum Command {
-        StrafeLeft,
-        StrafeRight,
+        Primary,
+        Secondary,
         Left,
         Right,
         Up,
         Down,
-        Confirm,
-        Cancel,
         Menu,
-        Debug,
     };
 
     public enum Event {
         Down,
         Up,
         Hold,
-        Repeat,
     };
 
-    private static readonly float KeyRepeatSeconds = 0.5f;
+    private Dictionary<Command, InputAction> actions = new Dictionary<Command, InputAction>();
 
-    private Dictionary<Command, List<KeyCode>> keybinds;
-    private List<IInputListener> listeners;
-    private List<IInputListener> disabledListeners;
-    private Dictionary<Command, float> holdStartTimes;
-    private Dictionary<string, IInputListener> anonymousListeners;
+    private static readonly float KeyRepeatSeconds = 0.3f;
 
-    public void Awake() {
-        keybinds = new Dictionary<Command, List<KeyCode>>();
-        keybinds[Command.StrafeRight] = new List<KeyCode>(new[] { KeyCode.D });
-        keybinds[Command.StrafeLeft] = new List<KeyCode>(new[] { KeyCode.A });
-        keybinds[Command.Left] = new List<KeyCode>(new[] { KeyCode.LeftArrow, KeyCode.Keypad4 });
-        keybinds[Command.Left] = new List<KeyCode>(new[] { KeyCode.LeftArrow, KeyCode.Keypad4 });
-        keybinds[Command.Right] = new List<KeyCode>(new[] { KeyCode.RightArrow, KeyCode.Keypad6 });
-        keybinds[Command.Up] = new List<KeyCode>(new[] { KeyCode.UpArrow, KeyCode.W, KeyCode.Keypad8 });
-        keybinds[Command.Down] = new List<KeyCode>(new[] { KeyCode.DownArrow, KeyCode.S, KeyCode.Keypad2 });
-        keybinds[Command.Confirm] = new List<KeyCode>(new[] { KeyCode.Space, KeyCode.Z, KeyCode.Return, KeyCode.E });
-        keybinds[Command.Cancel] = new List<KeyCode>(new[] { KeyCode.Escape, KeyCode.B, KeyCode.X });
-        keybinds[Command.Debug] = new List<KeyCode>(new[] { KeyCode.F9 });
-        keybinds[Command.Menu] = new List<KeyCode>(new[] { KeyCode.Escape, KeyCode.C, KeyCode.Backspace, KeyCode.Tab });
+    private List<IInputListener> listeners = new List<IInputListener>();
+    private Dictionary<Command, float> holdStartTimes = new Dictionary<Command, float>();
+    private Dictionary<string, IInputListener> anonymousListeners = new Dictionary<string, IInputListener>();
+    private HashSet<Command> axesDownLastFrame = new HashSet<Command>();
 
-        listeners = new List<IInputListener>();
-        disabledListeners = new List<IInputListener>();
+    private bool endProcessing;
+    
+    public void Update() {
 
-        listeners = new List<IInputListener>();
-        holdStartTimes = new Dictionary<Command, float>();
+        if (actions.Count == 0) {
+            return;
+        }
 
-        anonymousListeners = new Dictionary<string, IInputListener>();
+        foreach (Command command in Enum.GetValues(typeof(Command))) {
+
+            var up = false;
+            var down = false;
+            var held = false;
+
+            var action = actions[command];
+            if (action.WasPerformedThisFrame()) {
+                down = true;
+                holdStartTimes[command] = Time.time;
+            }
+            if (!action.IsPressed() && holdStartTimes.ContainsKey(command)) {
+                up = true;
+                holdStartTimes.Remove(command);
+            }
+            if (action.IsPressed()) {
+                held = true;
+            }
+
+            var listener = PeekListener();
+            if (listener == null) {
+                break;
+            }
+            endProcessing = false;
+
+            if (down) {
+                listener.OnCommand(command, Event.Down);
+                if (endProcessing) {
+                    break;
+                }
+            }
+            if (up) {
+                listener.OnCommand(command, Event.Up);
+                if (endProcessing) {
+                    break;
+                }
+            }
+            if (held && holdStartTimes.ContainsKey(command)) {
+                listener.OnCommand(command, Event.Hold);
+                if (Time.time - holdStartTimes[command] > KeyRepeatSeconds) {
+                    endProcessing |= listener.OnCommand(command, Event.Down);
+                    holdStartTimes[command] = Time.time - KeyRepeatSeconds / 2f;
+                }
+            }
+        }
     }
 
-    public void Update() {
-        var listeners = new List<IInputListener>();
-        listeners.AddRange(this.listeners);
-
-        foreach (var listener in listeners) {
-            if (disabledListeners.Contains(listener)) {
-                continue;
-            }
-
-            bool endProcessing = false; // ew.
-            foreach (Command command in System.Enum.GetValues(typeof(Command))) {
-                foreach (KeyCode code in keybinds[command]) {
-                    if (Input.GetKeyDown(code)) {
-                        endProcessing |= listener.OnCommand(command, Event.Down);
-                    }
-                    if (Input.GetKeyUp(code)) {
-                        endProcessing |= listener.OnCommand(command, Event.Up);
-                        holdStartTimes.Remove(command);
-                    }
-                    if (Input.GetKey(code)) {
-                        if (!holdStartTimes.ContainsKey(command)) {
-                            holdStartTimes[command] = Time.time;
-                        }
-                        endProcessing |= listener.OnCommand(command, Event.Hold);
-                        if (Time.time - holdStartTimes[command] > KeyRepeatSeconds) {
-                            endProcessing |= listener.OnCommand(command, Event.Repeat);
-                        }
-                    }
-                    if (endProcessing) break;
-                }
-                if (endProcessing) break;
-            }
-            if (endProcessing) break;
-        }
+    public void EndProcessing() {
+        holdStartTimes.Clear();
+        endProcessing = true;
     }
 
     public void PushListener(string id, Func<Command, Event, bool> responder) {
@@ -110,20 +110,81 @@ public class InputManager : SingletonBehavior {
         listeners.Remove(listener);
     }
 
-    public void DisableListener(IInputListener listener) {
-        disabledListeners.Add(listener);
+    public IInputListener PeekListener() {
+        return listeners.Count > 0 ? listeners[0] : null;
     }
 
-    public void EnableListener(IInputListener listener) {
-        if (disabledListeners.Contains(listener)) {
-            disabledListeners.Remove(listener);
+    public bool IsFastKeyDown() {
+        return actions[Command.Primary].IsPressed();
+    }
+
+    public void SetDefaultKeybindsForCommand(Command command) {
+        InputAction action = new InputAction(name: command.ToString(), type: InputActionType.Value);
+        switch (command) {
+            case Command.Left:
+                action.AddBinding(Keyboard.current.numpad4Key);
+                action.AddBinding(Keyboard.current.leftArrowKey);
+                action.AddBinding(Keyboard.current.aKey);
+                action.AddBinding("<Gamepad>/leftStick/left");
+                action.AddBinding("<Gamepad>/dpad/left");
+                break;
+            case Command.Right:
+                action.AddBinding(Keyboard.current.numpad6Key);
+                action.AddBinding(Keyboard.current.rightArrowKey);
+                action.AddBinding(Keyboard.current.dKey);
+                action.AddBinding("<Gamepad>/leftStick/right");
+                action.AddBinding("<Gamepad>/dpad/right");
+                break;
+            case Command.Up:
+                action.AddBinding(Keyboard.current.numpad8Key);
+                action.AddBinding(Keyboard.current.upArrowKey);
+                action.AddBinding(Keyboard.current.wKey);
+                action.AddBinding("<Gamepad>/leftStick/up");
+                action.AddBinding("<Gamepad>/dpad/up");
+                break;
+            case Command.Down:
+                action.AddBinding(Keyboard.current.numpad2Key);
+                action.AddBinding(Keyboard.current.downArrowKey);
+                action.AddBinding(Keyboard.current.sKey);
+                action.AddBinding("<Gamepad>/leftStick/down");
+                action.AddBinding("<Gamepad>/dpad/down");
+                break;
+            case Command.Primary:
+                action.AddBinding(Keyboard.current.spaceKey);
+                action.AddBinding(Keyboard.current.enterKey);
+                action.AddBinding(Keyboard.current.zKey);
+                action.AddBinding("<Gamepad>/buttonSouth");
+                break;
+            case Command.Secondary:
+                action.AddBinding(Keyboard.current.bKey);
+                action.AddBinding(Keyboard.current.xKey);
+                action.AddBinding(Keyboard.current.ctrlKey);
+                action.AddBinding(Keyboard.current.rightShiftKey);
+                action.AddBinding("<Gamepad>/buttonEast");
+                break;
+            case Command.Menu:
+                action.AddBinding(Keyboard.current.escapeKey);
+                action.AddBinding(Keyboard.current.cKey);
+                action.AddBinding(Keyboard.current.backspaceKey);
+                action.AddBinding("<Gamepad>/buttonNorth");
+                action.AddBinding("<Gamepad>/buttonWest");
+                break;
         }
+        action.Enable();
+        actions[command] = action;
+    }
+
+    public override void GameReset() {
+        base.GameReset();
+        listeners.Clear();
+        anonymousListeners.Clear();
     }
 
     public IEnumerator ConfirmRoutine() {
         var id = "confirm";
         var done = false;
-        PushListener(id, (command, type) => {
+        PushListener(id, (command, type) =>
+        {
             if (type == Event.Down) {
                 RemoveListener(id);
                 done = true;
@@ -132,4 +193,25 @@ public class InputManager : SingletonBehavior {
         });
         while (!done) yield return null;
     }
+
+    public Task ConfirmAsync() {
+        var id = "confirm";
+        var source = new TaskCompletionSource<bool>();
+        PushListener(id, (command, type) =>
+        {
+            if (type == Event.Down) {
+                RemoveListener(id);
+                source.SetResult(true);
+            }
+            return true;
+        });
+        return source.Task;
+    }
+
+    public string GetBindingForCommand(Command command) {
+        var action = actions[command];
+        return action.bindings[0].ToDisplayString();
+    }
+
+    public InputAction GetActionForCommand(Command command) => actions[command];
 }

@@ -7,7 +7,7 @@ public class ExpanderComponent : MonoBehaviour {
     [SerializeField] private GameObject contents = null;
 
     [SerializeField] private int stepSize = 16;
-    [SerializeField] private float duration = 0.2f;
+    [SerializeField] public float duration = 0.2f;
 
     private RectTransform rectTransform;
     public RectTransform RectTransform {

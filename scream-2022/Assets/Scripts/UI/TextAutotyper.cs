@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using TMPro;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class TextAutotyper : MonoBehaviour, IInputListener {
 
-    [SerializeField] public TextMeshProUGUI textbox;
+    [SerializeField] public Text textbox;
     [SerializeField] public float charsPerSecond = 120f;
     [SerializeField] protected GameObject advanceArrow;
     [SerializeField] protected bool speedUpWhenHurried;
+
+    public bool mode2 = false;
 
     public int LinesTyped { get; private set; } = 0;
 
@@ -17,28 +18,24 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
     protected bool hurried;
     protected bool confirmed;
 
-    protected virtual void Start() {
-        advanceArrow.SetActive(false);
+    public virtual void Clear() {
+        textbox.text = "";
     }
 
     public bool OnCommand(InputManager.Command command, InputManager.Event eventType) {
         switch (eventType) {
             case InputManager.Event.Hold:
-                if (command == InputManager.Command.Confirm) {
+                if (command == InputManager.Command.Primary) {
                     hurried = true;
                 }
                 break;
             case InputManager.Event.Down:
-                if (command == InputManager.Command.Confirm) {
+                if (command == InputManager.Command.Primary) {
                     confirmed = true;
                 }
                 break;
         }
         return true;
-    }
-
-    public IEnumerator AutotypeRoutine() {
-        return TypeRoutine(textbox.text, false);
     }
 
     public IEnumerator TypeRoutine(string text, bool waitForConfirm = true) {
@@ -47,17 +44,19 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
         float elapsed = 0.0f;
         float total = (text.Length - typingStartIndex) / charsPerSecond;
         textbox.GetComponent<CanvasGroup>().alpha = 1.0f;
-        while (elapsed <= total && textbox) {
+        while (elapsed <= total) {
             elapsed += Time.deltaTime;
             int charsToShow = Mathf.FloorToInt(elapsed * charsPerSecond) + typingStartIndex;
             int cutoff = charsToShow > text.Length ? text.Length : charsToShow;
             textbox.text = text.Substring(0, cutoff);
-            textbox.text += "<color=#aa000000>";
-            textbox.text += text.Substring(cutoff);
-            textbox.text += "</color>";
+            if (!mode2) {
+                textbox.text += "<color=#aa000000>";
+                textbox.text += text.Substring(cutoff);
+                textbox.text += "</color>";
+            }
             yield return null;
 
-            elapsed += Time.deltaTime * Global.Instance.SystemData.SettingTextSpeed.Value;
+            elapsed += Time.deltaTime;
             if (hurried) {
                 hurried = false;
                 if (speedUpWhenHurried) {
@@ -72,7 +71,6 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
             }
         }
         textbox.text = text;
-        AudioManager.Instance.StopSFX();
 
         if (waitForConfirm) {
             confirmed = false;

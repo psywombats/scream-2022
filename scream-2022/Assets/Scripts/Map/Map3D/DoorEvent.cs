@@ -41,9 +41,6 @@ public class DoorEvent : MonoBehaviour {
     }
 
     public virtual IEnumerator TeleportRoutine(AvatarEvent avatar, bool force = false) {
-        if (avatar.GetComponent<CharaEvent>().Facing != dir && !avatar.UseFirstPersonControl) {
-            yield break;
-        }
         if (avatar.UseFirstPersonControl && AvatarEvent.Instance.FPFacing() != dir) {
             yield break;
         }
@@ -79,11 +76,10 @@ public class DoorEvent : MonoBehaviour {
         Vector3 targetPx = avatar.Event.PositionPx + dir.Px3D();
         yield return CoUtils.RunParallel(new IEnumerator[] {
             avatar.GetComponent<MapEvent>().LinearStepRoutine(targetPx),
-            avatar.GetComponent<CharaEvent>().FadeRoutine(1.0f / avatar.GetComponent<MapEvent>().tilesPerSecond * 0.75f)
         }, this);
         yield return CoUtils.Wait(animator.frameDuration * 2);
         yield return Global.Instance.Maps.TeleportRoutine(mapName, targetEventName);
-        yield return avatar.GetComponent<MapEvent>().LinearStepRoutine(avatar.Event.PositionPx + avatar.Chara.Facing.Px3D() * .2f);
+        yield return avatar.GetComponent<MapEvent>().LinearStepRoutine(avatar.Event.PositionPx + avatar.FPFacing().Px3D() * .2f);
         avatar.UnpauseInput();
         avatar.CancelCollisions = false;
     }

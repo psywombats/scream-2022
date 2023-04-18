@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CharaEvent))]
 [RequireComponent(typeof(MapEvent))]
 [RequireComponent(typeof(Rigidbody))]
 public class AvatarEvent : MonoBehaviour, IInputListener {
@@ -24,9 +23,6 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     private MapEvent @event;
     public MapEvent Event => @event ?? (@event = GetComponent<MapEvent>());
-
-    private CharaEvent chara;
-    public CharaEvent Chara => chara ?? (chara = GetComponent<CharaEvent>());
 
     private Rigidbody body;
     public Rigidbody Body => body ?? (body = GetComponent<Rigidbody>());
@@ -87,9 +83,6 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
             var xcom = new Vector3(velocityThisFrame.x, 0, 0);
             var ycom = new Vector3(0, 0, velocityThisFrame.z);
 
-            // TODO: don't switch directions if facing is okay
-            Chara.Facing = OrthoDirExtensions.DirectionOf3D(velocityThisFrame);
-
             CheckPhysicsComponent(xcom, ycom);
             CheckPhysicsComponent(ycom, xcom);
         }
@@ -120,12 +113,6 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
                     case InputManager.Command.Down:
                         TryStep(OrthoDir.South);
                         return false;
-                    case InputManager.Command.StrafeRight:
-                        TryStep(OrthoDir.East);
-                        return false;
-                    case InputManager.Command.StrafeLeft:
-                        TryStep(OrthoDir.West);
-                        return false;
                     case InputManager.Command.Right:
                         if (UseFirstPersonControl) {
                             TryTurn(1);
@@ -145,14 +132,12 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
                 }
             case InputManager.Event.Up:
                 switch (command) {
-                    case InputManager.Command.Confirm:
-                        Interact();
+                    case InputManager.Command.Primary:
+                         //todo
                         return false;
-                    case InputManager.Command.Cancel:
+                    case InputManager.Command.Secondary:
+                    case InputManager.Command.Menu:
                         ShowMenu();
-                        return false;
-                    case InputManager.Command.Debug:
-                        SerializationManager.Instance.SaveToSlot(0);
                         return false;
                     default:
                         return false;
@@ -186,11 +171,13 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         return CoUtils.RunTween(firstPersonParent.transform.DORotate(lookAngles, .5f));
     }
 
-    public OrthoDir FPFacing() {
-        if (!UseFirstPersonControl) {
-            return chara.Facing;
-        }
+    public bool CanCrossTileGradient(Vector2Int from, Vector2Int to) {
+        float fromHeight = Event.Map.Terrain.HeightAt(from);
+        float toHeight = GetComponent<MapEvent>().Map.Terrain.HeightAt(to);
+        return Mathf.Abs(fromHeight - toHeight) < 1.0f && toHeight > 0.0f;
+    }
 
+    public OrthoDir FPFacing() {
         var a = firstPersonParent.transform.localEulerAngles.y;
         while (a < -180) a += 360;
         while (a > 180) a -= 360;
@@ -226,7 +213,6 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
                     // these are stairs and we are moving towards them
                     if (!DisableHeightCrossing) {
                         velocityThisFrame = Vector3.zero;
-                        Chara.Facing = OrthoDirExtensions.DirectionOf3D(delta);
                         StartCoroutine(Event.LinearStepRoutine(adjustedLoc));
                     }
                 }
@@ -249,43 +235,6 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
                 }
             }
         }
-    }
-
-    private void Interact() {
-        if (TryInteractWithReach(.65f)) {
-            return;
-        }
-        if (UseFirstPersonControl && TryInteractWithReach(.8f)) {
-            return;
-        }
-        
-        var target = Event.PositionPx;
-        var targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(target);
-        foreach (MapEvent tryTarget in targetEvents) {
-            if (tryTarget.IsSwitchEnabled && tryTarget.IsPassableBy(Event)) {
-                tryTarget.GetComponent<Dispatch>().Signal(MapEvent.EventInteract, this);
-                return;
-            }
-        }
-    }
-
-    private bool TryInteractWithReach(float reach) {
-        Vector3 target;
-        if (UseFirstPersonControl) {
-            target = firstPersonParent.transform.position + (firstPersonParent.transform.rotation * Vector3.forward) * reach;
-            target -= new Vector3(.5f, 0, .5f);
-        } else {
-            target = Event.PositionPx + Chara.Facing.Px3D() * reach;
-        }
-        
-        List<MapEvent> targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(target);
-        foreach (MapEvent tryTarget in targetEvents) {
-            if (tryTarget.IsSwitchEnabled && !tryTarget.IsPassableBy(Event) && tryTarget != Event) {
-                tryTarget.GetComponent<Dispatch>().Signal(MapEvent.EventInteract, this);
-                return true;
-            }
-        }
-        return false;
     }
 
     private bool TryStep(OrthoDir dir) {
@@ -345,9 +294,5 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         var yQuat = Quaternion.AngleAxis(rotation.y, Vector3.left);
 
         //firstPersonParent.transform.localRotation = xQuat * yQuat;
-
-        if (Input.GetMouseButtonUp(0)) {
-            Interact();
-        }
     }
 }

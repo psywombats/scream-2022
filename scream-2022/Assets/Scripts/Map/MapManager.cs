@@ -115,11 +115,7 @@ public class MapManager : SingletonBehavior {
         }
 
         AddInitialAvatar(map);
-        AvatarEvent.Instance.Chara.Renderer.color = Color.white;
         Avatar.GetComponent<MapEvent>().transform.position = new Vector3(location.x, map.Terrain.HeightAt(location), location.y);
-        if (facing != null) {
-            Avatar.Chara.Facing = facing.GetValueOrDefault(OrthoDir.North);
-        }
 
         if (map != ActiveMap) {
             if (ActiveMap != null) {

@@ -4,8 +4,6 @@ using MoonSharp.Interpreter;
 using Coroutine = MoonSharp.Interpreter.Coroutine;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 /// <summary>
 ///  A wrapper around Script that represents an environment where a script can execute.
@@ -40,17 +38,8 @@ public class LuaContext {
         lua.Globals[key] = luaObject;
     }
 
-    public void Reset() {
-        ForceTerminate();
-        activeScripts.Clear();
-    }
-
     public bool IsRunning() {
         return activeScripts.Count > 0;
-    }
-
-    public List<LuaScript> ActiveScripts() {
-        return new List<LuaScript>( activeScripts );
     }
 
     public DynValue CreateObject() {
@@ -59,7 +48,7 @@ public class LuaContext {
 
     public DynValue Marshal(object toMarshal) {
         // touch globals to make sure assembly registered
-        var global = Global.Instance;
+        //Global.Instance;
 
         return DynValue.FromObject(lua, toMarshal);
     }
@@ -70,19 +59,16 @@ public class LuaContext {
             return lua.CreateCoroutine(scriptFunction).Coroutine;
         } catch (SyntaxErrorException e) {
             Debug.LogError("bad script: " + fullScript + "\n\nerror:\n" + e.DecoratedMessage);
-            return null;
+            throw e;
         }
     }
+
     // all coroutines that are meant to block execution of the script should go through here
-    public void RunRoutineFromLua(IEnumerator routine) {
-        RunRoutineFromLuaInternal(routine);
-    }
-    protected virtual void RunRoutineFromLuaInternal(IEnumerator routine) {
+    public virtual void RunRoutineFromLua(IEnumerator routine) {
         if (forceKilled) {
             // leave the old instance infinitely suspended
             return;
         }
-        
         Global.Instance.StartCoroutine(CoUtils.RunWithCallback(routine, () => {
             if (activeScripts.Count > 0 && !forceKilled) {
                 ResumeAwaitedScript();
@@ -108,7 +94,6 @@ public class LuaContext {
     // kills the current script, useful for debug only
     public void ForceTerminate() {
         forceKilled = true;
-        activeScripts.Clear();
     }
 
     public IEnumerator RunRoutine(string luaString, bool canBlock) {
@@ -117,49 +102,41 @@ public class LuaContext {
     }
 
     public virtual IEnumerator RunRoutine(LuaScript script, bool canBlock) {
-        if (canBlock) activeScripts.Push(script);
+        activeScripts.Push(script);
         forceKilled = false;
         try {
             script.scriptRoutine.Resume();
-        } catch (Exception e) {
-            Debug.LogError("Exception during script: " + script + "\n" + e);
-            ForceTerminate();
+        } catch (Exception) {
+            Debug.Log("Exception during script: " + script + "\n context: " + this);
+            throw;
         }
         while (script.scriptRoutine.State != CoroutineState.Dead && !forceKilled) {
             yield return null;
         }
-        if (!forceKilled && canBlock) {
-            activeScripts.Pop();
-        }
+        activeScripts.Pop();
     }
 
-    public IEnumerator RunRoutineFromFile(string filename) {
-        if (filename.Contains(".lua")) {
-            filename = filename.Substring(0, filename.LastIndexOf('.'));
+    public IEnumerator RunRoutineFromFile(string filename, bool canBlock = true) {
+        if (filename.Contains(".")) {
+            filename = filename.Substring(0, filename.IndexOf('.'));
         }
         var asset = Resources.Load<LuaSerializedScript>("Lua/" + filename);
-        yield return RunRoutine(asset.luaString, true);
+        yield return RunRoutine(asset.luaString, canBlock);
     }
 
     protected void ResumeAwaitedScript() {
-        var script = activeScripts.Peek();
-        try {
-            script.scriptRoutine.Resume();
-        } catch (Exception e) {
-            Debug.LogError("Error resuming script " + script + ": " + e);
-            ForceTerminate();
-        }
+        activeScripts.Peek().scriptRoutine.Resume();
     }
 
     protected virtual void AssignGlobals() {
         lua.Globals["debugLog"] = (Action<DynValue>)DebugLog;
-        lua.Globals["playSFX"] = (Action<DynValue, DynValue>)PlaySFX;
-        lua.Globals["playSound"] = (Action<DynValue, DynValue>)PlaySFX;
+        lua.Globals["playSFX"] = (Action<DynValue>)PlaySFX;
+        lua.Globals["cs_wait"] = (Action<DynValue>)Wait;
+        lua.Globals["cs_play"] = (Action<DynValue, DynValue>)Play;
         lua.Globals["getSwitch"] = (Func<DynValue, DynValue>)GetSwitch;
         lua.Globals["setSwitch"] = (Action<DynValue, DynValue>)SetSwitch;
-        lua.Globals["getAvatar"] = (Func<DynValue>)GetAvatar;
-        lua.Globals["cs_wait"] = (Action<DynValue>)Wait;
-        lua.Globals["cs_play"] = (Action<DynValue>)Play;
+        lua.Globals["rand"] = (Func<DynValue, DynValue>)Rand;
+        lua.Globals["isBigRoom"] = (Func<DynValue>)IsBigMap;
     }
 
     protected void LoadDefines(string path) {
@@ -168,6 +145,11 @@ public class LuaContext {
     }
 
     // === LUA CALLABLE ============================================================================
+
+    protected DynValue IsBigMap() {
+        var map = Global.Instance.Maps.ActiveMap;
+        return Marshal(map.size.x >= 10 && map.size.x <= 20);
+    }
 
     protected DynValue GetSwitch(DynValue switchName) {
         bool value = Global.Instance.Data.GetSwitch(switchName.String);
@@ -186,16 +168,23 @@ public class LuaContext {
         RunRoutineFromLua(CoUtils.Wait((float)seconds.Number));
     }
 
-    protected void PlaySFX(DynValue sfxKey, DynValue fanfareMode) {
+    protected void PlaySFX(DynValue sfxKey) {
         Global.Instance.Audio.PlaySFX(sfxKey.String);
     }
 
-    protected void Play(DynValue filename) {
-        RunRoutineFromLua(RunRoutineFromFile(filename.String));
+    protected DynValue Rand(DynValue max) {
+        return Marshal(UnityEngine.Random.Range(0, (int)max.Number));
     }
-
-    protected DynValue GetAvatar() {
-        var obj = Global.Instance.Maps.Avatar.Event.LuaObject;
-        return UserData.Create(obj);
+    protected void Play(DynValue filename, DynValue delay) => Play(filename, delay, false);
+    protected void Play(DynValue filename, DynValue delay, bool blocks = true) {
+        if (delay.IsNil()) {
+            RunRoutineFromLua(RunRoutineFromFile(filename.String, blocks));
+        } else {
+            RunRoutineFromLua(CoUtils.Wait(0.01f));
+            activeScripts.Peek().scriptRoutine.Resume();
+            Global.Instance.StartCoroutine(CoUtils.RunAfterDelay((float)delay.Number, () => {
+                Global.Instance.StartCoroutine(RunRoutineFromFile(filename.String));
+            }));
+        }
     }
 }
