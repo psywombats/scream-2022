@@ -1,6 +1,6 @@
 BRAULIO: "Everyone, I'd like you to meet Sumi Chey. Ms. Chey, welcome to Lucir."
 SUMI: "Just Sumi is fine."
-SUMI: "You probably don't know me by name, but my group has a controlling stake in international businesses in the mining and energy sectors."
+SUMI: "You probably don't know me by name, but the Chey Group has a controlling stake in international businesses in the mining and energy sectors."
 SUMI: "I'm looking to diversify, however, and venture capital seems to suit me. And I'm particularly fascinated by the work you're doing here at Lucir."
 BRAULIO: "I have the pitch deck ready to go when you're comfortable."
 SUMI: "Then let's see it."
