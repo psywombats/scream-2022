@@ -22,7 +22,7 @@ public class BillboardingSpriteComponent : MonoBehaviour {
         if (!AvatarEvent.Instance.UseFirstPersonControl) {
             Vector3 angles = transform.eulerAngles;
             transform.eulerAngles = new Vector3(
-                    GetCamera().GetCameraComponent().transform.eulerAngles.x,
+                    GetCamera().Cam.transform.eulerAngles.x,
                     angles.y,
                     angles.z);
         }

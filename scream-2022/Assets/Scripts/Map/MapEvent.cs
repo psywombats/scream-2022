@@ -22,7 +22,6 @@ public class MapEvent : MonoBehaviour {
     [Header("Movement")]
     [SerializeField] public float tilesPerSecond = 2.0f;
     [SerializeField] public bool passable = true;
-    [SerializeField] public OrthoDir requiredDir = OrthoDir.North;
     [Space]
     [Header("Lua scripting")]
     [SerializeField] [TextArea(3, 6)] public string luaCondition;
@@ -118,7 +117,7 @@ public class MapEvent : MonoBehaviour {
                 OnCollide((AvatarEvent)payload);
             });
             GetComponent<Dispatch>().RegisterListener(EventInteract, (object payload) => {
-                OnInteract((AvatarEvent)payload);
+                Interact();
             });
 
             CheckEnabled();
@@ -289,7 +288,7 @@ public class MapEvent : MonoBehaviour {
 
     // called when the avatar stumbles into us
     // facing us if impassable, on top of us if passable
-    private void OnInteract(AvatarEvent avatar) {
+    public void Interact() {
         LuaObject.Run(PropertyInteract);
     }
 

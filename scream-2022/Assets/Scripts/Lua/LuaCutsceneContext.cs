@@ -2,7 +2,6 @@
 using System.Collections;
 using System;
 using MoonSharp.Interpreter;
-using UnityEngine.SceneManagement;
 
 public class LuaCutsceneContext : LuaContext {
 
@@ -51,10 +50,11 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_fadeOutBGM"] = (Action<DynValue>)FadeOutBGM;
         lua.Globals["cs_fade"] = (Action<DynValue>)Fade;
         lua.Globals["cs_walk"] = (Action<DynValue, DynValue, DynValue, DynValue>)Walk;
-        lua.Globals["cs_enterADV"] = (Action<DynValue>)EnterNVL;
-        lua.Globals["cs_exitADV"] = (Action)ExitADV;
+        lua.Globals["cs_enterNVL"] = (Action<DynValue>)EnterNVL;
+        lua.Globals["cs_exitNVL"] = (Action)ExitNVL;
         lua.Globals["cs_exit"] = (Action<DynValue>)Exit;
         lua.Globals["cs_enter"] = (Action<DynValue, DynValue, DynValue>)Enter;
+        lua.Globals["cs_speak"] = (Action<DynValue, DynValue>)Speak;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -130,7 +130,7 @@ public class LuaCutsceneContext : LuaContext {
         yield return MapOverlayUI.Instance.adv.ShowRoutine(dontClear);
     }
 
-    public void ExitADV() {
+    public void ExitNVL() {
         RunRoutineFromLua(ExitNVLRoutine());
     }
     private IEnumerator ExitNVLRoutine() {
@@ -162,5 +162,13 @@ public class LuaCutsceneContext : LuaContext {
     private void SetName(DynValue speakerLua, DynValue nameLua) {
         var speaker = IndexDatabase.Instance.Speakers.GetData(speakerLua.String);
         MapOverlayUI.Instance.adv.speakerNames[speaker] = nameLua.String;
+    }
+
+    public void Speak(DynValue speakerNameLua, DynValue messageLua) {
+        var speaker = IndexDatabase.Instance.Speakers.GetData(speakerNameLua.String);
+        RunRoutineFromLua(SpeakRoutine(speaker, messageLua.String));
+    }
+    private IEnumerator SpeakRoutine(SpeakerData speaker, string message) {
+        yield return MapOverlayUI.Instance.adv.SpeakRoutine(speaker, message);
     }
 }

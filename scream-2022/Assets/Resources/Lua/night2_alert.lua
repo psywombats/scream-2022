@@ -1,8 +1,0 @@
-fadeOutBGM(1.8)
-fade('fade_long')
-setSwitch('n2_clear', true)
-setHeightcrossing(true)
-wait(.6)
-intertitle("WHITE SLEET, VACANT SKY, SOUTHERN WIND\nMORNING AURA, OCEANS HUE,\nABLUTION, ABSOLUTION\n\nTABULA RASA\n\n\nDAY_3")
-setSwitch('night', false)
-teleport('RoomYours', 'start')

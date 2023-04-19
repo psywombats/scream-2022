@@ -8,6 +8,7 @@ PART 2:
 4: weird tone in the ending... we really want that?
 5: mostly fixed now, still has a nonsensical joke
 finale02: missing a transition
+finale02: ending is abrupt
 finale02: overwrought
 
 too long

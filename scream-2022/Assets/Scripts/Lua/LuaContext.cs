@@ -121,6 +121,9 @@ public class LuaContext {
             filename = filename.Substring(0, filename.IndexOf('.'));
         }
         var asset = Resources.Load<LuaSerializedScript>("Lua/" + filename);
+        if (asset == null) {
+            throw new ArgumentException($"Can't find {filename}");
+        }
         yield return RunRoutine(asset.luaString, canBlock);
     }
 

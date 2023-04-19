@@ -18,6 +18,7 @@ public class NVLComponent : MonoBehaviour {
     public LineAutotyper text;
     public Text nameText;
     public CanvasGroup fader;
+    public Image background;
 
     public Dictionary<SpeakerData, string> speakerNames = new Dictionary<SpeakerData, string>();
 
@@ -29,14 +30,14 @@ public class NVLComponent : MonoBehaviour {
     public IEnumerator ShowRoutine(bool dontClear = false) {
         backer.Hide();
         fader.alpha = 0.0f;
-        if (!dontClear)
-        {
-            foreach (var portrait in GetPortraits())
-            {
+        background.color = new Color(1, 1, 1, 0);
+        if (!dontClear) {
+            foreach (var portrait in GetPortraits()) {
                 portrait.Clear();
             }
         }
-        
+
+        StartCoroutine(CoUtils.RunTween(background.DOColor(new Color(1, 1, 1, 1), bgTime)));
         yield return backer.ShowRoutine();
         text.Clear();
         Wipe();
@@ -53,8 +54,20 @@ public class NVLComponent : MonoBehaviour {
         routines.Clear();
         routines.Add(backer.HideRoutine());
         routines.Add(CoUtils.RunTween(fader.DOFade(0.0f, backer.duration)));
+        routines.Add(CoUtils.RunTween(background.DOColor(new Color(1, 1, 1, 0), bgTime)));
         yield return CoUtils.RunParallel(routines.ToArray(), this);
         Wipe();
+    }
+
+    public IEnumerator SetBGRoutine(Sprite bg) {
+        if (background.color.a > 0) {
+            yield return StartCoroutine(CoUtils.RunTween(background.DOColor(new Color(0.0f, 0.0f, 0.0f, 1.0f), bgTime)));
+            background.overrideSprite = bg;
+            yield return StartCoroutine(CoUtils.RunTween(background.DOColor(new Color(1.0f, 1.0f, 1.0f, 1.0f), bgTime)));
+        }
+        else {
+            background.overrideSprite = bg;
+        }
     }
 
     public IEnumerator EnterRoutine(SpeakerData speaker, string slot, bool alt = false) {
@@ -72,7 +85,7 @@ public class NVLComponent : MonoBehaviour {
 
     public IEnumerator SpeakRoutine(SpeakerData speaker, string message) {
         Wipe();
-        var name = speakerNames.ContainsKey(speaker) ? speakerNames[speaker] : "????";
+        var name = speaker.displayName;
 
         var portrait = GetPortrait(speaker);
         if (speaker != null) {

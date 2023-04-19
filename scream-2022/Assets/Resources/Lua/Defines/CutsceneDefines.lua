@@ -20,18 +20,8 @@ function fadeOutBGM(seconds)
     await()
 end
 
-function speak(speaker, line, eventTarget)
-    cs_speak(speaker, line, eventTarget)
-    await()
-end
-
-function speakP(portrait, line)
-    cs_speakPortrait(portrait, line)
-    await()
-end
-
-function intertitle(text)
-    cs_intertitle(text)
+function speak(speaker, line)
+    cs_speak(speaker, line)
     await()
 end
 
@@ -40,38 +30,23 @@ function fade(fadeType)
     await()
 end
 
-function search(text)
-    cs_search(text)
+function enterNVL()
+    cs_enterNVL()
     await()
 end
 
-function notebook(text)
-    cs_notebook(text)
+function exitNVL()
+    cs_exitNVL()
     await()
 end
 
-function card(val)
-    cs_card(val)
+function enter(speaker, slot, alt)
+    cs_enter(speaker, slot, alt)
     await()
 end
 
-function keywords(text)
-    cs_keywords(text)
-    await()
-end
-
-function choice(a, b)
-    cs_choice(a, b)
-    await()
-end
-
-function caldeath(version)
-    cs_caldeath(version)
-    await()
-end
-
-function pathTo(eventName)
-    cs_pathTo(eventName)
+function exit(speaker)
+    cs_exit(speaker)
     await()
 end
 
@@ -81,23 +56,5 @@ function walk(event, count, direction, wait)
     if wait then
         await()
     end
-end
-
-function pathEvent(mover, target, wait)
-    if wait == nil then wait = true end
-    cs_pathEvent(mover, target, wait)
-    if wait then
-        await()
-    end
-end
-
-function rotateTo(target)
-    cs_rotateTo(target)
-    await()
-end
-
-function clippy(portrait, text)
-    cs_clippy(portrait, text)
-    await()
 end
 

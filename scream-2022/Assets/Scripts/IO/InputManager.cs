@@ -40,6 +40,7 @@ public class InputManager : SingletonBehavior {
         foreach (Command cmd in Enum.GetValues(typeof(Command))) {
             SetDefaultKeybindsForCommand(cmd);
         }
+        Cursor.visible = false;
     }
 
     public void Update() {
@@ -220,4 +221,9 @@ public class InputManager : SingletonBehavior {
     }
 
     public InputAction GetActionForCommand(Command command) => actions[command];
+
+    public Vector2Int GetMouse() {
+        var pos = Mouse.current.position;
+        return new Vector2Int((int)pos.x.ReadValue(), (int)pos.y.ReadValue());
+    }
 }

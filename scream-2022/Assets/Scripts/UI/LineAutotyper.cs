@@ -5,7 +5,7 @@ using System.Text;
 
 public class LineAutotyper : TextAutotyper {
 
-    public int lineHeightPx = 14;
+    public int lineHeightPx = 30;
     public int lineCount = 32;
 
     int fullLines;

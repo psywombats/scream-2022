@@ -14,6 +14,23 @@ public class MapEventEditor : Editor {
             mapEvent.SetDepth();
         }
 
+        if (!mapEvent.GetComponent<CharaEvent>()) {
+            if (GUILayout.Button("Add Chara Event")) {
+                GameObject dollPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DollPath);
+                var doll = (GameObject)PrefabUtility.InstantiatePrefab(dollPrefab);
+                doll.name = mapEvent.name + " (doll)";
+                GameObjectUtility.SetParentAndAlign(doll, mapEvent.gameObject);
+                CharaEvent chara = mapEvent.gameObject.AddComponent<CharaEvent>();
+                chara.doll = doll.GetComponent<DollComponent>();
+                mapEvent.passable = false;
+                Undo.RegisterCreatedObjectUndo(mapEvent, "Create " + doll.name);
+                Selection.activeObject = doll;
+                
+                doll.transform.localPosition = new Vector3(0, 0, 0f);
+            }
+            GUILayout.Space(25.0f);
+        }
+
         Vector2Int newPosition = EditorGUILayout.Vector2IntField("Tiles position", mapEvent.Location);
         if (newPosition != mapEvent.Location) {
             mapEvent.transform.hasChanged = false;

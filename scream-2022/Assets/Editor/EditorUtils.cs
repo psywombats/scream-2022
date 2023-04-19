@@ -3,7 +3,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-public class EditorUtils {
+public class EditorUtils : MonoBehaviour {
 
     public static string NameFromPath(string path) {
         char[] splitters = { '/' };
@@ -24,5 +24,14 @@ public class EditorUtils {
         MethodInfo mi = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);
         mi.Invoke(importer, args);
         return new Vector2Int((int)args[0], (int)args[1]);
+    }
+
+    [MenuItem("Assets/MGNE/PopulateIndex")]
+    public static void PopulateIndexCommand() {
+        (Selection.activeObject as IIndexPopulater).PopulateIndex();
+    }
+    [MenuItem("Assets/MGNE/PopulateIndex", true)]
+    private static bool PopulateIndexCommandValidation() {
+        return (Selection.activeObject as IIndexPopulater) != null;
     }
 }

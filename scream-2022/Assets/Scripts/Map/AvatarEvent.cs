@@ -1,10 +1,8 @@
 ﻿using DG.Tweening;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 
 [RequireComponent(typeof(MapEvent))]
 [RequireComponent(typeof(Rigidbody))]
@@ -12,15 +10,14 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     public static AvatarEvent Instance => MapManager.Instance.Avatar;
 
-    [SerializeField] private GameObject firstPersonParent = null;
+    [SerializeField] public GameObject firstPersonParent = null;
     [SerializeField] private MapCamera fpsCam = null;
     [SerializeField] private bool fpsOverride = false;
     [Space]
     [SerializeField] private float degreesPerSecond = 120;
-    [SerializeField] [Range(0.1f, 9f)] float mouseRotateSensitivity = 2f;
-
-    const string xAxis = "Mouse X";
-    const string yAxis = "Mouse Y";
+    [SerializeField] [Range(0f, 9f)] float mouseRotateSensitivity = 2f;
+    [SerializeField] Vector2 RotationYBounds = new Vector2(-35, 25);
+    [SerializeField] private float rayRange = 2.5f;
 
     private MapEvent @event;
     public MapEvent Event => @event ?? (@event = GetComponent<MapEvent>());
@@ -48,7 +45,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     public bool DisableHeightCrossing { get; set; }
 
     private Vector3 velocityThisFrame;
-    private Vector2Control lastMousePos;
+    private Vector2Int lastMousePos;
     private Vector2Int lastLoc;
     private Vector3 rotation;
     private Map lastMap;
@@ -77,7 +74,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         if (UseFirstPersonControl) {
             HandleFPC();
         }
-        lastMousePos = Mouse.current.position;
+        lastMousePos = InputManager.Instance.GetMouse();
 
         if (velocityThisFrame != Vector3.zero) {
             var xcom = new Vector3(velocityThisFrame.x, 0, 0);
@@ -90,6 +87,8 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         Body.velocity = velocityThisFrame;
         velocityThisFrame = Vector3.zero;
         fpLastFrame = UseFirstPersonControl;
+
+        HandleRay();
     }
 
     public void OnEnable() {
@@ -114,18 +113,10 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
                         TryStep(OrthoDir.South);
                         return false;
                     case InputManager.Command.Right:
-                        if (UseFirstPersonControl) {
-                            TryTurn(1);
-                        } else {
-                            TryStep(OrthoDir.East);
-                        }
+                        TryStep(OrthoDir.East);
                         return false;
                     case InputManager.Command.Left:
-                        if (UseFirstPersonControl) {
-                            TryTurn(-1);
-                        } else {
-                            TryStep(OrthoDir.West);
-                        }
+                        TryStep(OrthoDir.West);
                         return false;
                     default:
                         return false;
@@ -133,7 +124,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
             case InputManager.Event.Up:
                 switch (command) {
                     case InputManager.Command.Primary:
-                         //todo
+                        Interact();
                         return false;
                     case InputManager.Command.Secondary:
                     case InputManager.Command.Menu:
@@ -270,29 +261,53 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     private void ShowMenu() {
-        // ??
+        PauseInput();
     }
 
     private void HandleFPC() {
         if (InputPaused) {
             return;
         }
-        if (!Input.mousePresent) {
-            return;
-        }
-        if (Mouse.current.position != lastMousePos) {
+        if (InputManager.Instance.GetMouse() != lastMousePos) {
             mouseLastMovedAt = Time.time;
         }
         if (Time.time - mouseLastMovedAt > .5) {
             return;
         }
 
-        rotation.x += Input.GetAxis(xAxis) * mouseRotateSensitivity;
-        rotation.y += Input.GetAxis(yAxis) * mouseRotateSensitivity;
-        rotation.y = Mathf.Clamp(rotation.y, -26, 15);
+        var mouse = Mouse.current.delta;
+        rotation.x += mouse.x.ReadValue() * mouseRotateSensitivity;
+        rotation.y += mouse.y.ReadValue() * mouseRotateSensitivity;
+        rotation.y = Mathf.Clamp(rotation.y, RotationYBounds.x, RotationYBounds.y);
         var xQuat = Quaternion.AngleAxis(rotation.x, Vector3.up);
         var yQuat = Quaternion.AngleAxis(rotation.y, Vector3.left);
 
-        //firstPersonParent.transform.localRotation = xQuat * yQuat;
+        firstPersonParent.transform.localRotation = xQuat * yQuat;
+    }
+
+    private void HandleRay() {
+        var chara = GetLookingChara();
+        if (chara != null) {
+            chara.HandleRay();
+        }
+    }
+
+    private CharaEvent GetLookingChara() {
+        var cameraCenter = fpsCam.Cam.ScreenToWorldPoint(new Vector3(Screen.width / 2f, Screen.height / 2f, fpsCam.Cam.nearClipPlane));
+        if (Physics.Raycast(cameraCenter, fpsCam.transform.forward, out var hit, 1000)) {
+            var obj = hit.transform.gameObject;
+            var chara = obj.GetComponent<CharaEvent>();
+            if (chara != null && hit.distance < rayRange) {
+                return chara;
+            }
+        }
+        return null;
+    }
+
+    private void Interact() {
+        var chara = GetLookingChara();
+        if (chara != null) {
+            chara.Interact();
+        }
     }
 }
