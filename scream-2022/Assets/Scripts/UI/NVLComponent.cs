@@ -18,7 +18,7 @@ public class NVLComponent : MonoBehaviour {
     public LineAutotyper text;
     public Text nameText;
     public CanvasGroup fader;
-    public Image background;
+    public CanvasGroup background;
 
     public Image wake0, wake1, wake2;
 
@@ -32,14 +32,14 @@ public class NVLComponent : MonoBehaviour {
     public IEnumerator ShowRoutine(bool dontClear = false) {
         backer.Hide();
         fader.alpha = 0.0f;
-        background.color = new Color(1, 1, 1, 0);
+        background.alpha = 0f;
         if (!dontClear) {
             foreach (var portrait in GetPortraits()) {
                 portrait.Clear();
             }
         }
 
-        StartCoroutine(CoUtils.RunTween(background.DOColor(new Color(1, 1, 1, 1), bgTime)));
+        StartCoroutine(CoUtils.RunTween(background.DOFade(1, bgTime)));
         yield return backer.ShowRoutine();
         text.Clear();
         Wipe();
@@ -56,25 +56,14 @@ public class NVLComponent : MonoBehaviour {
         routines.Clear();
         routines.Add(backer.HideRoutine());
         routines.Add(CoUtils.RunTween(fader.DOFade(0.0f, backer.duration)));
-        routines.Add(CoUtils.RunTween(background.DOColor(new Color(1, 1, 1, 0), bgTime)));
+        routines.Add(CoUtils.RunTween(background.DOFade(0, bgTime)));
         yield return CoUtils.RunParallel(routines.ToArray(), this);
         Wipe();
     }
 
-    public IEnumerator SetBGRoutine(Sprite bg) {
-        if (background.color.a > 0) {
-            yield return StartCoroutine(CoUtils.RunTween(background.DOColor(new Color(0.0f, 0.0f, 0.0f, 1.0f), bgTime)));
-            background.overrideSprite = bg;
-            yield return StartCoroutine(CoUtils.RunTween(background.DOColor(new Color(1.0f, 1.0f, 1.0f, 1.0f), bgTime)));
-        }
-        else {
-            background.overrideSprite = bg;
-        }
-    }
-
-    public IEnumerator EnterRoutine(SpeakerData speaker, string slot, bool alt = false) {
+    public IEnumerator EnterRoutine(SpeakerData speaker, string slot, string expr = null) {
         var portrait = GetPortrait(slot);
-        yield return portrait.EnterRoutine(speaker, alt);
+        yield return portrait.EnterRoutine(speaker, expr);
     }
 
     public IEnumerator ExitRoutine(SpeakerData speaker) {
@@ -103,25 +92,29 @@ public class NVLComponent : MonoBehaviour {
     public IEnumerator SpeakRoutine(SpeakerData speaker, string message) {
         Wipe();
         var name = speaker.displayName;
-
-        var portrait = GetPortrait(speaker);
+        
         if (speaker != null) {
-            var routines = new List<IEnumerator>();
-            if (portrait != null && !portrait.IsHighlighted) {
-                routines.Add(portrait.HighlightRoutine());
-            }
-            foreach (var other in GetPortraits()) {
-                if (other.Speaker != null && other.Speaker != speaker && other.IsHighlighted) {
-                    routines.Add(other.UnhighlightRoutine());
-                }
-            }
-            yield return CoUtils.RunParallel(routines.ToArray(), this);
+            yield return SetHighlightRoutine(speaker);
         }
 
         string toType = message;
         nameText.text = name;
         yield return text.WriteLineRoutine(toType);
         yield return Global.Instance.Input.ConfirmRoutine();
+    }
+
+    public IEnumerator SetHighlightRoutine(SpeakerData speaker) {
+        var portrait = GetPortrait(speaker);
+        var routines = new List<IEnumerator>();
+        if (portrait != null && !portrait.IsHighlighted) {
+            routines.Add(portrait.HighlightRoutine());
+        }
+        foreach (var other in GetPortraits()) {
+            if (other.Speaker != null && other.Speaker != speaker && other.IsHighlighted) {
+                routines.Add(other.UnhighlightRoutine());
+            }
+        }
+        yield return CoUtils.RunParallel(routines.ToArray(), this);
     }
 
     private PortraitComponent GetPortrait(string slot) {
@@ -136,7 +129,7 @@ public class NVLComponent : MonoBehaviour {
         return portrait;
     }
 
-    private PortraitComponent GetPortrait(SpeakerData speaker) {
+    public PortraitComponent GetPortrait(SpeakerData speaker) {
         if (slotA.Speaker == speaker) return slotA;
         if (slotB.Speaker == speaker) return slotB;
         if (slotC.Speaker == speaker) return slotC;

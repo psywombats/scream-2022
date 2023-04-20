@@ -298,7 +298,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     private void HandleRay() {
         var chara = GetLookingChara();
-        if (chara != null) {
+        if (chara != null && !InputPaused) {
             chara.HandleRay();
         }
     }

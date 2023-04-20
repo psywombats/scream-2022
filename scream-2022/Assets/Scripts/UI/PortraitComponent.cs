@@ -9,7 +9,9 @@ public class PortraitComponent : MonoBehaviour {
     private static readonly float highlightTime = 0.3f;
     private static readonly float inactiveAlpha = 0.5f;
 
+    public NVLComponent nvl;
     public Image sprite;
+    public Image altSprite;
     public bool moveSibling;
 
     public SpeakerData Speaker { get; private set; }
@@ -18,19 +20,16 @@ public class PortraitComponent : MonoBehaviour {
     public void Clear() {
         Speaker = null;
         sprite.sprite = null;
+        altSprite.sprite = null;
         IsHighlighted = false;
     }
 
-    public IEnumerator EnterRoutine(SpeakerData speaker, bool alt = false) {
-        if (this.Speaker != null) {
+    public IEnumerator EnterRoutine(SpeakerData speaker, string expr = null) {
+        if (Speaker != null) {
             yield return ExitRoutine();
         }
-        this.Speaker = speaker;
-        if (alt) {
-            sprite.sprite = speaker.altimage;
-        } else {
-            sprite.sprite = speaker.image;
-        }
+        Speaker = speaker;
+        sprite.sprite = speaker.GetExpr(expr);
         
         sprite.SetNativeSize();
         sprite.color = new Color(1, 1, 1, 0);
@@ -63,6 +62,22 @@ public class PortraitComponent : MonoBehaviour {
         yield return CoUtils.RunTween(tween);
 
         IsHighlighted = true;
+    }
+
+    public IEnumerator ExpressRoutine(string expr) {
+        if (!IsHighlighted) {
+            yield return nvl.SetHighlightRoutine(Speaker);
+        }
+        altSprite.color = Color.clear;
+        altSprite.sprite = Speaker.GetExpr(expr);
+        altSprite.SetNativeSize();
+        yield return CoUtils.RunParallel(this,
+            //CoUtils.RunTween(sprite.DOColor(new Color(inactiveAlpha, inactiveAlpha, inactiveAlpha, 1f), highlightTime)),
+            CoUtils.RunTween(altSprite.DOFade(1f, highlightTime)));
+        sprite.sprite = altSprite.sprite;
+        sprite.color = Color.white;
+        altSprite.color = Color.clear;
+        altSprite.sprite = null;
     }
 
     public IEnumerator UnhighlightRoutine() {

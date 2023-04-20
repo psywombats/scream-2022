@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 [RequireComponent(typeof(MapEvent))]
 public class CharaEvent : MonoBehaviour {
 
-    private const float TargetHeight = 1.8f;
+    private const float TargetHeight = 2.2f;
     private const float HighlightSpeed = 2f;
 
     [SerializeField] public DollComponent doll;
     [SerializeField] private SpeakerData speaker;
     [SerializeField] private bool phaseIn;
+    [SerializeField] private float phaserDelay = 1.5f;
     [SerializeField] private OrthoDir dir = OrthoDir.South;
 
     private MapEvent @event;
@@ -29,7 +30,7 @@ public class CharaEvent : MonoBehaviour {
 
     private async void PhaseIn() {
         doll.offsetter.transform.localScale = new Vector3(0, 0, 1);
-        await Task.Delay(1500);
+        await Task.Delay((int)(phaserDelay * 1000));
         doll.offsetter.transform.DOScaleY(1f, 1.5f).SetEase(Ease.OutBounce).Play();
         doll.offsetter.transform.DOScaleX(1f, 1.5f).SetEase(Ease.OutCubic).Play();
     }
@@ -57,8 +58,8 @@ public class CharaEvent : MonoBehaviour {
         highlightNow = false;
     }
 
-    public void SetFacing(OrthoDir dirr) {
-        doll.offsetter.transform.localEulerAngles = new Vector3(0, dirr.Rot3D(), 0);
+    public void SetFacing(OrthoDir dir) {
+        doll.offsetter.transform.localEulerAngles = new Vector3(0, dir.Rot3D(), 0);
     }
 
     public void OnValidate() {
@@ -75,10 +76,7 @@ public class CharaEvent : MonoBehaviour {
             doll.highlightRenderer.transform.localScale = new Vector3(factor, factor, factor);
             doll.renderer.sprite = speaker.image;
             doll.highlightRenderer.sprite = speaker.glow;
-        } else {
-            doll.renderer.sprite = null;
-            doll.highlightRenderer.sprite = null;
-        }
+        } 
     }
 
     public void HandleRay() {

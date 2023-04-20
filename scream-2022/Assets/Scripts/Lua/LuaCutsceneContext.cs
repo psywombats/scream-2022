@@ -60,6 +60,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["setCorridorBias"] = (Action<DynValue>)SetCorridorBias;
         lua.Globals["setWake"] = (Action<DynValue>)SetWake;
         lua.Globals["cs_rotateTo"] = (Action<DynValue>)RotateToward;
+        lua.Globals["cs_expr"] = (Action<DynValue, DynValue>)Express;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -142,14 +143,14 @@ public class LuaCutsceneContext : LuaContext {
         yield return MapOverlayUI.Instance.adv.HideRoutine();
     }
 
-    public void Enter(DynValue speakerNameLua, DynValue slotLua, DynValue altLua) {
+    public void Enter(DynValue speakerNameLua, DynValue slotLua, DynValue exprLua) {
         var speaker = IndexDatabase.Instance.Speakers.GetData(speakerNameLua.String);
         var slot = slotLua.String;
-        var alt = altLua.IsNotNil() && altLua.Boolean;
+        var alt = exprLua.String;
         RunRoutineFromLua(EnterRoutine(speaker, slot, alt));
     }
-    private IEnumerator EnterRoutine(SpeakerData speaker, string slot, bool alt = false) {
-        yield return MapOverlayUI.Instance.adv.EnterRoutine(speaker, slot, alt);
+    private IEnumerator EnterRoutine(SpeakerData speaker, string slot, string expr = null) {
+        yield return MapOverlayUI.Instance.adv.EnterRoutine(speaker, slot, expr);
     }
 
     public void Exit(DynValue speakerNameLua) {
@@ -194,5 +195,14 @@ public class LuaCutsceneContext : LuaContext {
     private void RotateToward(DynValue eventName) {
         var @event = MapManager.Instance.ActiveMap.GetEventNamed(eventName.String);
         RunRoutineFromLua(AvatarEvent.Instance.RotateTowardRoutine(@event));
+    }
+
+    public void Express(DynValue charaLu, DynValue expr) {
+        RunRoutineFromLua(ExpressRoutine(charaLu.String, expr.String));
+    }
+    private IEnumerator ExpressRoutine(string charaTag, string expr) {
+        var adv = MapOverlayUI.Instance.adv;
+        var speaker = IndexDatabase.Instance.Speakers.GetData(charaTag);
+        return adv.GetPortrait(speaker).ExpressRoutine(expr);
     }
 }
