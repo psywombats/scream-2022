@@ -3487,7 +3487,7 @@ TextureImporter:
       canvas[5][0]: 2355410649567823588
       canvas[3][4]: 2448717058771820830
       canvas[1][3]: 4437872585237621102
-      canvas[5][5]: 5272672231090487299
+      canvas[9][9]: 0
       canvas[4][10]: 6439097440312456467
       canvas[11][4]: 0
       canvas[6][9]: 541356532892060787
@@ -3605,7 +3605,7 @@ TextureImporter:
       canvas[7][0]: 4526027083023366416
       canvas[4][3]: -1045585437329277896
       canvas[6][3]: -6019416559900864637
-      canvas[9][9]: 0
+      canvas[5][5]: 5272672231090487299
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

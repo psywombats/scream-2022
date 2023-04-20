@@ -363,7 +363,7 @@ public class TacticsTerrainEditor : Editor {
                                         paletteBuffer[(int)(paletteBufferSize.x * (2.0f * (y - y1)) + (z - z1))] = at.tile;
                                     }
                                 }
-                            } else if (y1 != y2 && (x1 != x2 || z1 == z2 )) {
+                            } else if (y1 != y2 && x1 != x2) {
                                 paletteBufferSize = new Vector2Int((int)(x2 - x1 + 1), (int)((y2 - y1 + 0.5f) * 2.0f));
                                 paletteBuffer = new Tile[paletteBufferSize.x * paletteBufferSize.y];
                                 for (float x = x1; x <= x2; x += 1.0f) {
