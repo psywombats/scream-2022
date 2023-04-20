@@ -2,10 +2,10 @@
 using UnityEngine;
 
 public enum OrthoDir {
-    [OrthoDir("North",     0, -1,  0,      0,  0,  1,      0)] North,
-    [OrthoDir("East",      1,  0,  0,      1,  0,  0,      1)] East,
-    [OrthoDir("South",     0,  1,  0,      0,  0, -1,      2)] South,
-    [OrthoDir("West",     -1,  0,  0,     -1,  0,  0,      3)] West,
+    [OrthoDir("North",     0, -1,  0,      0,  0,  1,      0,   180)] North,
+    [OrthoDir("East",      1,  0,  0,      1,  0,  0,      1,   270)] East,
+    [OrthoDir("South",     0,  1,  0,      0,  0, -1,      2,   0)] South,
+    [OrthoDir("West",     -1,  0,  0,     -1,  0,  0,      3,   90)] West,
 }
 
 public class OrthoDirAttribute : Attribute {
@@ -26,6 +26,7 @@ public class OrthoDirAttribute : Attribute {
     public int Px3DX { get { return Px3D.x; } }
     public int Px3DY { get { return Px3D.y; } }
     public int Px3DZ { get { return Px3D.z; } }
+    public float Rot3D { get; private set; }
 
     public int Ordinal { get; private set; }
     public string DirectionName { get; private set; }
@@ -33,13 +34,14 @@ public class OrthoDirAttribute : Attribute {
     internal OrthoDirAttribute(string directionName,
             int px2DX, int px2DY, int px2DZ,
             int px3DX, int px3DY, int px3DZ,
-            int ordinal) {
+            int ordinal, float rot) {
         XY2D = new Vector2Int(px2DX, px2DY);
         XY3D = new Vector2Int(px3DX, px3DZ);
         Px2D = new Vector3Int(px2DX, px2DY, px2DZ);
         Px3D = new Vector3Int(px3DX, px3DY, px3DZ);
         Ordinal = ordinal;
         DirectionName = directionName;
+        Rot3D = rot;
     }
 }
 
@@ -92,4 +94,5 @@ public static class OrthoDirExtensions {
 
     public static int Ordinal(this OrthoDir dir) { return dir.GetAttribute<OrthoDirAttribute>().Ordinal; }
     public static string DirectionName(this OrthoDir dir) { return dir.GetAttribute<OrthoDirAttribute>().DirectionName; }
+    public static float Rot3D(this OrthoDir dir) { return dir.GetAttribute<OrthoDirAttribute>().Rot3D; }
 }

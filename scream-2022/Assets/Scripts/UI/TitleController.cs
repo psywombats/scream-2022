@@ -66,7 +66,7 @@ public class TitleController : MonoBehaviour {
 
             if (cmd == InputManager.Command.Primary) {
                 AudioManager.Instance.PlaySFX("selection");
-                Global.Instance.StartCoroutine(ContinueRoutine());
+                Continue();
             }
 
             return true;
@@ -83,23 +83,21 @@ public class TitleController : MonoBehaviour {
     public void ExitGame() {
         Application.Quit();
     }
-
+    
+    public void Continue() {
+        Global.Instance.StartCoroutine(ContinueRoutine());
+    }
     private IEnumerator ContinueRoutine() {
         StartCoroutine(AudioManager.Instance.FadeOutRoutine(1));
         yield return FadeOutRoutine();
         ContinueSwitches.Activate(continueIndex);
-        if (continueIndex == Continues.Length - 1) {
-            yield return Global.Instance.Serialization.StartGameRoutine("Office1", "target");
-        } else {
-            yield return Global.Instance.Serialization.StartGameRoutine("RoomYours", "start");
-        }
-        
+        Global.Instance.Serialization.StartGameRoutine("Gazer", "chair");
     }
 
     private IEnumerator StartRoutine() {
         yield return FadeOutRoutine();
         yield return AudioManager.Instance.FadeOutRoutine(.5f);
-        yield return Global.Instance.Serialization.StartGameRoutine("RoomYours", "start");
+        yield return Global.Instance.Serialization.StartGameRoutine("Corridor", "start");
 
     }
 

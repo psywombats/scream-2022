@@ -139,6 +139,13 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         }
     }
 
+    public void SetFacing(OrthoDir dirr) {
+        var targetPos = firstPersonParent.transform.position + dirr.Px3D();
+        var dir = (targetPos - firstPersonParent.transform.position).normalized;
+        var lookAngles = Quaternion.LookRotation(dir);
+        firstPersonParent.transform.localRotation = lookAngles;
+    }
+
     public void PauseInput() {
         pauseCount += 1;
     }

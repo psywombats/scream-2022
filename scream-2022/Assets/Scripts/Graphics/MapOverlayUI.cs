@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MapOverlayUI : MonoBehaviour {
 
@@ -21,4 +22,5 @@ public class MapOverlayUI : MonoBehaviour {
     }
 
     public NVLComponent adv;
+    public Image xfade;
 }

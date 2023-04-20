@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
+using DG.Tweening;
+using UnityEngine.UI;
 
 //[ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
@@ -39,6 +41,9 @@ public class DepthCamComponent : FadeComponent {
     }
 
     public override IEnumerator FadeRoutine(FadeData fade, bool invert = false, float timeMult = 1) {
+        MapOverlayUI.Instance.xfade.DOFade(invert ? 0 : 1, timeMult * fade.delay).Play();
+        return CoUtils.Wait(timeMult * fade.delay);
+        /*
         var elapsed = 0f;
         var origFade = fader;
         var target = invert ? 0 : 1;
@@ -55,6 +60,8 @@ public class DepthCamComponent : FadeComponent {
             blitMat.SetFloat("_XFade", target);
             fader = target;
         }
+        */
+
     }
 
     protected void OnRenderImage(RenderTexture src, RenderTexture dest) {

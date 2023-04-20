@@ -49,6 +49,10 @@ public class MapManager : SingletonBehavior {
 
     private string activeMapName;
 
+    public void Teleport(string mapName, string targetEventName, OrthoDir? facing = null, bool isRaw = false) {
+        StartCoroutine(TeleportRoutine(mapName, targetEventName, facing, isRaw));
+    }
+
     public IEnumerator TeleportRoutine(string mapName, Vector2Int location, OrthoDir? facing = null, bool isRaw = false) {
         Avatar?.PauseInput();
         TransitionData data = IndexDatabase.Instance.Transitions.GetData(FadeComponent.DefaultTransitionTag);
@@ -116,6 +120,9 @@ public class MapManager : SingletonBehavior {
 
         AddInitialAvatar(map);
         Avatar.GetComponent<MapEvent>().transform.position = new Vector3(location.x, map.Terrain.HeightAt(location), location.y);
+        if (facing.HasValue) {
+            Avatar.SetFacing(facing.Value);
+        }
 
         if (map != ActiveMap) {
             if (ActiveMap != null) {

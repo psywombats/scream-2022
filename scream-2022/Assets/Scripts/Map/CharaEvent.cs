@@ -10,6 +10,8 @@ public class CharaEvent : MonoBehaviour {
 
     [SerializeField] public DollComponent doll;
     [SerializeField] private SpeakerData speaker;
+    [SerializeField] private bool phaseIn;
+    [SerializeField] private OrthoDir dir = OrthoDir.South;
 
     private MapEvent @event;
     public MapEvent Event => @event ?? (@event = GetComponent<MapEvent>());
@@ -19,18 +21,20 @@ public class CharaEvent : MonoBehaviour {
     public void Start() {
         UpdateRenderer();
 
-        PhaseIn();
+        if (phaseIn) {
+            PhaseIn();
+        }
+        SetFacing(dir);
     }
 
     private async void PhaseIn() {
         doll.offsetter.transform.localScale = new Vector3(0, 0, 1);
-        await Task.Delay(4000);
+        await Task.Delay(1500);
         doll.offsetter.transform.DOScaleY(1f, 1.5f).SetEase(Ease.OutBounce).Play();
         doll.offsetter.transform.DOScaleX(1f, 1.5f).SetEase(Ease.OutCubic).Play();
     }
 
     public void Update() {
-
         var a = doll.renderer.color.a;
         var targetA = highlightNow ? 0f : 1f;
         var delta = HighlightSpeed * Time.deltaTime;
@@ -53,8 +57,13 @@ public class CharaEvent : MonoBehaviour {
         highlightNow = false;
     }
 
+    public void SetFacing(OrthoDir dirr) {
+        doll.offsetter.transform.localEulerAngles = new Vector3(0, dirr.Rot3D(), 0);
+    }
+
     public void OnValidate() {
         UpdateRenderer();
+        SetFacing(dir);
     }
 
     public void Interact() => Event.Interact();

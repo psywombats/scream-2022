@@ -20,10 +20,11 @@ public class Oscillator : MonoBehaviour {
     public OscillationMovementMode movementMode = OscillationMovementMode.Sinusoidal;
     public OscillationOffsetMode offsetMode = OscillationOffsetMode.StartsAtMiddle;
     public bool scaleMode;
+    public bool posMode;
 
     private Vector3 originalPosition;
     private Vector3 originalScale;
-    private float elapsed;
+    public float Elapsed { get; set; }
 
     public virtual void Start() {
         originalPosition = gameObject.transform.localPosition;
@@ -40,18 +41,19 @@ public class Oscillator : MonoBehaviour {
 
         if (scaleMode) {
             gameObject.transform.localScale = originalScale + maxOffset * vectorMultiplier;
-        } else {
+        }
+        if (posMode) {
             gameObject.transform.localPosition = originalPosition + maxOffset * vectorMultiplier;
         }
     }
 
-    protected float CalcVectorMult() {
-        elapsed += Time.deltaTime;
-        while (elapsed >= durationSeconds) {
-            elapsed -= durationSeconds;
+    public virtual float CalcVectorMult() {
+        Elapsed += Time.deltaTime;
+        while (Elapsed >= durationSeconds) {
+            Elapsed -= durationSeconds;
         }
 
-        float completed = (elapsed / durationSeconds);
+        float completed = (Elapsed / durationSeconds);
         if (offsetMode == OscillationOffsetMode.StartsAtMiddle) {
             completed += 0.5f;
             if (completed > 1.0f) {
@@ -82,6 +84,6 @@ public class Oscillator : MonoBehaviour {
     }
 
     private void Reset() {
-        elapsed = offsetSeconds;
+        Elapsed = offsetSeconds;
     }
 }

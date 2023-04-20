@@ -11,6 +11,7 @@ public class MapEvent : MonoBehaviour {
     private const string PropertyCondition = "show";
     private const string PropertyInteract = "onInteract";
     private const string PropertyCollide = "onCollide";
+    private const string PropertyEnter = "onEnter";
 
     public const string EventEnabled = "enabled";
     public const string EventCollide = "collide";
@@ -27,6 +28,7 @@ public class MapEvent : MonoBehaviour {
     [SerializeField] [TextArea(3, 6)] public string luaCondition;
     [SerializeField] [TextArea(3, 6)] public string luaOnInteract;
     [SerializeField] [TextArea(3, 6)] public string luaOnCollide;
+    [SerializeField] [TextArea(3, 6)] public string luaOnEnter;
     [SerializeField] private GameObject enableChild;
   
     public bool IsTracking { get; private set; }
@@ -112,6 +114,7 @@ public class MapEvent : MonoBehaviour {
             LuaObject.Set(PropertyCollide, luaOnCollide);
             LuaObject.Set(PropertyInteract, luaOnInteract);
             LuaObject.Set(PropertyCondition, luaCondition);
+            LuaObject.Set(PropertyEnter, luaOnEnter);
 
             GetComponent<Dispatch>().RegisterListener(EventCollide, (object payload) => {
                 OnCollide((AvatarEvent)payload);
@@ -124,9 +127,15 @@ public class MapEvent : MonoBehaviour {
         }
     }
 
+    private bool autod;
     public virtual void Update() {
         if (Application.IsPlaying(this)) {
             CheckEnabled();
+        }
+
+        if (IsSwitchEnabled && !autod && luaOnEnter.Length > 0) {
+            LuaObject.Run(PropertyEnter);
+            autod = true;
         }
     }
 
@@ -272,10 +281,10 @@ public class MapEvent : MonoBehaviour {
   // before the step if impassable, after if passable
   private bool triggered = false;
     private void OnCollide(AvatarEvent avatar) {
-    if (avatar.InputPaused)
-    {
-      return;
-    }
+        if (avatar.InputPaused)
+        {
+          return;
+        }
         if (luaOnCollide.Length == 0) {
             return;
         }

@@ -20,6 +20,8 @@ public class NVLComponent : MonoBehaviour {
     public CanvasGroup fader;
     public Image background;
 
+    public Image wake0, wake1, wake2;
+
     public Dictionary<SpeakerData, string> speakerNames = new Dictionary<SpeakerData, string>();
 
     public void Wipe() {
@@ -79,6 +81,21 @@ public class NVLComponent : MonoBehaviour {
         foreach (var portrait in GetPortraits()) {
             if (portrait.Speaker == speaker) {
                 yield return portrait.ExitRoutine();
+            }
+        }
+    }
+
+    public void SetWake(int count) {
+        Image waker = null;
+        if (count == 0) waker = wake0;
+        if (count == 1) waker = wake1;
+        if (count == 2) waker = wake2;
+
+        foreach (var un in new List<Image>() { wake0, wake1, wake2 }) {
+            if (waker == un) {
+                un.DOFade(1f, 2f).Play();
+            } else {
+                un.DOFade(0f, 2f).Play();
             }
         }
     }

@@ -40,6 +40,11 @@ function exitNVL()
     await()
 end
 
+function rotateTo(event)
+	cs_rotateTo(event)
+	await()
+end
+
 function enter(speaker, slot, alt)
     cs_enter(speaker, slot, alt)
     await()

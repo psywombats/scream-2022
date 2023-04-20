@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using MoonSharp.Interpreter;
+using UnityEngine.UI;
 
 public class LuaCutsceneContext : LuaContext {
 
@@ -55,6 +56,10 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_exit"] = (Action<DynValue>)Exit;
         lua.Globals["cs_enter"] = (Action<DynValue, DynValue, DynValue>)Enter;
         lua.Globals["cs_speak"] = (Action<DynValue, DynValue>)Speak;
+        lua.Globals["monitorRoutine"] = (Action<DynValue>)MonitorRoutine;
+        lua.Globals["setCorridorBias"] = (Action<DynValue>)SetCorridorBias;
+        lua.Globals["setWake"] = (Action<DynValue>)SetWake;
+        lua.Globals["cs_rotateTo"] = (Action<DynValue>)RotateToward;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -170,5 +175,24 @@ public class LuaCutsceneContext : LuaContext {
     }
     private IEnumerator SpeakRoutine(SpeakerData speaker, string message) {
         yield return MapOverlayUI.Instance.adv.SpeakRoutine(speaker, message);
+    }
+
+    public void MonitorRoutine(DynValue value) {
+        var corridor = GameObject.FindObjectOfType<CorridorController>();
+        _ = corridor.RunRoutineAsync(value.String);
+    }
+
+    public void SetCorridorBias(DynValue value) {
+        var corridor = GameObject.FindObjectOfType<CorridorController>();
+        corridor.Bias = (int)value.Number;
+    }
+
+    public void SetWake(DynValue value) {
+        MapOverlayUI.Instance.adv.SetWake((int)value.Number);
+    }
+
+    private void RotateToward(DynValue eventName) {
+        var @event = MapManager.Instance.ActiveMap.GetEventNamed(eventName.String);
+        RunRoutineFromLua(AvatarEvent.Instance.RotateTowardRoutine(@event));
     }
 }

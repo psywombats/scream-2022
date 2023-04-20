@@ -96,7 +96,7 @@ public class SerializationManager : SingletonBehavior {
         yield return SceneManager.LoadSceneAsync("Map3D", LoadSceneMode.Single);
         //var transition = IndexDatabase.Instance.Transitions.GetData(FadeComponent.DefaultTransitionTag);
         //yield return Global.Instance.Maps.Camera.fade.FadeRoutine(transition.GetFadeOut(), false, 0.0f);
-        yield return Global.Instance.Maps.TeleportRoutine(map, target, OrthoDir.South);
+        yield return Global.Instance.Maps.TeleportRoutine(map, target, OrthoDir.East);
         //yield return Global.Instance.Maps.Camera.fade.FadeRoutine(transition.GetFadeIn(), true);
         yield return null;
     }
