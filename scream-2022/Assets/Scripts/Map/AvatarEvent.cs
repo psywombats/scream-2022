@@ -43,6 +43,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     public bool UseFirstPersonControl => true;
 
     public bool DisableHeightCrossing { get; set; }
+    public bool FreeTraverse { get; set; }
 
     private Vector3 velocityThisFrame;
     private Vector2Int lastMousePos;
@@ -144,11 +145,11 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     public void UnpauseInput() {
         if (pauseCount > 0)
-    {
-      pauseCount -= 1;
-    }
+        {
+          pauseCount -= 1;
+        }
 
-  }
+    }
 
     public bool WantsToTrack() {
         return trackingLastFrame || tracking;
@@ -163,6 +164,9 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     public bool CanCrossTileGradient(Vector2Int from, Vector2Int to) {
+        if (FreeTraverse) {
+            return true;
+        }
         float fromHeight = Event.Map.Terrain.HeightAt(from);
         float toHeight = GetComponent<MapEvent>().Map.Terrain.HeightAt(to);
         return Mathf.Abs(fromHeight - toHeight) < 1.0f && toHeight > 0.0f;
@@ -216,7 +220,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         if (adjustedLoc != Event.Location) {
             var h1 = Event.Map.Terrain.HeightAt(Event.Location);
             var h2 = Event.Map.Terrain.HeightAt(adjustedLoc);
-            if (h1 - h2 >= 1) {
+            if (h1 - h2 >= 1 && !FreeTraverse) {
                 // this is a steep drop
                 if (adjustedLoc.x != Event.Location.x) {
                     velocityThisFrame.x = 0;

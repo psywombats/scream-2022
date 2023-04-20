@@ -16,7 +16,7 @@ public class Map : MonoBehaviour {
     [SerializeField] private string mapName = "New map";
     [SerializeField] private Grid grid = null;
     [SerializeField] private ObjectLayer objectLayer = null;
-    [SerializeField] private TacticsTerrainMesh terrain = null;
+    [SerializeField] public TacticsTerrainMesh terrain = null; // don't set this plz
     [Space]
     [SerializeField] private string bgmKey = null;
     [SerializeField] private List<string> settings = null;

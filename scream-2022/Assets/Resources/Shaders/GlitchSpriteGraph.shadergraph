@@ -19,9 +19,6 @@
             "m_Id": "10e87152dca64efeae7871a417d1d2e4"
         },
         {
-            "m_Id": "4c76de33d0e64e07ad84660f32ec6c6b"
-        },
-        {
             "m_Id": "8ac26b0ab5904722be4209e73b3b99cf"
         },
         {
@@ -59,25 +56,14 @@
         },
         {
             "m_Id": "38a5262b8ce94c87be16b4b32f539e6b"
+        },
+        {
+            "m_Id": "547ea81dccc840a1a4b9aa366a005f20"
         }
     ],
     "m_GroupDatas": [],
     "m_StickyNoteDatas": [],
     "m_Edges": [
-        {
-            "m_OutputSlot": {
-                "m_Node": {
-                    "m_Id": "165f46ba49b44a1c9733a558c04c75d7"
-                },
-                "m_SlotId": 0
-            },
-            "m_InputSlot": {
-                "m_Node": {
-                    "m_Id": "38a5262b8ce94c87be16b4b32f539e6b"
-                },
-                "m_SlotId": 0
-            }
-        },
         {
             "m_OutputSlot": {
                 "m_Node": {
@@ -131,10 +117,10 @@
                 "m_Id": "10e87152dca64efeae7871a417d1d2e4"
             },
             {
-                "m_Id": "4c76de33d0e64e07ad84660f32ec6c6b"
+                "m_Id": "8ac26b0ab5904722be4209e73b3b99cf"
             },
             {
-                "m_Id": "8ac26b0ab5904722be4209e73b3b99cf"
+                "m_Id": "547ea81dccc840a1a4b9aa366a005f20"
             }
         ]
     },
@@ -175,7 +161,7 @@
     },
     "m_PreviewData": {
         "serializedMesh": {
-            "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
+            "m_SerializedMesh": "{\"mesh\":{\"fileID\":10210,\"guid\":\"0000000000000000e000000000000000\",\"type\":0}}",
             "m_Guid": ""
         },
         "preventRotation": false
@@ -399,7 +385,7 @@
     "m_Hidden": false,
     "m_ShaderOutputName": "Occlusion",
     "m_StageCapability": 2,
-    "m_Value": 1.0,
+    "m_Value": 0.0,
     "m_DefaultValue": 1.0,
     "m_Labels": []
 }
@@ -523,7 +509,7 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
+        "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"c622ee8d791cefe48be81d4601545bcf\",\"type\":3}}",
         "m_Guid": ""
     },
     "isMainTexture": false,
@@ -649,39 +635,6 @@
 
 {
     "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.BlockNode",
-    "m_ObjectId": "4c76de33d0e64e07ad84660f32ec6c6b",
-    "m_Group": {
-        "m_Id": ""
-    },
-    "m_Name": "VertexDescription.Normal",
-    "m_DrawState": {
-        "m_Expanded": true,
-        "m_Position": {
-            "serializedVersion": "2",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 0.0,
-            "height": 0.0
-        }
-    },
-    "m_Slots": [
-        {
-            "m_Id": "f00d77a4b8074c7f8168bceebaf261fe"
-        }
-    ],
-    "synonyms": [],
-    "m_Precision": 0,
-    "m_PreviewExpanded": true,
-    "m_PreviewMode": 0,
-    "m_CustomColors": {
-        "m_SerializableColors": []
-    },
-    "m_SerializedDescriptor": "VertexDescription.Normal"
-}
-
-{
-    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "4f0da7786fe64a7883dd536ca542a729",
     "m_Id": 1,
@@ -751,6 +704,39 @@
         "w": 0.0
     },
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.BlockNode",
+    "m_ObjectId": "547ea81dccc840a1a4b9aa366a005f20",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "VertexDescription.Normal",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 0.0,
+            "height": 0.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "e9651d233ac049f9b5dada81b91229f2"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_SerializedDescriptor": "VertexDescription.Normal"
 }
 
 {
@@ -1242,7 +1228,7 @@
 {
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.NormalMaterialSlot",
-    "m_ObjectId": "f00d77a4b8074c7f8168bceebaf261fe",
+    "m_ObjectId": "e9651d233ac049f9b5dada81b91229f2",
     "m_Id": 0,
     "m_DisplayName": "Normal",
     "m_SlotType": 0,

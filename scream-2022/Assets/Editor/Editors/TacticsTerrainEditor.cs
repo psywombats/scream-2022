@@ -137,18 +137,20 @@ public class TacticsTerrainEditor : Editor {
                                 break;
                         }
                     }
+                    if (tile != null) {
+                        Rect rect = new Rect(
+                            tile.sprite.uv[2].x,
+                            tile.sprite.uv[3].y,
+                            tile.sprite.uv[3].x - tile.sprite.uv[2].x,
+                            tile.sprite.uv[2].y - tile.sprite.uv[3].y);
 
-                    Rect rect = new Rect(
-                        tile.sprite.uv[2].x, 
-                        tile.sprite.uv[3].y,
-                        tile.sprite.uv[3].x - tile.sprite.uv[2].x,
-                        tile.sprite.uv[2].y - tile.sprite.uv[3].y);
-
-                    GUI.DrawTextureWithTexCoords(r, tile.sprite.texture, rect, true);
-                    if (r.Contains(Event.current.mousePosition)) {
-                        GUI.DrawTexture(r, backer, ScaleMode.StretchToFill, true, 0.0f, new Color(1, 0, 0, 0.5f), 0.0f, 0.0f);
-                    } else if (paletteBufferSize == Vector2Int.zero && tileSelectRect.Contains(new Vector2(x, y))) {
-                        GUI.DrawTexture(r, backer, ScaleMode.StretchToFill, true, 0.0f, new Color(1, 1, 1, 0.8f), 0.0f, 0.0f);
+                        GUI.DrawTextureWithTexCoords(r, tile.sprite.texture, rect, true);
+                        if (r.Contains(Event.current.mousePosition)) {
+                            GUI.DrawTexture(r, backer, ScaleMode.StretchToFill, true, 0.0f, new Color(1, 0, 0, 0.5f), 0.0f, 0.0f);
+                        }
+                        else if (paletteBufferSize == Vector2Int.zero && tileSelectRect.Contains(new Vector2(x, y))) {
+                            GUI.DrawTexture(r, backer, ScaleMode.StretchToFill, true, 0.0f, new Color(1, 1, 1, 0.8f), 0.0f, 0.0f);
+                        }
                     }
 
                     EditorGUILayout.EndHorizontal();
