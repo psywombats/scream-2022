@@ -1,16 +1,17 @@
 enterNVL()
-enter('BRAULIO', 'b')
 
 if not getSwitch('pt1_05d') then
+	enter('BRAULIO', 'b')
 	enter('SUMI', 'd')
 	speak('BRAULIO', "Oh hey Ariel. And welcome back, Sumi.")
 	speak('BRAULIO', "Sorry for the wait! We just weren't expecting you this early. This whole thing's been a whirlwind.")
-	if getSwitch('pt1_05a') and getSwitch('pt1_05b') and getSwitch('pt1_05c') then
+	if not getSwitch('pt1_05a') or not getSwitch('pt1_05b') or not getSwitch('pt1_05c') then
 		expr('BRAULIO', 'unsure')
 		speak('BRAULIO', "Hopefully I should wrap things up once Ariel's done showing you around.")
 		expr('BRAULIO', nil)
-		speak('SUMI', "My apologies for the inconvenience.")
+		
 	end
+	speak('SUMI', "My apologies for the inconvenience.")
 	expr('BRAULIO', nil)
 	exit('SUMI')
 	enter('SUMI', 'e', 'surprised')
@@ -20,10 +21,11 @@ if not getSwitch('pt1_05d') then
 	speak('BRAULIO', "I'm pretty big into climbing. Or I was, when I still had time to do anything outside Lucir.")
 	speak('BRAULIO', "Sophomore year, I took a trip up into the Cascades. I was out on a cliff face probably 2000 feet above the treeline and saw two of those goats up near the summit, on a 70 degree incline.")
 	speak('ARIEL', "They made it to the top?")
-	speak('BRAULIO', "One did. The other, well, fell and died.")
-	speak('SUMI', "Ahaha. A story with a moral.")
+	speak('BRAULIO', "One did.")
 	expr('BRAULIO', 'unsure')
-	speak('BRAULIO', "Sorry, that was probably really inappropriate.")
+	speak('BRAULIO', "The other, well, fell and died.")
+	speak('SUMI', "Ahaha. A story with a moral.")
+	speak('BRAULIO', "Sorry, that was probably too much information.")
 	expr('BRAULIO', 'determined')
 	speak('BRAULIO', "But the point is, they're fearless animals that don't stop until they reach the top. I admire them.")
 	expr('BRAULIO', nil)
@@ -50,7 +52,6 @@ if not getSwitch('pt1_05d') then
 		speak('BRAULIO', "No problem! It was nice talking to you, Sumi!")
 	end
 else
-	enterNVL()
 	enter('BRAULIO', 'c')
 	speak('ARIEL', "Sorry to interrupt you, Braulio. We'll get on with the tour and then be back when you're ready.")
 	speak('BRAULIO', "No problem! It was nice talking to you!")

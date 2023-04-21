@@ -1,4 +1,5 @@
-enterNVL(true)
+enterNVL()
 enter('noemi', 'c')
 speak('Noemi', "Greetings! This is a test message.")
+speak('Noemi', "This is a test message has a little more ____ to it. What, don't you like ____?")
 exitNVL()

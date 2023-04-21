@@ -38,17 +38,47 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
         return true;
     }
 
+    public void StartGlitch() {
+        MapOverlayUI.Instance.adv.GetHighlightedPortrait().Jolt();
+    }
+
     public IEnumerator TypeRoutine(string text, bool waitForConfirm = true) {
         hurried = false;
         confirmed = false;
         float elapsed = 0.0f;
         float total = (text.Length - typingStartIndex) / charsPerSecond;
         textbox.GetComponent<CanvasGroup>().alpha = 1.0f;
+
+        var containsGlitch = text.IndexOf("____") >= 0;
+        var glitchesDelayed = 0;
+        var glitchStartedAt = 0;
+
         while (elapsed <= total) {
+
             elapsed += Time.deltaTime;
             int charsToShow = Mathf.FloorToInt(elapsed * charsPerSecond) + typingStartIndex;
             int cutoff = charsToShow > text.Length ? text.Length : charsToShow;
             textbox.text = text.Substring(0, cutoff);
+
+            var uCount = 0;
+            foreach (var c in textbox.text) {
+                if (c == '_') {
+                    uCount += 1;
+                }
+            }
+            if (glitchesDelayed < uCount) {
+                var tryg = textbox.text.Length;
+                while (textbox.text[tryg - 1] == '_') {
+                    tryg -= 1;
+                }
+                if (tryg > glitchStartedAt) {
+                    glitchStartedAt = tryg;
+                    StartGlitch();
+                }
+                yield return CoUtils.Wait(.175f);
+                glitchesDelayed = uCount;
+            }
+            
             if (!mode2) {
                 textbox.text += "<color=#aa000000>";
                 textbox.text += text.Substring(cutoff);
@@ -63,7 +93,7 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
                     elapsed += Time.deltaTime * 4;
                 }
             }
-            if (confirmed) {
+            if (confirmed && !containsGlitch) {
                 confirmed = false;
                 if (!speedUpWhenHurried) {
                     break;

@@ -91,13 +91,21 @@ public class TitleController : MonoBehaviour {
         StartCoroutine(AudioManager.Instance.FadeOutRoutine(1));
         yield return FadeOutRoutine();
         ContinueSwitches.Activate(continueIndex);
-        yield return Global.Instance.Serialization.StartGameRoutine("F2", "pt1target");
+        switch (continueIndex) {
+            case 0:
+                yield return Global.Instance.Serialization.StartGameRoutine("F2", "pt1target", OrthoDir.North);
+                break;
+            case 1:
+                yield return Global.Instance.Serialization.StartGameRoutine("F2", "gazer", OrthoDir.North);
+                break;
+        }
+        
     }
 
     private IEnumerator StartRoutine() {
         yield return FadeOutRoutine();
         yield return AudioManager.Instance.FadeOutRoutine(.5f);
-        yield return Global.Instance.Serialization.StartGameRoutine("Corridor", "start");
+        yield return Global.Instance.Serialization.StartGameRoutine("Corridor", "start", OrthoDir.West);
     }
 
     private IEnumerator FadeOutRoutine() {

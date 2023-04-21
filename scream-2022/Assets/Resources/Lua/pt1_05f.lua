@@ -1,0 +1,11 @@
+enterNVL()
+enter('BRAULIO', 'b')
+enter('ARIEL', 'd')
+speak('BRAULIO', "I was wondering what happened to you guys. I'm all set now if you want to dive deeper on the financials, Sumi.")
+speak('SUMI', "Excellent. I'm looking forward to it.")
+speak('ARIEL', "I'll leave you two to it.")
+exit('BRAULIO')
+exit('SUMI')
+speak('ARIEL', "...Good luck, Braulio.")
+
+play('pt1_06')

@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -123,6 +124,10 @@ public class NVLComponent : MonoBehaviour {
             }
         }
         yield return CoUtils.RunParallel(routines.ToArray(), this);
+    }
+
+    public PortraitComponent GetHighlightedPortrait() {
+        return GetPortraits().Where(p => p.IsHighlighted).First();
     }
 
     private PortraitComponent GetPortrait(string slot) {

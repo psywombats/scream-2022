@@ -270,7 +270,6 @@ public class MapEvent : MonoBehaviour {
 
     // called when the avatar stumbles into us
     // before the step if impassable, after if passable
-    private bool triggered = false;
     public void Collide(AvatarEvent avatar) {
         if (avatar.InputPaused)
         {

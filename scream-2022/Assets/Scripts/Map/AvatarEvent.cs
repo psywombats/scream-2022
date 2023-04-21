@@ -12,7 +12,6 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     [SerializeField] public GameObject firstPersonParent = null;
     [SerializeField] private MapCamera fpsCam = null;
-    [SerializeField] private bool fpsOverride = false;
     [Space]
     [SerializeField] private float degreesPerSecond = 120;
     [SerializeField] [Range(0f, 9f)] float mouseRotateSensitivity = 2f;
@@ -54,8 +53,6 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     private bool tracking;
     private bool trackingLastFrame;
     private bool fpLastFrame;
-    private bool canMouseDelta = false;
-    
 
     public void Start() {
         if (MapManager.Instance.Avatar == null) {
@@ -153,7 +150,6 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     public void PauseInput() {
         pauseCount += 1;
-        canMouseDelta = false;
     }
 
     public void UnpauseInput() {
@@ -283,10 +279,6 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     private void HandleFPC() {
-        if (InputPaused) {
-            return;
-        }
-        
         if (InputManager.Instance.GetMouse() != lastMousePos) {
             mouseLastMovedAt = Time.time;
         }
@@ -294,19 +286,32 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
             //return;
         }
 
+       
         var mouse = Mouse.current.delta;
-        rotation.x += mouse.x.ReadValue() * mouseRotateSensitivity;
+        var inX = mouse.x.ReadValue();
+        var inY = mouse.y.ReadValue();
+        /*rotation.x += mouse.x.ReadValue() * mouseRotateSensitivity;
         rotation.y += mouse.y.ReadValue() * mouseRotateSensitivity;
         rotation.y = Mathf.Clamp(rotation.y, RotationYBounds.x, RotationYBounds.y);
         var xQuat = Quaternion.AngleAxis(rotation.x, Vector3.up);
         var yQuat = Quaternion.AngleAxis(rotation.y, Vector3.left);
-
-        if (!canMouseDelta) {
-            canMouseDelta = true;
+        */
+        if (InputPaused) {
             return;
         }
 
-        firstPersonParent.transform.localRotation = xQuat * yQuat;
+
+        var trans = firstPersonParent.transform;
+        trans.rotation *= Quaternion.AngleAxis(inY  * mouseRotateSensitivity, Vector3.left);
+        var ang = trans.eulerAngles.x;
+        while (ang > 180) ang -= 360;
+        while (ang < -180) ang += 360;
+        trans.rotation = Quaternion.Euler(
+            Mathf.Clamp(ang, RotationYBounds.x, RotationYBounds.y),
+            trans.eulerAngles.y + inX * mouseRotateSensitivity,
+            trans.eulerAngles.z
+        );
+
     }
 
     private void HandleRay() {

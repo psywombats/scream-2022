@@ -1,3 +1,4 @@
+teleport('Meeting', 'target',
 CHRIS: "You said there was news?"
 BRAULIO: "Sumi's in! Her holding group would take 30% equity, but we'd be funded in full for the next five years! And with enough to hire more staff and buy material for the next Gazer prototype."
 ARIEL: "Nice work."

@@ -21,6 +21,7 @@ public class MapOverlayUI : MonoBehaviour {
         }
     }
 
+    public SettingBox setting;
     public NVLComponent adv;
     public Image xfade;
 }

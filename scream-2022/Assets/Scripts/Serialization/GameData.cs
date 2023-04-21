@@ -20,11 +20,21 @@ public class GameData {
 
     public int SwitchLastUpdatedFrame { get; set; } = 0;
 
+    public TimeblockType Time {
+        get {
+            if (!GetSwitch("pt1_08")) {
+                return TimeblockType.Morning;
+            } else {
+                return TimeblockType.Afternoon;
+            }
+        }
+    }
+
     public GameData(SerializationManager serialization) {
         Variables = new Dictionary<string, int>();
         StringVariables = new Dictionary<string, string>();
         Switches = new Dictionary<string, bool>();
-        SwitchLastUpdatedFrame = Time.frameCount;
+        SwitchLastUpdatedFrame = UnityEngine.Time.frameCount;
         SavedAt = UIUtils.CurrentTimestamp();
     }
 
@@ -37,7 +47,7 @@ public class GameData {
 
     public void SetSwitch(string switchName, bool value) {
         Switches[switchName] = value;
-        SwitchLastUpdatedFrame = Time.frameCount;
+        SwitchLastUpdatedFrame = UnityEngine.Time.frameCount;
     }
 
     public int GetVariable(string variableName) {

@@ -8,7 +8,10 @@ public class SpeakerData : MainSchema {
     public string displayName;
     public Sprite image;
     public List<Expression> expressions;
+    public List<Sprite> glitchBrush;
     public Sprite glow;
+    public Sprite spooky;
+    public Sprite glitch;
 
     public override string Key => tag;
 

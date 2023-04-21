@@ -1,5 +1,5 @@
-
 enterNVL()
+
 speak('CHRIS', "Ariel. Ariel! Are you alright?")
 speak('NOEMI', "Hmmm. These delta waves... There's a flowing rhythm in them.")
 setWake(1)
@@ -12,6 +12,11 @@ speak('ARIEL', "I'm awake. Sorry.")
 exitNVL()
 
 setWake(-1)
+wait(2)
+setting('Aquila Tower')
+setting('Floor 37')
+setting('Lucir Offices')
+setSwitch('no_settings', false)
 wait(3)
 
 enterNVL()

@@ -145,16 +145,16 @@ public class Map : MonoBehaviour {
         }
         return null;
     }
-
-    private static bool firstMap = true;
+    
     public void OnTeleportTo() {
         if (bgmKey != null) {
             AudioManager.Instance.PlayBGM(bgmKey);
         }
-        if (firstMap == true) {
-            firstMap = false;
-        } else {
-            firstMap = false;
+
+        if (!Global.Instance.Data.GetSwitch("no_settings")) {
+            foreach (var setting in settings) {
+                MapOverlayUI.Instance.setting.Show(setting);
+            }
         }
 
         FMODUnity.RuntimeManager.StudioSystem.setParameterByName("RoomSize", roominess);

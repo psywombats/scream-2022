@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Threading.Tasks;
 
 public class PortraitComponent : MonoBehaviour {
 
@@ -91,5 +92,47 @@ public class PortraitComponent : MonoBehaviour {
         }
 
         IsHighlighted = false;
+    }
+
+    public void Jolt() {
+        _ = GlitchBrushAsync(.7f);
+        _ = GlitchAsync(.7f);
+    }
+
+    private async Task GlitchBrushAsync(float duration) {
+        var interval = 50;
+        var i = 0;
+        altSprite.color = Color.white;
+        for (var ms = 0; ms < duration * 1000; ms += interval) {
+            i += Random.Range(0, 2) == 0 ? 1 : -1;
+            if (i < 0) i += Speaker.glitchBrush.Count;
+            if (i >= Speaker.glitchBrush.Count) i = 0;
+            altSprite.sprite = Speaker.glitchBrush[i];
+            altSprite.transform.localScale = new Vector3(
+                altSprite.transform.localScale.x * (Random.Range(0, 2) == 0 ? 1 : -1),
+                altSprite.transform.localScale.y * (Random.Range(0, 2) == 0 ? 1 : -1),
+                altSprite.transform.localScale.z);
+            altSprite.SetNativeSize();
+            await Task.Delay(interval);
+        }
+        altSprite.sprite = null;
+        altSprite.transform.localScale = new Vector3(
+            Mathf.Abs(altSprite.transform.localScale.x),
+            Mathf.Abs(altSprite.transform.localScale.y),
+            Mathf.Abs(altSprite.transform.localScale.z));
+        altSprite.color = Color.clear;
+    }
+
+    private async Task GlitchAsync(float duration) {
+        var frameLength = (int)(duration * 1000f / 7f);
+        sprite.sprite = Speaker.glitch;
+        await Task.Delay(frameLength);
+        sprite.sprite = Speaker.spooky;
+        await Task.Delay(frameLength * 3);
+        sprite.sprite = Speaker.glitch;
+        await Task.Delay(frameLength);
+        sprite.sprite = Speaker.spooky;
+        await Task.Delay(frameLength);
+        sprite.sprite = Speaker.image;
     }
 }

@@ -62,6 +62,9 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_rotateTo"] = (Action<DynValue>)RotateToward;
         lua.Globals["cs_expr"] = (Action<DynValue, DynValue>)Express;
         lua.Globals["cs_bootGazer"] = (Action<DynValue>)BootGazer;
+        lua.Globals["disableGazer"] = (Action)DisableGazer;
+        lua.Globals["updateGazer"] = (Action)UpdateGazer;
+        lua.Globals["setting"] = (Action<DynValue>)Setting;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -213,5 +216,19 @@ public class LuaCutsceneContext : LuaContext {
     private IEnumerator BootGazerRoutine(bool on) {
         var gazer = GameObject.FindObjectOfType<GazerController>();
         yield return CoUtils.TaskAsRoutine(gazer.BootAsync(on));
+    }
+
+    public void UpdateGazer() {
+        var gazer = GameObject.FindObjectOfType<GazerController>();
+        gazer.UpdateAmbient();
+    }
+
+    public void DisableGazer() {
+        var gazer = GameObject.FindObjectOfType<GazerController>();
+        gazer.DisableAmbient();
+    }
+
+    private void Setting(DynValue textVal) {
+        MapOverlayUI.Instance.setting.Show(textVal.String);
     }
 }
