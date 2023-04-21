@@ -30,4 +30,4 @@ ARIEL: "Sorry, Noemi is a little odd, but she's an old friend of mine, and she p
 ARIEL: "Computational neuroscience is her specialty. All the technology that lets us record and play back brain signals -- that's all her."
 SUMI: "Genius and insanity go hand in hand, after all."
 ARIEL: "She's not insane, she - "
-SUMI: "Ahaha, I'm only joking. She seems like a nice girl. Maybe later I'll come back and meet the rats."
+SUMI: "Ahaha, I'm only joking. She seems like a nice girl. Maybe later I'll have to meet the rats later."

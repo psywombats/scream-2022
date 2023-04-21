@@ -54,11 +54,16 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     private bool tracking;
     private bool trackingLastFrame;
     private bool fpLastFrame;
+    private bool canMouseDelta = false;
+    
 
     public void Start() {
         if (MapManager.Instance.Avatar == null) {
             MapManager.Instance.Avatar = this;
         }
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public virtual void Update() {
@@ -148,11 +153,11 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     public void PauseInput() {
         pauseCount += 1;
+        canMouseDelta = false;
     }
 
     public void UnpauseInput() {
-        if (pauseCount > 0)
-        {
+        if (pauseCount > 0) {
           pauseCount -= 1;
         }
 
@@ -243,7 +248,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         var targetEvents = GetComponent<MapEvent>().Map.GetEventsAt(Event.PositionPx);
         foreach (var tryTarget in targetEvents) {
             if (tryTarget.IsSwitchEnabled && tryTarget.IsPassableBy(Event) && tryTarget != Event) {
-                tryTarget.GetComponent<Dispatch>().Signal(MapEvent.EventCollide, this);
+                tryTarget.Collide(this);
                 break;
             }
         }
@@ -273,17 +278,20 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     private void ShowMenu() {
         PauseInput();
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     private void HandleFPC() {
         if (InputPaused) {
             return;
         }
+        
         if (InputManager.Instance.GetMouse() != lastMousePos) {
             mouseLastMovedAt = Time.time;
         }
         if (Time.time - mouseLastMovedAt > .5) {
-            return;
+            //return;
         }
 
         var mouse = Mouse.current.delta;
@@ -292,6 +300,11 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         rotation.y = Mathf.Clamp(rotation.y, RotationYBounds.x, RotationYBounds.y);
         var xQuat = Quaternion.AngleAxis(rotation.x, Vector3.up);
         var yQuat = Quaternion.AngleAxis(rotation.y, Vector3.left);
+
+        if (!canMouseDelta) {
+            canMouseDelta = true;
+            return;
+        }
 
         firstPersonParent.transform.localRotation = xQuat * yQuat;
     }

@@ -68,7 +68,7 @@ public class PortraitComponent : MonoBehaviour {
         if (!IsHighlighted) {
             yield return nvl.SetHighlightRoutine(Speaker);
         }
-        altSprite.color = Color.clear;
+        altSprite.color = new Color(1, 1, 1, 0);
         altSprite.sprite = Speaker.GetExpr(expr);
         altSprite.SetNativeSize();
         yield return CoUtils.RunParallel(this,

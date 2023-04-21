@@ -1,6 +1,8 @@
 TODO:
 title mouse controls
-real ceilings
+ui, desperately
+beginning lighting
+glitch out
 
 
 PART 1:

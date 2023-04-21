@@ -45,6 +45,11 @@ function rotateTo(event)
 	await()
 end
 
+function bootGazer(on)
+	cs_bootGazer(on)
+	await()
+end
+
 function enter(speaker, slot, alt)
     cs_enter(speaker, slot, alt)
     await()

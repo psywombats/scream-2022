@@ -15,6 +15,7 @@ public class Global : MonoBehaviour {
     public MapManager Maps => Get<MapManager>();
     public AudioManager Audio => Get<AudioManager>();
     public SerializationManager Serialization => Get<SerializationManager>();
+    public VideoManager Video => Get<VideoManager>();
 
     public GameData Data => Serialization.Data;
     public SystemData SystemData => Serialization.SystemData;

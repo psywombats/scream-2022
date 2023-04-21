@@ -65,7 +65,6 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
                 AvatarEvent.Instance.UnpauseInput();
 
                 await MapManager.Instance.Lua.RunRoutineFromFile("pt1_02");
-
                 
                 break;
         }

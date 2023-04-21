@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine;
 
 
-[RequireComponent(typeof(Dispatch))]
 [RequireComponent(typeof(RectTransform))]
 [DisallowMultipleComponent]
 public class MapEvent : MonoBehaviour {
@@ -12,11 +11,6 @@ public class MapEvent : MonoBehaviour {
     private const string PropertyInteract = "onInteract";
     private const string PropertyCollide = "onCollide";
     private const string PropertyEnter = "onEnter";
-
-    public const string EventEnabled = "enabled";
-    public const string EventCollide = "collide";
-    public const string EventInteract = "interact";
-    public const string EventMove = "move";
 
     [SerializeField] public Vector2Int size = new Vector2Int(1, 1);
     [Space]
@@ -29,10 +23,14 @@ public class MapEvent : MonoBehaviour {
     [SerializeField] [TextArea(3, 6)] public string luaOnInteract;
     [SerializeField] [TextArea(3, 6)] public string luaOnCollide;
     [SerializeField] [TextArea(3, 6)] public string luaOnEnter;
-    [SerializeField] private GameObject enableChild;
+    [SerializeField] public GameObject enableChild;
   
     public bool IsTracking { get; private set; }
     private float lastCollided;
+
+    public event Action<bool> OnSwitchChanged;
+    public event Action OnInteract;
+    public event Action OnCollide;
     
     public Vector3 PositionPx {
         get { return transform.localPosition; }
@@ -94,7 +92,7 @@ public class MapEvent : MonoBehaviour {
         }
         set {
             if (value != isSwitchEnabled) {
-                GetComponent<Dispatch>().Signal(EventEnabled, value);
+                OnSwitchChanged?.Invoke(value);
                 if (enableChild != null) {
                     enableChild.SetActive(value);
                 }
@@ -115,13 +113,6 @@ public class MapEvent : MonoBehaviour {
             LuaObject.Set(PropertyInteract, luaOnInteract);
             LuaObject.Set(PropertyCondition, luaCondition);
             LuaObject.Set(PropertyEnter, luaOnEnter);
-
-            GetComponent<Dispatch>().RegisterListener(EventCollide, (object payload) => {
-                OnCollide((AvatarEvent)payload);
-            });
-            GetComponent<Dispatch>().RegisterListener(EventInteract, (object payload) => {
-                Interact();
-            });
 
             CheckEnabled();
         }
@@ -277,10 +268,10 @@ public class MapEvent : MonoBehaviour {
             new Vector3((size.x - 0.1f), fudge, (size.y - 0.1f)));
     }
 
-  // called when the avatar stumbles into us
-  // before the step if impassable, after if passable
-  private bool triggered = false;
-    private void OnCollide(AvatarEvent avatar) {
+    // called when the avatar stumbles into us
+    // before the step if impassable, after if passable
+    private bool triggered = false;
+    public void Collide(AvatarEvent avatar) {
         if (avatar.InputPaused)
         {
           return;
@@ -293,12 +284,14 @@ public class MapEvent : MonoBehaviour {
         }
         lastCollided = Time.time;
         LuaObject.Run(PropertyCollide);
+        OnCollide?.Invoke();
     }
 
     // called when the avatar stumbles into us
     // facing us if impassable, on top of us if passable
     public void Interact() {
         LuaObject.Run(PropertyInteract);
+        OnInteract?.Invoke();
     }
 
     private LuaScript ParseScript(string lua) {

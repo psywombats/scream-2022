@@ -11,4 +11,5 @@ speak('BRAULIO', "Okay, good, I'm glad you're okay, because she's looking to mee
 exitNVL()
 
 teleport('Meeting', 'target', 'NORTH')
+setSwitch('pt1_03', true)
 play('pt1_04')

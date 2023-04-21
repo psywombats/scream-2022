@@ -9,21 +9,19 @@ public class DoorEvent : MonoBehaviour {
     [Space]
     [SerializeField] private string mapName;
     [SerializeField] private string targetEventName;
-    [SerializeField] [TextArea(5, 10)] private string lockedCondition;
-    [SerializeField] [TextArea(5, 10)] private string lockedLua = "";
+    [SerializeField] OrthoDir dir;
+    [SerializeField] [TextArea(3, 6)] private string lockedCondition;
+    [SerializeField] [TextArea(3, 6)] private string lockedLua = "";
+    [SerializeField] private string passSwitch;
 
     private MapEvent @event;
     public MapEvent Event => @event ?? (@event = GetComponent<MapEvent>());
 
-    private void Start() {
+    public void Start() {
         RefreshDoor();
 
-        GetComponent<Dispatch>().RegisterListener(MapEvent.EventCollide, (object payload) => {
-            Global.Instance.StartCoroutine(TeleportRoutine(AvatarEvent.Instance));
-        });
-        GetComponent<Dispatch>().RegisterListener(MapEvent.EventInteract, (object payload) => {
-            Global.Instance.StartCoroutine(TeleportRoutine(AvatarEvent.Instance, force: true));
-        });
+        Event.OnCollide += () => Global.Instance.StartCoroutine(TeleportRoutine(AvatarEvent.Instance));
+        Event.OnInteract += () => Global.Instance.StartCoroutine(TeleportRoutine(AvatarEvent.Instance, force: true)); 
         Event.LuaObject.Set("door", lockedCondition);
     }
 
@@ -32,10 +30,13 @@ public class DoorEvent : MonoBehaviour {
     }
 
     public virtual IEnumerator TeleportRoutine(AvatarEvent avatar, bool force = false) {
-
+        if (string.IsNullOrEmpty(mapName)) {
+            yield break;
+        }
         if (!GetComponent<MapEvent>().IsSwitchEnabled) {
             yield break;
         }
+
         if (lockedCondition.Length > 0 && !Event.LuaObject.EvaluateBool("door")) {
             if (force) {
                 Event.LuaObject.Set("locked", lockedLua);
@@ -43,13 +44,26 @@ public class DoorEvent : MonoBehaviour {
             }
             yield break;
         }
-        GetComponent<StudioEventEmitter>().Play();
+        var emitter = GetComponent<StudioEventEmitter>();
+        if (emitter != null) {
+            emitter.Play();
+        }
+
+        if (!string.IsNullOrEmpty(passSwitch)) {
+            Global.Instance.Data.SetSwitch("sumi_last_chris", false);
+            Global.Instance.Data.SetSwitch("sumi_last_elevator", false);
+            Global.Instance.Data.SetSwitch("sumi_last_noemi", false);
+            Global.Instance.Data.SetSwitch("sumi_last_braulio", false);
+            Global.Instance.Data.SetSwitch("sumi_last_gazer", false);
+            Global.Instance.Data.SetSwitch(passSwitch, true);
+        }
 
         avatar.PauseInput();
         avatar.CancelCollisions = true;
+        var reFace = GetComponent<CharaEvent>().dir;
+
         yield return avatar.RotateTowardRoutine(Event);
-        yield return Global.Instance.Maps.TeleportRoutine(mapName, targetEventName);
-        yield return avatar.GetComponent<MapEvent>().LinearStepRoutine(avatar.Event.PositionPx + avatar.FPFacing().Px3D() * .2f);
+        yield return Global.Instance.Maps.TeleportRoutine(mapName, targetEventName, dir);
         avatar.UnpauseInput();
         avatar.CancelCollisions = false;
     }

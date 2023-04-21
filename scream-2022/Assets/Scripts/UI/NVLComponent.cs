@@ -22,6 +22,8 @@ public class NVLComponent : MonoBehaviour {
 
     public Image wake0, wake1, wake2;
 
+    public bool IsShown { get; private set; }
+
     public Dictionary<SpeakerData, string> speakerNames = new Dictionary<SpeakerData, string>();
 
     public void Wipe() {
@@ -29,17 +31,18 @@ public class NVLComponent : MonoBehaviour {
         nameText.text = "";
     }
 
-    public IEnumerator ShowRoutine(bool dontClear = false) {
+    public IEnumerator ShowRoutine(bool lightMode = false) {
+        IsShown = true;
         backer.Hide();
         fader.alpha = 0.0f;
         background.alpha = 0f;
-        if (!dontClear) {
-            foreach (var portrait in GetPortraits()) {
-                portrait.Clear();
-            }
+        foreach (var portrait in GetPortraits()) {
+            portrait.Clear();
         }
 
-        StartCoroutine(CoUtils.RunTween(background.DOFade(1, bgTime)));
+        if (!lightMode) {
+            StartCoroutine(CoUtils.RunTween(background.DOFade(1, bgTime)));
+        }
         yield return backer.ShowRoutine();
         text.Clear();
         Wipe();
@@ -59,6 +62,7 @@ public class NVLComponent : MonoBehaviour {
         routines.Add(CoUtils.RunTween(background.DOFade(0, bgTime)));
         yield return CoUtils.RunParallel(routines.ToArray(), this);
         Wipe();
+        IsShown = false;
     }
 
     public IEnumerator EnterRoutine(SpeakerData speaker, string slot, string expr = null) {
@@ -93,6 +97,10 @@ public class NVLComponent : MonoBehaviour {
         Wipe();
         var name = speaker.displayName;
         
+        if (!IsShown) {
+            yield return ShowRoutine(lightMode: true);
+        }
+
         if (speaker != null) {
             yield return SetHighlightRoutine(speaker);
         }

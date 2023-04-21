@@ -33,6 +33,10 @@ public class TacticsTerrainMesh : MonoBehaviour, ISerializationCallbackReceiver 
         }
     }
 
+    public void Fix() {
+        
+    }
+
     public void Resize(Vector2Int newSize) {
         List<FacingTileKey> toRemove = new List<FacingTileKey>();
         foreach (FacingTileKey key in facingTiles.Keys) {
@@ -113,7 +117,7 @@ public class TacticsTerrainMesh : MonoBehaviour, ISerializationCallbackReceiver 
         FacingTileKey key = new FacingTileKey();
         key.dir = dir;
         key.pos = new Vector3(x, height, y);
-        if (facingTiles.ContainsKey(key)) {
+        if (facingTiles.ContainsKey(key) && facingTiles[key] != null) {
             return facingTiles[key];
         } else {
             return defaultFaceTile;

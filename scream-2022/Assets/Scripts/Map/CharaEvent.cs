@@ -11,8 +11,8 @@ public class CharaEvent : MonoBehaviour {
     [SerializeField] public DollComponent doll;
     [SerializeField] private SpeakerData speaker;
     [SerializeField] private bool phaseIn;
-    [SerializeField] private float phaserDelay = 1.5f;
-    [SerializeField] private OrthoDir dir = OrthoDir.South;
+    [SerializeField] private float phaserDelay = .8f;
+    [SerializeField] public OrthoDir dir = OrthoDir.South;
 
     private MapEvent @event;
     public MapEvent Event => @event ?? (@event = GetComponent<MapEvent>());
@@ -26,6 +26,8 @@ public class CharaEvent : MonoBehaviour {
             PhaseIn();
         }
         SetFacing(dir);
+        Event.enableChild = doll.gameObject;
+        doll.gameObject.SetActive(Event.IsSwitchEnabled);
     }
 
     private async void PhaseIn() {
@@ -59,7 +61,9 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void SetFacing(OrthoDir dir) {
-        doll.offsetter.transform.localEulerAngles = new Vector3(0, dir.Rot3D(), 0);
+        if (doll != null) {
+            doll.offsetter.transform.localEulerAngles = new Vector3(0, dir.Rot3D(), 0);
+        }
     }
 
     public void OnValidate() {

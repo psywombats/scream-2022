@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -41,8 +42,10 @@ public class TerrainQuad {
             vertices.Add(new Vector3(upperRight.x, lowerLeft.y, lowerLeft.z));
         }
         vertices.Add(upperRight);
-
-        Debug.Assert(tile != null);
+        
+        if (tile == null || tile.sprite == null) {
+            throw new ArgumentException($"Tile {tile} is invalid");
+        }
         Vector2[] spriteUVs = tile.sprite.uv;
         var fudgeX = .00f;
         var fudgeY = .00f;

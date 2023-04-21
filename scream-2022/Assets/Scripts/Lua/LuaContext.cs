@@ -113,6 +113,9 @@ public class LuaContext {
         while (script.scriptRoutine.State != CoroutineState.Dead && !forceKilled) {
             yield return null;
         }
+        if (MapOverlayUI.Instance.adv.IsShown) {
+            yield return MapOverlayUI.Instance.adv.HideRoutine();
+        }
         activeScripts.Pop();
     }
 

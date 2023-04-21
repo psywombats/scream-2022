@@ -40,7 +40,6 @@ public class InputManager : SingletonBehavior {
         foreach (Command cmd in Enum.GetValues(typeof(Command))) {
             SetDefaultKeybindsForCommand(cmd);
         }
-        Cursor.visible = false;
     }
 
     public void Update() {
@@ -161,12 +160,14 @@ public class InputManager : SingletonBehavior {
                 action.AddBinding(Keyboard.current.enterKey);
                 action.AddBinding(Keyboard.current.zKey);
                 action.AddBinding("<Gamepad>/buttonSouth");
+                action.AddBinding(Mouse.current.leftButton);
                 break;
             case Command.Secondary:
                 action.AddBinding(Keyboard.current.bKey);
                 action.AddBinding(Keyboard.current.xKey);
                 action.AddBinding(Keyboard.current.ctrlKey);
                 action.AddBinding(Keyboard.current.rightShiftKey);
+                action.AddBinding(Mouse.current.rightButton);
                 action.AddBinding("<Gamepad>/buttonEast");
                 break;
             case Command.Menu:

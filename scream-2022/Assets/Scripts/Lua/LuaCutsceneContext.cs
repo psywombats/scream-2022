@@ -61,6 +61,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["setWake"] = (Action<DynValue>)SetWake;
         lua.Globals["cs_rotateTo"] = (Action<DynValue>)RotateToward;
         lua.Globals["cs_expr"] = (Action<DynValue, DynValue>)Express;
+        lua.Globals["cs_bootGazer"] = (Action<DynValue>)BootGazer;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -128,12 +129,12 @@ public class LuaCutsceneContext : LuaContext {
         RunRoutineFromLua(globals.Maps.Camera.fade.FadeRoutine(fade, invert));
     }
     
-    public void EnterNVL(DynValue dontClearLua) {
-        var dontClear = dontClearLua.IsNil() || dontClearLua.Boolean;
-        RunRoutineFromLua(EnterNVLRoutine(dontClear));
+    public void EnterNVL(DynValue lightLua) {
+        var lightMode = !lightLua.IsNil() && lightLua.Boolean;
+        RunRoutineFromLua(EnterNVLRoutine(lightMode));
     }
-    private IEnumerator EnterNVLRoutine(bool dontClear) {
-        yield return MapOverlayUI.Instance.adv.ShowRoutine(dontClear);
+    private IEnumerator EnterNVLRoutine(bool lightMode) {
+        yield return MapOverlayUI.Instance.adv.ShowRoutine(lightMode);
     }
 
     public void ExitNVL() {
@@ -204,5 +205,13 @@ public class LuaCutsceneContext : LuaContext {
         var adv = MapOverlayUI.Instance.adv;
         var speaker = IndexDatabase.Instance.Speakers.GetData(charaTag);
         return adv.GetPortrait(speaker).ExpressRoutine(expr);
+    }
+
+    public void BootGazer(DynValue on) {
+        RunRoutineFromLua(BootGazerRoutine(on.Boolean));
+    }
+    private IEnumerator BootGazerRoutine(bool on) {
+        var gazer = GameObject.FindObjectOfType<GazerController>();
+        yield return CoUtils.TaskAsRoutine(gazer.BootAsync(on));
     }
 }
