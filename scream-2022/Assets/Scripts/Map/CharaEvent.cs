@@ -38,26 +38,23 @@ public class CharaEvent : MonoBehaviour {
     }
 
     public void Update() {
-        var a = doll.renderer.color.a;
-        var targetA = highlightNow ? 0f : 1f;
+        var a = doll.highlightRenderer.color.a;
+        var targetA = highlightNow ? 1f : 0f;
         var delta = HighlightSpeed * Time.deltaTime;
         if (a < targetA) delta *= -1;
         a += delta;
         if (delta < 0 && a < targetA) a = targetA;
         if (delta > 0 && a > targetA) a = targetA;
-
-        //doll.renderer.color = new Color(
-        //    doll.renderer.color.r,
-        //    doll.renderer.color.g,
-        //   doll.renderer.color.b,
-        //    a);
+        
         doll.highlightRenderer.color = new Color(
             doll.highlightRenderer.color.r,
             doll.highlightRenderer.color.g,
             doll.highlightRenderer.color.b,
-            1f - a);
+            a);
 
-        highlightNow = false;
+        if (!AvatarEvent.Instance.InputPaused) {
+            highlightNow = false;
+        }
     }
 
     public void SetFacing(OrthoDir dir) {
@@ -76,9 +73,11 @@ public class CharaEvent : MonoBehaviour {
     public void UpdateRenderer() {
         if (speaker != null) {
             var factor = TargetHeight / speaker.image.rect.height * speaker.image.pixelsPerUnit;
-            doll.renderer.transform.localScale = new Vector3(factor, factor, factor);
+            foreach (var renderer in doll.renderers) {
+                renderer.transform.localScale = new Vector3(factor, factor, factor);
+                renderer.sprite = speaker.image;
+            }
             doll.highlightRenderer.transform.localScale = new Vector3(factor, factor, factor);
-            doll.renderer.sprite = speaker.image;
             doll.highlightRenderer.sprite = speaker.glow;
         } 
     }

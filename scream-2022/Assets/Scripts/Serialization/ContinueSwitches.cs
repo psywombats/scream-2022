@@ -9,20 +9,33 @@
     };
 
     private static readonly string[] switchesPt1B = {
-        "pt1_5a",
-        "pt1_5b",
-        "pt1_5c",
-        "pt1_5d",
-        "pt1_5e",
+        "pt1_05a",
+        "pt1_05b",
+        "pt1_05c",
+        "pt1_05d",
+        "pt1_05e",
         "pt1_06",
         "pt1_08",
+        "pt1_08b",
     };
 
     private static readonly string[] switchesPt1C = {
+        "pt1_09a",
+        "pt1_09b",
+        "pt1_09c",
+        "pt1_09d",
+        "pt1_10",
+    };
+
+    private static readonly string[] switchesPt1D = {
+        "pt1_10a",
+        "pt1_10b",
+        "pt1_10c",
+        "pt1_11",
     };
 
 
-    private static readonly string[][] checkpoints = { switchesPt1A, switchesPt1B, switchesPt1C };
+    private static readonly string[][] checkpoints = { switchesPt1A, switchesPt1B, switchesPt1C, switchesPt1D };
 
     public static void Activate(int checkpoint) {
         for (var i = 0; i <= checkpoint; i += 1 ) {

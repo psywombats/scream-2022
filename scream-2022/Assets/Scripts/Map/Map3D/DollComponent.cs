@@ -1,9 +1,10 @@
-﻿using FMODUnity;
+﻿using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 
 public class DollComponent : MonoBehaviour {
 
-    public new SpriteRenderer renderer;
+    public List<SpriteRenderer> renderers;
     public SpriteRenderer highlightRenderer;
     public new CapsuleCollider collider;
     public StudioEventEmitter emitter;

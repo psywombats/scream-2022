@@ -1,6 +1,8 @@
 teleport('Gazer', 'chair', 'SOUTH', true)
 fade('normal')
 wait(1)
+setting("March 1st, 4:00PM")
+wait(1)
 rotateTo('braulio_2')
 wait(.6)
 
@@ -19,4 +21,5 @@ expr('BRAULIO', 'determined')
 speak('BRAULIO', "Never mind! Catch me in the office if you need anything!")
 exitNVL()
 
+setSwitch('pt1_08b', true)
 teleport('F2', 'gazer', 'NORTH')

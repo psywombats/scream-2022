@@ -145,7 +145,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         var targetPos = firstPersonParent.transform.position + dirr.Px3D();
         var dir = (targetPos - firstPersonParent.transform.position).normalized;
         var lookAngles = Quaternion.LookRotation(dir);
-        firstPersonParent.transform.localRotation = lookAngles;
+        FPSCam.transform.localRotation = lookAngles;
     }
 
     public void PauseInput() {
@@ -168,7 +168,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         var dir = (targetPos - firstPersonParent.transform.position).normalized;
         var lookAngles = Quaternion.LookRotation(dir).eulerAngles;
 
-        return CoUtils.RunTween(firstPersonParent.transform.DORotate(lookAngles, .5f));
+        return CoUtils.RunTween(FPSCam.transform.DORotate(lookAngles, .5f));
     }
 
     public bool CanCrossTileGradient(Vector2Int from, Vector2Int to) {
@@ -181,7 +181,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     public OrthoDir FPFacing() {
-        var a = firstPersonParent.transform.localEulerAngles.y;
+        var a = FPSCam.transform.localEulerAngles.y;
         while (a < -180) a += 360;
         while (a > 180) a -= 360;
         if (a >= -45 && a <= 45) {
@@ -252,7 +252,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         tracking = true;
         var component = dir.Px3D() * Event.tilesPerSecond * 1.2f;
         if (UseFirstPersonControl) {
-            var c2 = Quaternion.AngleAxis(firstPersonParent.transform.localEulerAngles.y, Vector3.up) * component;
+            var c2 = Quaternion.AngleAxis(FPSCam.transform.localEulerAngles.y, Vector3.up) * component;
             velocityThisFrame += c2;
         } else {
             velocityThisFrame += component;
@@ -301,7 +301,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         }
 
 
-        var trans = firstPersonParent.transform;
+        var trans = FPSCam.transform;
         trans.rotation *= Quaternion.AngleAxis(inY  * mouseRotateSensitivity, Vector3.left);
         var ang = trans.eulerAngles.x;
         while (ang > 180) ang -= 360;

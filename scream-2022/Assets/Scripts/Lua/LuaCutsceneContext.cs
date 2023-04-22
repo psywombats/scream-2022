@@ -65,6 +65,7 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["disableGazer"] = (Action)DisableGazer;
         lua.Globals["updateGazer"] = (Action)UpdateGazer;
         lua.Globals["setting"] = (Action<DynValue>)Setting;
+        lua.Globals["jolt"] = (Action<DynValue>)Jolt;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -230,5 +231,11 @@ public class LuaCutsceneContext : LuaContext {
 
     private void Setting(DynValue textVal) {
         MapOverlayUI.Instance.setting.Show(textVal.String);
+    }
+
+    private void Jolt(DynValue charaTag) {
+        var speaker = IndexDatabase.Instance.Speakers.GetData(charaTag.String);
+        var portrait = MapOverlayUI.Instance.adv.GetPortrait(speaker);
+        _ = portrait.JoltAsync();
     }
 }

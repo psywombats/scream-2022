@@ -9,6 +9,7 @@ public class HallPanelController : MonoBehaviour {
     public void Start() {
         switch (Global.Instance.Data.Time) {
             case TimeblockType.Afternoon:
+            case TimeblockType.Evening:
                 Light.IsEvil = false;
                 Light.preferRunning = true;
                 Light.IsShutDown = false;

@@ -1,6 +1,9 @@
 #ifndef __GLITCH_CGINC_INCLUDED__
 #define __GLITCH_CGINC_INCLUDED__
 
+#include "UnityShaderVariables.cginc"
+#include "UnitySprites.cginc"
+
 float _Wave[512];
 int _WaveSamples;
 
@@ -123,9 +126,6 @@ float _CSplitStart;
 float _CSplitMax;
 float _CSplitFix;
 
-sampler2D _MainTex;
-
-
 // for when 0.0001 and 0.1 are equally valid
 // source is from a slider, usually 0-1
 float cubicEase(float source,  float newMax) {
@@ -241,7 +241,7 @@ float clampShade(float source, float shadesAllowed, bool dither, bool vary, floa
 }
 
 // returns a jitter from -1 to 1 scaled by jitter
-float jitter(float jitter, float2 seed) {
+float jitter(float jitter, fixed2 seed) {
     if (jitter > 0.0) {
         float add = rand2(seed[0] * 36.0, seed[1] * 17.0) * 2.0 - 1.0;
         add *= jitter;
@@ -251,8 +251,8 @@ float jitter(float jitter, float2 seed) {
 }
 
 // return c2 with the brightness of c1
-float4 preserveBrightness(float4 c1, float4 c2) {
-    float4 result = c2;
+fixed4 preserveBrightness(fixed4 c1, fixed4 c2) {
+    fixed4 result = c2;
     float brightness = (c1[0] + c1[1] + c1[2]);
     float newBrightness = (c2[0] + c2[1] + c2[2]);
     float ratio = brightness / newBrightness;
@@ -267,8 +267,8 @@ float4 preserveBrightness(float4 c1, float4 c2) {
 // channelIndex: the index to flip (r/g/b 0/1/2)
 // chance: will be cubicly eased to 0-1 range
 // seed: covariant
-float4 invertChannel(float4 source, int channelIndex, float chance, float seed) {
-    float4 result = source;
+fixed4 invertChannel(fixed4 source, int channelIndex, float chance, float seed) {
+    fixed4 result = source;
     float roll = rand2(_Time[1], seed);
     float invertChance = cubicEase(chance, 1.0);
     if ((roll > 1.0 - invertChance) && (source.a > 0.02 || _PDistAlphaIncluded > 0.0)) {
@@ -276,8 +276,8 @@ float4 invertChannel(float4 source, int channelIndex, float chance, float seed) 
     }
     return result;
 }
-float4 maxChannel(float4 source, int channelIndex, float chance, float seed) {
-    float4 result = source;
+fixed4 maxChannel(fixed4 source, int channelIndex, float chance, float seed) {
+    fixed4 result = source;
     float roll = rand2(_Time[1], seed);
     float invertChance = cubicEase(chance, 1.0);
     if ((roll > 1.0 - invertChance) && (source.a > 0.02 || _PDistAlphaIncluded > 0.0)) {
@@ -286,7 +286,7 @@ float4 maxChannel(float4 source, int channelIndex, float chance, float seed) {
     return result;
 }
 
-float3 CMYKtoRGB (float4 cmyk) {
+fixed3 CMYKtoRGB (fixed4 cmyk) {
     float c = cmyk.x;
     float m = cmyk.y;
     float y = cmyk.z;
@@ -296,36 +296,36 @@ float3 CMYKtoRGB (float4 cmyk) {
     float r = 1.0 - min(1.0, c * invK + k);
     float g = 1.0 - min(1.0, m * invK + k);
     float b = 1.0 - min(1.0, y * invK + k);
-    return clamp(float3(r, g, b), 0.0, 1.0);
+    return clamp(fixed3(r, g, b), 0.0, 1.0);
 }
 
-float4 RGBtoCMYK (float3 rgb) {
+fixed4 RGBtoCMYK (fixed3 rgb) {
     float r = rgb.r;
     float g = rgb.g;
     float b = rgb.b;
     float k = min(1.0 - r, min(1.0 - g, 1.0 - b));
-    float3 cmy = float3(0, 0, 0);
+    fixed3 cmy = fixed3(0, 0, 0);
     float invK = 1.0 - k;
     if (invK != 0.0) {
         cmy.x = (1.0 - r - k) / invK;
         cmy.y = (1.0 - g - k) / invK;
         cmy.z = (1.0 - b - k) / invK;
     }
-    return float4(cmy[0], cmy[1], cmy[2], k);
+    return fixed4(cmy[0], cmy[1], cmy[2], k);
 }
-float4 cmykAverage(float4 source, float2 coords, int channel) {
-    float4 smp = tex2D(_MainTex, coords);
-    float4 s1 = source;
-    float4 s2 = smp;
+fixed4 cmykAverage(fixed4 source, fixed2 coords, int channel) {
+    fixed4 smp = SampleSpriteTexture(coords);
+    fixed4 s1 = source;
+    fixed4 s2 = smp;
     s1[channel] = (s1[channel] + s2[channel] / 2);
-    //float3 back = CMYKtoRGB(s1);
+    //fixed3 back = CMYKtoRGB(s1);
     return s1;
-     
-    //float4 result = float4(back.r, back.g, back.b, source.a);
+    
+    //fixed4 result = fixed4(back.r, back.g, back.b, source.a);
     //return result;
 }
 
-float4 glitchFragFromCoords(float2 xy, float4 pxXY, float depth) {
+fixed4 glitchFragFromCoords(float2 xy, float4 pxXY, float depth) {
     float t = _Time[1] + 500.0;
     
     // horizontal chunk displacement
@@ -393,14 +393,14 @@ float4 glitchFragFromCoords(float2 xy, float4 pxXY, float depth) {
     }
     
     // taking the sample!!!
-    float4 c = tex2D(_MainTex, xy);
+    fixed4 c = SampleSpriteTexture(xy);
     
     // CMYK split
     if (_CSplitEnabled > 0.0) {
         float offset = (depth - _CSplitStart) * _CSplitRate;
         offset = clamp(offset, 0, _CSplitMax);
-        c = cmykAverage(c, float2(xy[0] + offset / 100 + _CSplitFix, xy[1]), 0);
-        c = cmykAverage(c, float2(xy[0] - offset / 100 - _CSplitFix, xy[1]), 1);
+        c = cmykAverage(c, fixed2(xy[0] + offset / 100 + _CSplitFix, xy[1]), 0);
+        c = cmykAverage(c, fixed2(xy[0] - offset / 100 - _CSplitFix, xy[1]), 1);
     }
     
     // rectangular displacement
@@ -416,7 +416,7 @@ float4 glitchFragFromCoords(float2 xy, float4 pxXY, float depth) {
             float sourceRoll = rand3(t, sourceChunkX, sourceChunkY);
             if ((sourceRoll > 1.0 - chance) && (!_RDispKeepAlpha || (c.a > 0.01))) {
                 if (_RDispInvertSource > 0.0) {
-                    float4 cOrig = c;
+                    fixed4 cOrig = c;
                     c[0] = (1.0f - c[0]);
                     c[1] = (1.0f - c[1]);
                     c[2] = (1.0f - c[2]);
@@ -466,7 +466,7 @@ float4 glitchFragFromCoords(float2 xy, float4 pxXY, float depth) {
                         c = tex2D(_MainTex, float2(xy[0] + power, xy[1]));
                     }
                     if (!_TDistExcludeAlpha || (c.a > 0.01)) {
-                        float4 cOrig = c;
+                        fixed4 cOrig = c;
                         if (_TDistInvertR > 0.0) {
                             c[0] = 1.0 - c[0];
                         }
@@ -509,7 +509,7 @@ float4 glitchFragFromCoords(float2 xy, float4 pxXY, float depth) {
                 if (xy[1] > y1 && xy[1] <= y2) {
                     float posRatio = 1.0 - ((xy[1] - y1) / (y2 - y1));
                     float chunkedRatio = posRatio;
-                    float4 cOrig = c;
+                    fixed4 cOrig = c;
                     float staticSize = cubicEase(_TDistStaticSize, 0.2);
                     float staticChunk = intervalR(xy[0], staticSize, 27.0);
                     float staticRoll = rand3(staticChunk, t, xy[1]);
@@ -540,10 +540,10 @@ float4 glitchFragFromCoords(float2 xy, float4 pxXY, float depth) {
         float hbleedRoll = rand3(hbleedXInterval * 100, hbleedYInterval * 200, t);
         if (hbleedRoll > 1.0 - hbleedChance) {
             float r = (xy[0] - hbleedXInterval) / abs(hbleedTailSize);
-            float4 c2 = tex2D(_MainTex, float2(hbleedXInterval, xy[1]));
+            fixed4 c2 = SampleSpriteTexture(float2(hbleedXInterval, xy[1]));
             c2.rgb *= c2.a;
             
-            float4 smear;
+            fixed4 smear;
             smear.r = lerp(c.r, c2.r, r);
             smear.g = lerp(c.g, c2.g, r);
             smear.b = lerp(c.b, c2.b, r);
@@ -632,7 +632,7 @@ float4 glitchFragFromCoords(float2 xy, float4 pxXY, float depth) {
     
     // channel clamping
     if (_CClampEnabled > 0.0 && c.a > 0.01) {
-        float2 seed = xy;
+        fixed2 seed = xy;
         if (_CClampDitherChunk > 0.0) {
             if (_CClampDitherVary > 0.0) {
                 seed[0] = intervalR(seed[0], cubicEase(_CClampDitherChunk, 0.5), t);
@@ -640,9 +640,9 @@ float4 glitchFragFromCoords(float2 xy, float4 pxXY, float depth) {
                 seed[0] = intervalF(seed[0], cubicEase(_CClampDitherChunk, 0.5));
             }
         }
-        float shadesR = _CClampR + jitter(cubicEase(_CClampJitterR, 1.0), float2(t, 10.0));
-        float shadesG = _CClampG + jitter(cubicEase(_CClampJitterG, 1.0), float2(t, 20.0));
-        float shadesB = _CClampB + jitter(cubicEase(_CClampJitterB, 1.0), float2(t, 30.0));
+        float shadesR = _CClampR + jitter(cubicEase(_CClampJitterR, 1.0), fixed2(t, 10.0));
+        float shadesG = _CClampG + jitter(cubicEase(_CClampJitterG, 1.0), fixed2(t, 20.0));
+        float shadesB = _CClampB + jitter(cubicEase(_CClampJitterB, 1.0), fixed2(t, 30.0));
         c[0] = clampShade(c[0] + _CClampBrightness, shadesR, _CClampDither > 0.0, _CClampDitherVary > 0.0, seed);
         c[1] = clampShade(c[1] + _CClampBrightness, shadesG, _CClampDither > 0.0, _CClampDitherVary > 0.0, seed);
         c[2] = clampShade(c[2] + _CClampBrightness, shadesB, _CClampDither > 0.0, _CClampDitherVary > 0.0, seed);
@@ -668,6 +668,33 @@ float4 glitchFragFromCoords(float2 xy, float4 pxXY, float depth) {
     }
     
     return c;
+}
+
+fixed4 glitchFrag(v2f IN) : SV_Target {
+    float2 xy = IN.texcoord;
+    float4 pxXY = IN.vertex;
+    return glitchFragFromCoords(xy, pxXY, 0) * IN.color;
+}
+
+v2f glitchVert(appdata_t IN) {
+    v2f OUT;
+
+    UNITY_SETUP_INSTANCE_ID (IN);
+    UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
+
+    #ifdef UNITY_INSTANCING_ENABLED
+        IN.vertex.xy *= _Flip;
+    #endif
+
+    OUT.vertex = UnityObjectToClipPos(IN.vertex);
+    OUT.texcoord = IN.texcoord;
+    OUT.color = IN.color * _Color * _RendererColor;
+
+    #ifdef PIXELSNAP_ON
+        OUT.vertex = UnityPixelSnap (OUT.vertex);
+    #endif
+
+    return OUT;
 }
 
 #endif

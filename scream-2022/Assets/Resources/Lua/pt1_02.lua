@@ -13,9 +13,9 @@ exitNVL()
 
 setWake(-1)
 wait(2)
-setting('Aquila Tower')
-setting('Floor 37')
-setting('Lucir Offices')
+setting("March 1st, 11:00AM")
+setting("Aquila Tower F37")
+setting("Lucir Offices")
 setSwitch('no_settings', false)
 wait(3)
 

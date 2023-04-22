@@ -37,7 +37,11 @@ public class DepthCamComponent : FadeComponent {
     }
 
     protected void Update() {
+        GlitchFromSwitch = Global.Instance.Data.GetSwitch("glitch_on");
         rangeMult = Mathf.MoveTowards(rangeMult, RangeMultTarget, Time.deltaTime * rangeMultRate);
+        blitMat.SetFloat("_UniversalEnable", (GlitchFromSwitch || glitchOn) ? 1 : 0);
+        blitMat.SetFloat("_DLimitMin", rangeMin * rangeMult);
+        blitMat.SetFloat("_DLimitMax", rangeMax * rangeMult);
     }
 
     public override IEnumerator FadeRoutine(FadeData fade, bool invert = false, float timeMult = 1) {
@@ -64,6 +68,7 @@ public class DepthCamComponent : FadeComponent {
 
     }
 
+    /*
     protected void OnRenderImage(RenderTexture src, RenderTexture dest) {
         if (blitMat != null) {
             blitMat.SetFloat("_UniversalEnable", (GlitchFromSwitch || glitchOn) ? 1 : 0);
@@ -77,4 +82,5 @@ public class DepthCamComponent : FadeComponent {
             Graphics.Blit(src, depthDumpTex, depthDumpMat);
         }
     }
+    */
 }

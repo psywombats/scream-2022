@@ -13,6 +13,10 @@ public class DoorEvent : MonoBehaviour {
     [SerializeField] [TextArea(3, 6)] private string lockedCondition;
     [SerializeField] [TextArea(3, 6)] private string lockedLua = "";
     [SerializeField] private string passSwitch;
+    [SerializeField] private string glitchBackSwitch;
+    [SerializeField] private string glitchBackMap;
+    [SerializeField] private string glitchBackEvent;
+    [SerializeField] private OrthoDir glitchBackDir;
 
     private MapEvent @event;
     public MapEvent Event => @event ?? (@event = GetComponent<MapEvent>());
@@ -64,6 +68,16 @@ public class DoorEvent : MonoBehaviour {
 
         yield return avatar.RotateTowardRoutine(Event);
         yield return Global.Instance.Maps.TeleportRoutine(mapName, targetEventName, dir);
+        if (!string.IsNullOrEmpty(glitchBackSwitch) && !Global.Instance.Data.GetSwitch(glitchBackSwitch)) {
+            yield return CoUtils.Wait(.75f);
+            MapOverlayUI.Instance.setting.Scramble();
+            Global.Instance.Data.SetSwitch("glitch_on", true);
+            yield return CoUtils.Wait(.75f);
+            Global.Instance.Data.SetSwitch("no_settings", true);
+            yield return Global.Instance.Maps.TeleportRoutine(glitchBackMap, glitchBackEvent, glitchBackDir, isRaw: true);
+            Global.Instance.Data.SetSwitch("glitch_on", false);
+            Global.Instance.Data.SetSwitch("no_settings", false);
+        }
         avatar.UnpauseInput();
         avatar.CancelCollisions = false;
     }

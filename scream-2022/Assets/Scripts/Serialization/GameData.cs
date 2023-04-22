@@ -24,8 +24,10 @@ public class GameData {
         get {
             if (!GetSwitch("pt1_08")) {
                 return TimeblockType.Morning;
-            } else {
+            } else if (!GetSwitch("pt1_10")) {
                 return TimeblockType.Afternoon;
+            } else {
+                return TimeblockType.Evening;
             }
         }
     }

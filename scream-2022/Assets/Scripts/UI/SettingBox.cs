@@ -25,17 +25,25 @@ public class SettingBox : MonoBehaviour {
         }
     }
 
+    public void Scramble() {
+        var s = "";
+        foreach (var _ in text.text) {
+            s += (char)Random.Range(43, 125);
+        }
+        text.text = s;
+    }
+
     protected void Update() {
         if (toShow.Count > 0 && !showing) {
+            showing = true;
             StartCoroutine(ShowRoutine());
         }
     }
 
     private IEnumerator ShowRoutine() {
-        showing = true;
         text.text = toShow[0];
         yield return null;
-        yield return CoUtils.RunTween(Rect.DOAnchorPosX(text.rectTransform.rect.width + 32, inTime));
+        yield return CoUtils.RunTween(Rect.DOAnchorPosX(text.rectTransform.rect.width + 48 * 2, inTime));
         yield return CoUtils.Wait(waitTime);
         yield return CoUtils.RunTween(Rect.DOAnchorPosX(0, inTime));
         toShow.RemoveAt(0);

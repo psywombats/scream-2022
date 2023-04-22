@@ -7,6 +7,9 @@ public class ByDayController : MonoBehaviour {
     [SerializeField] private List<GameObject> afternoonObjs;
     [SerializeField] private List<GameObject> eveningObjs;
     [SerializeField] private List<GameObject> midnightObjs;
+    [Space]
+    [SerializeField] private List<GameObject> dayObjs;
+    [SerializeField] private List<GameObject> nightObjs;
 
     public void Start() {
         UpdateObjs();
@@ -29,6 +32,12 @@ public class ByDayController : MonoBehaviour {
         }
         foreach (var obj in midnightObjs) {
             obj.SetActive(time == TimeblockType.Midnight);
+        }
+        foreach (var obj in dayObjs) {
+            obj.SetActive(time == TimeblockType.Morning || time == TimeblockType.Afternoon);
+        }
+        foreach (var obj in nightObjs) {
+            obj.SetActive(time == TimeblockType.Evening || time == TimeblockType.Midnight);
         }
     }
 }

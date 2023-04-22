@@ -39,7 +39,7 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
     }
 
     public void StartGlitch() {
-        MapOverlayUI.Instance.adv.GetHighlightedPortrait().Jolt();
+        _ = MapOverlayUI.Instance.adv.GetHighlightedPortrait().JoltAsync();
     }
 
     public IEnumerator TypeRoutine(string text, bool waitForConfirm = true) {
@@ -51,7 +51,7 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
 
         var containsGlitch = text.IndexOf("____") >= 0;
         var glitchesDelayed = 0;
-        var glitchStartedAt = 0;
+        var glitchStartedAt = -1;
 
         while (elapsed <= total) {
 
@@ -68,7 +68,7 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
             }
             if (glitchesDelayed < uCount) {
                 var tryg = textbox.text.Length;
-                while (textbox.text[tryg - 1] == '_') {
+                while (tryg > 0 && textbox.text[tryg - 1] == '_') {
                     tryg -= 1;
                 }
                 if (tryg > glitchStartedAt) {

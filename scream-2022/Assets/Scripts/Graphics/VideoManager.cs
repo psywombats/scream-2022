@@ -29,6 +29,7 @@ public class VideoManager : SingletonBehavior {
                             vid.data = newData;
                             vid.data.clipHandles += 1;
                             vid.player.clip = newData.data.clip;
+                            vid.player.isLooping = true;
                             vid.player.Play();
                             break;
                         }

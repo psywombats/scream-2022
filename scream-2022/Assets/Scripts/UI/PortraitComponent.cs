@@ -94,9 +94,10 @@ public class PortraitComponent : MonoBehaviour {
         IsHighlighted = false;
     }
 
-    public void Jolt() {
-        _ = GlitchBrushAsync(.7f);
-        _ = GlitchAsync(.7f);
+    public async Task JoltAsync() {
+        var duration = .7f;
+        if (!IsHighlighted) await nvl.SetHighlightRoutine(Speaker);
+        await Task.WhenAll(GlitchBrushAsync(duration), GlitchAsync(duration));
     }
 
     private async Task GlitchBrushAsync(float duration) {

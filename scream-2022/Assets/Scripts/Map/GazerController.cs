@@ -8,11 +8,15 @@ public class GazerController : MonoBehaviour {
 
     [SerializeField] private List<PanelLightComponent> allLights;
 
-    public void OnEnable() {
+    public async void OnEnable() {
         UpdateAmbient();
     }
 
-    public void UpdateAmbient() {
+    public async void UpdateAmbient() {
+        await Task.Delay(100);
+        foreach (var light in allLights) {
+            light.IsShutDown = true;
+        }
         switch (Global.Instance.Data.Time) {
             case TimeblockType.Morning:
                 break;
@@ -23,7 +27,7 @@ public class GazerController : MonoBehaviour {
             case TimeblockType.Evening:
                 for (var i = 0; i < allLights.Count; i += 1) {
                     if (i == 3 || i == 8) {
-                        break;
+                        continue;
                     }
                     BootGood(i, i == 11);
                 }
@@ -31,7 +35,7 @@ public class GazerController : MonoBehaviour {
             case TimeblockType.Midnight:
                 for (var i = 0; i < allLights.Count; i += 1) {
                     if (i == 5) {
-                        break;
+                        continue;
                     }
                     BootGood(i, true);
                 }
