@@ -12,7 +12,7 @@ public class TitleController : MonoBehaviour {
     [SerializeField] private Text continueText = null;
     [SerializeField] private GameObject canvasParent = null;
 
-    private static readonly string[] Continues = { "March 1 11:00AM", "March 1 4:00PM", "March 1 9:00PM", "MIDNIGHT", "March 2 5:00PM", "March 2 10:00PM", "TWILIGHT" };
+    private static readonly string[] Continues = { "March 1 11:00AM", "March 1 4:00PM", "March 1 9:00PM", "MIDNIGHT", "March 2 5:00PM", "March 2 10:00PM", "RECKONING" };
     private int continueIndex = 0;
 
     public void Start() {
@@ -101,8 +101,19 @@ public class TitleController : MonoBehaviour {
             case 2:
                 yield return Global.Instance.Serialization.StartGameRoutine("Gazer", "chair", OrthoDir.South);
                 break;
+            case 3:
+                yield return Global.Instance.Serialization.StartGameRoutine("F3", "elevator2", OrthoDir.East);
+                break;
+            case 4:
+                yield return Global.Instance.Serialization.StartGameRoutine("Gazer", "chair", OrthoDir.South);
+                break;
+            case 5:
+                yield return Global.Instance.Serialization.StartGameRoutine("F2", "noemi", OrthoDir.West);
+                break;
+            case 6:
+                yield return Global.Instance.Serialization.StartGameRoutine("Gazer", "door", OrthoDir.North);
+                break;
         }
-        
     }
 
     private IEnumerator StartRoutine() {

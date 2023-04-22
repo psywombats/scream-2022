@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using MoonSharp.Interpreter;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 public class LuaCutsceneContext : LuaContext {
 
@@ -66,6 +67,8 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["updateGazer"] = (Action)UpdateGazer;
         lua.Globals["setting"] = (Action<DynValue>)Setting;
         lua.Globals["jolt"] = (Action<DynValue>)Jolt;
+        lua.Globals["elevate"] = (Action)Elevate;
+        lua.Globals["cs_clue"] = (Action<DynValue>)Clue;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -237,5 +240,21 @@ public class LuaCutsceneContext : LuaContext {
         var speaker = IndexDatabase.Instance.Speakers.GetData(charaTag.String);
         var portrait = MapOverlayUI.Instance.adv.GetPortrait(speaker);
         _ = portrait.JoltAsync();
+    }
+
+    private void Elevate() {
+        Global.Instance.StartCoroutine(ElevatorRoutine());
+    }
+    private IEnumerator ElevatorRoutine() {
+        return CoUtils.TaskAsRoutine(AvatarEvent.Instance.ShakeAsync(4));
+    }
+
+    private void Clue(DynValue expected) {
+        RunRoutineFromLua(CoUtils.TaskAsRoutine(ClueAsync(expected.String)));
+    }
+    private async Task ClueAsync(string expected) {
+        var menu = MapOverlayUI.Instance.deduction;
+        var res = await menu.DoMenuAsync();
+        lua.Globals["selection"] = Marshal(expected.Equals(res));
     }
 }

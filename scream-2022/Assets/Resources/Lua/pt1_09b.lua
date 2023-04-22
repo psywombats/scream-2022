@@ -3,7 +3,7 @@ enter('chris', 'c')
 
 if not getSwitch('pt1_09b') then
 	speak('ARIEL', "Hey Chris. Need a hand?")
-	speak('CHRIS', "I'm alright. Just waiting for a titration to finish up before I bring this next match over to Noemi and the rats.")
+	speak('CHRIS', "I'm alright. Just waiting for a titration to finish up before I bring this next batch over to Noemi and the rats.")
 	speak('ARIEL', "Any luck on the Bluepill substitutes?")
 	speak('CHRIS', "None. But maybe that's a good thing. If Noemi perfects Gazer before I perfect a cyanophazepam analog, that means we don't need any drugs in the first place.")
 	speak('CHRIS', "I'm glad you're here though. I did mean to ask you something...")

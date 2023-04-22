@@ -24,7 +24,7 @@ if not getSwitch('pt1_05b') then
 	speak('SUMI', "So she's... sleepwalking?")
 	speak('NOEMI', "Humans waste a third of their life sleeping. But with just the right amount of Bluepill, at the same time I'm talking to you here, I can be writing code in the dream world.")
 	speak('SUMI', "How unconventional.")
-	speak('NOEMI', "I've found I program more fluently in a trance than when I'm truly awake. And I can work through the night while everyone else dreams unproductive dreams.")
+	speak('NOEMI', "I've found I program more fluently in a trance than when I'm truly awake. And I can work through the night while everyone else dreams unpleasant dreams.")
 	speak('ARIEL', "She hasn't woken up in a month, probably.")
 	expr('SUMI', nil)
 	speak('SUMI', "You don't find that... inconvenient?")

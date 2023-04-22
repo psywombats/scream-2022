@@ -1,0 +1,5 @@
+enterNVL()
+enter('SUMI', 'c')
+speak('SUMI', "Mampidi-doza ny alina.")
+speak('SUMI', "Or are you here for ____?")
+exitNVL()

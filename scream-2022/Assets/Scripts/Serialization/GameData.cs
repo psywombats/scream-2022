@@ -26,8 +26,16 @@ public class GameData {
                 return TimeblockType.Morning;
             } else if (!GetSwitch("pt1_10")) {
                 return TimeblockType.Afternoon;
-            } else {
+            } else if (!GetSwitch("midnight")) {
                 return TimeblockType.Evening;
+            } else if (!GetSwitch("pt1_done")) {
+                return TimeblockType.Midnight;
+            } else if (!GetSwitch("pt2_08")) {
+                return TimeblockType.Afternoon;
+            } else if (!GetSwitch("finale_mode")) {
+                return TimeblockType.Evening;
+            } else {
+                return TimeblockType.Midnight;
             }
         }
     }

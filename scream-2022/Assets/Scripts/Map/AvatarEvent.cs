@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -25,6 +26,14 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     public Rigidbody Body => body ?? (body = GetComponent<Rigidbody>());
 
     public MapCamera FPSCam => fpsCam;
+
+    // beast mode
+    public float TurnRate { get; set; } = 1f;
+    public float TowardsBeastRestrict ;
+    public float TowardsBeastMove;
+    public float PreventApproach;
+    public float LookAway;
+    // end beast mode
 
     private static int pauseCount;
     public bool InputPaused {
@@ -197,6 +206,13 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         }
     }
 
+    public async Task ShakeAsync(float s = .2f) {
+        FPSCam.osc.enabled = true;
+        await Task.Delay((int)(s * 1000f));
+        FPSCam.osc.enabled = false;
+        FPSCam.transform.localPosition = Vector3.zero;
+    }
+
     private void CheckPhysicsComponent(Vector3 delta, Vector3 otherDelta) {
         if (delta == Vector3.zero) {
             return;
@@ -258,6 +274,14 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
             velocityThisFrame += component;
         }
 
+        var beastly = Vector3.Angle(component, new Vector3(1, 0, 0)) / 180f;
+        var beastlied = component * beastly;
+        component = TowardsBeastMove * component + (1f - TowardsBeastMove) * beastlied;
+
+        if (velocityThisFrame.x > 0 && PreventApproach > 0f) {
+            velocityThisFrame.x *= (1f - PreventApproach);
+        }
+
         return true;
     }
 
@@ -300,18 +324,54 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
             return;
         }
 
+        
 
         var trans = FPSCam.transform;
+
+        var oldB = TowardsBeastLook();
+        var oldRot = trans.rotation;
+
         trans.rotation *= Quaternion.AngleAxis(inY  * mouseRotateSensitivity, Vector3.left);
+
         var ang = trans.eulerAngles.x;
         while (ang > 180) ang -= 360;
         while (ang < -180) ang += 360;
+
+        var xcom = inX * mouseRotateSensitivity * TurnRate;
+
         trans.rotation = Quaternion.Euler(
             Mathf.Clamp(ang, RotationYBounds.x, RotationYBounds.y),
-            trans.eulerAngles.y + inX * mouseRotateSensitivity,
+            trans.eulerAngles.y + xcom,
             trans.eulerAngles.z
         );
+        var newB = TowardsBeastLook();
+        if (newB > oldB && TowardsBeastRestrict > 0f) {
+            trans.rotation = oldRot;
+            var coef = Mathf.Max(0f, (1f - TowardsBeastLook()) - .3f);
+            trans.rotation = Quaternion.Euler(
+                Mathf.Clamp(ang, RotationYBounds.x, RotationYBounds.y),
+                trans.eulerAngles.y + xcom * coef,
+                trans.eulerAngles.z
+            );
+        }
 
+        if (LookAway > 0) {
+            var away = TowardsBeastLook() * TowardsBeastLook() * LookAway * Time.deltaTime * 40;
+            oldB = TowardsBeastLook();
+            oldRot = trans.rotation;
+
+            trans.rotation = Quaternion.Euler(
+                trans.eulerAngles.x,
+                trans.eulerAngles.y + away,
+                trans.eulerAngles.z);
+            if (oldB < TowardsBeastLook()) {
+                trans.rotation = oldRot;
+                trans.rotation = Quaternion.Euler(
+                    trans.eulerAngles.x,
+                    trans.eulerAngles.y - away,
+                    trans.eulerAngles.z);
+            }
+        }
     }
 
     private void HandleRay() {
@@ -338,5 +398,11 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         if (chara != null) {
             chara.Interact();
         }
+    }
+
+    public float TowardsBeastLook() {
+        var fwd = AvatarEvent.Instance.FPSCam.transform.forward;
+        var angle = Vector3.Angle(fwd, new Vector3(1, 0, 0));
+        return 1f - (angle / 180f);
     }
 }

@@ -32,10 +32,39 @@
         "pt1_10b",
         "pt1_10c",
         "pt1_11",
+        "midnight",
+    };
+
+    private static readonly string[] switchesPt2A = {
+        "midnight_over",
+        "pt1_done",
+        "announced_f3",
+        "pt1_13",
+        "pt2_01",
+    };
+
+    private static readonly string[] switchesPt2B = {
+        "pt2_02",
+        "pt2_03",
+        "pt2_04",
+        "pt2_05",
+        "pt2_06",
+        "pt2_07",
+        "pt2_08",
+        "clear_sprites",
+    };
+
+    private static readonly string[] switchesPt2C = {
+        "got_rat",
+        "got_laptop",
+        "got_pendant",
+        "got_file",
+        "got_diary",
+        "got_photo",
     };
 
 
-    private static readonly string[][] checkpoints = { switchesPt1A, switchesPt1B, switchesPt1C, switchesPt1D };
+    private static readonly string[][] checkpoints = { switchesPt1A, switchesPt1B, switchesPt1C, switchesPt1D, switchesPt2A, switchesPt2B, switchesPt2C };
 
     public static void Activate(int checkpoint) {
         for (var i = 0; i <= checkpoint; i += 1 ) {

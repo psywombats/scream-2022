@@ -65,6 +65,12 @@ function expr(speaker, expression)
 	await()
 end
 
+function clue(item)
+	cs_clue(item)
+	await()
+	return selection
+end
+
 function walk(event, count, direction, wait)
     if wait == nil then wait = true end
     cs_walk(event, count, direction, wait)

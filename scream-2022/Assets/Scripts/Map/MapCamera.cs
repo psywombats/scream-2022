@@ -8,6 +8,8 @@ public class MapCamera : MonoBehaviour {
     // these are read by sprites, not actually enforced by the cameras
     [SerializeField] private bool billboardX;
     [SerializeField] private bool billboardY;
+    [Space]
+    [SerializeField] public Oscillator osc;
 
     public Camera Cam => GetComponent<Camera>();
 

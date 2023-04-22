@@ -121,7 +121,7 @@ public class InputManager : SingletonBehavior {
     }
 
     public bool IsFastKeyDown() {
-        return actions[Command.Primary].IsPressed();
+        return actions[Command.Primary].IsPressed() || Keyboard.current.ctrlKey.isPressed;
     }
 
     public void SetDefaultKeybindsForCommand(Command command) {

@@ -89,7 +89,7 @@ public class TerrainQuad {
     }
 
     public void CopyUVs(Vector2[] uvs) {
-        for (int i = 0; i < 4; i += 1) {
+        for (int i = 0; i < 4 && vertsIndex + i < uvs.Length; i += 1) {
             uvs[vertsIndex + i] = ourUVs[i];
         }
     }

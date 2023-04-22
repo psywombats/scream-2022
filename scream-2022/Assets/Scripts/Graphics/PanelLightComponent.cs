@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class PanelLightComponent : MonoBehaviour {
@@ -54,7 +55,8 @@ public class PanelLightComponent : MonoBehaviour {
     private VideoManager.RunningVideo vid;
     private CorridorController manager;
 
-    public void Start() {
+    public async void Start() {
+        await Task.Delay(50);
         manager = FindObjectOfType<CorridorController>();
         if (manager != null) {
             manager.allLights.Add(this);
@@ -62,9 +64,7 @@ public class PanelLightComponent : MonoBehaviour {
             IsShutDown = manager.DefaultShutdown;
             IsLimited = true;
         } else {
-            IsEvil = false;
-            IsShutDown = true;
-            IsLimited = true;
+            IsLimited = false;
         }
     }
 

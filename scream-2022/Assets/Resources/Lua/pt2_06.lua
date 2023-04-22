@@ -1,0 +1,26 @@
+setSwitch('pt2_06', true)
+teleport('Gazer', 'chair', 'SOUTH')
+
+enterNVL()
+enter('SUMI', 'd')
+enter('BRAULIO', 'b')
+speak('BRAULIO', "Hey Sumi! And um, Ariel. If we're ready to go, I'll boot up Gazer.")
+speak('SUMI', "I can't wait.")
+speak('BRAULIO', "And you're, uh, really not worried about oneirophrenia?")
+speak('SUMI', "If I was, I wouldn't have signed the waiver.")
+speak('ARIEL', "Oneirophrenia? I don't think I've ever heard that word.")
+speak('BRAULIO', "Oh. Um.")
+speak('SUMI', "If the Bluepill dose is incorrect, Braulio explained that mirroring could cause oneirophrenia. The dreamer can't tell the dream from reality.")
+speak('SUMI', "He also said that you discovered that particular side effect.")
+speak('ARIEL', "I did? He must've misspoke. Or maybe I - ")
+speak('ARIEL', "No. Never mind. I'll figure this out later. As long as you're aware of the risks, I'm ready. What should I dream?")
+speak('SUMI', "Why not dream about Sumi Chey? This should be a fun little test.")
+speak('ARIEL', "By Sumi Chey, you mean your grandmother? Or you? I'm not sure if I'll be able to dream about someone I've never met.")
+speak('SUMI', "If you look at any photo of Grandmother as a young woman, her and I are twins. Whichever works.")
+speak('ARIEL', "I'll do my best.")
+exitNVL()
+
+
+-- TODO
+setWake(0)
+play('pt2_07')

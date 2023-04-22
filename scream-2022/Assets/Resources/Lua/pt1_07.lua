@@ -19,7 +19,7 @@ speak('BRAULIO', "Nothing too serious! She wants to hang around for a week or tw
 expr('CHRIS', 'thinking')
 speak('CHRIS', "I've never heard of it.")
 expr('CHRIS', 'pain')
-speak('CHRIS', "Isn't that woman supposed to manage a multinational holdings company? How's she going to do that if she's sitting in the back of my lab, drilling into the back of my neck with those falcon eyes of hers?")
+speak('CHRIS', "Isn't that woman supposed to manage a multinational holdings company? How's she going to do that if she's lurking in my lab, drilling into the back of my neck with those falcon eyes of hers?")
 expr('CHRIS', nil)
 expr('BRAULIO', 'determined')
 speak('BRAULIO', "I offered her one of the empty offices. She'll be working from there and then spending down time looking over our tech.")

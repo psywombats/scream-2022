@@ -16,6 +16,7 @@ public class DepthCamComponent : FadeComponent {
     [SerializeField] private bool glitchOn = false;
     [SerializeField] public float rangeMin = 10f;
     [SerializeField] public float rangeMax = 12f;
+   
 
     public bool GlitchFromSwitch { get; set; }
 

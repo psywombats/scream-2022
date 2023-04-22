@@ -28,7 +28,7 @@ public class SettingBox : MonoBehaviour {
     public void Scramble() {
         var s = "";
         foreach (var _ in text.text) {
-            s += (char)Random.Range(43, 125);
+            s += (char)Random.Range(97, 122);
         }
         text.text = s;
     }
