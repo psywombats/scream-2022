@@ -2,7 +2,7 @@ rotateTo('chair')
 setSwitch('sumi_last_gazer')
 wait(1)
 
-speak('ARIEL', "This is our prototype. We call it 'gazer'.")
+speak('ARIEL', "This is our prototype. We call it 'Recurser'.")
 enterNVL()
 enter('SUMI', 'c')
 speak('SUMI', "Fascinating. The monitors then... You're able to see the dream as it's being played?")
