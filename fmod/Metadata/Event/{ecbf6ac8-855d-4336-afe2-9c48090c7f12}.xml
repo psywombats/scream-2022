@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{ecbf6ac8-855d-4336-afe2-9c48090c7f12}">
 		<property name="name">
-			<value>AVDist JumpScare</value>
+			<value>jumpscare</value>
 		</property>
 		<property name="outputFormat">
 			<value>1</value>
@@ -31,6 +31,9 @@
 		<relationship name="timeline">
 			<destination>{233f6a58-9ffd-4c38-b776-73487b86370c}</destination>
 		</relationship>
+		<relationship name="banks">
+			<destination>{1c85f798-0db8-45d1-b434-859a5a8c5ebf}</destination>
+		</relationship>
 	</object>
 	<object class="EventMixer" id="{57071c55-8aed-4435-8d9c-52876ab501f6}">
 		<relationship name="masterBus">
@@ -50,7 +53,7 @@
 			<destination>{01ba0bf6-f958-437e-8984-399333162865}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{5af502cd-8836-4d9c-b345-8f72735fb99f}</destination>
+			<destination>{bebc6b70-584e-4439-8c45-7883d83f8e44}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{b0016785-d221-4e91-a8be-6ab7603f88b4}" />
@@ -87,13 +90,16 @@
 	<object class="MixerBusPanner" id="{01ba0bf6-f958-437e-8984-399333162865}" />
 	<object class="SingleSound" id="{bb9ead80-cb48-4a8c-8c4e-1d3277bf9282}">
 		<property name="length">
-			<value>2.1875056689342403</value>
+			<value>0.70016345240887801</value>
 		</property>
 		<relationship name="audioFile">
 			<destination>{4ebb8506-1ae5-4c61-9e65-6ca99f067ca2}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{cc88609c-1924-4847-9235-e5513771d391}">
+		<property name="volume">
+			<value>3</value>
+		</property>
 		<property name="name">
 			<value>Audio 1</value>
 		</property>

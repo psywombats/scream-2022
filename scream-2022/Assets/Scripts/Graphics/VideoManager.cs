@@ -90,7 +90,13 @@ public class VideoManager : SingletonBehavior {
     }
 
     private RunningVideo CreateVideo(ClipData data) {
-        var tex = new RenderTexture((int)data.data.clip.width, (int)data.data.clip.height, 0, RenderTextureFormat.ARGB32);
+        RenderTexture tex = null;
+#if UNITY_WEBGL
+        tex = new RenderTexture(320, 240, 0, RenderTextureFormat.ARGB32);
+#else
+        tex = new RenderTexture((int)data.data.clip.width, (int)data.data.clip.height, 0, RenderTextureFormat.ARGB32);
+#endif
+        
         var vid = new RunningVideo() {
             data = data,
             tex = tex,
@@ -99,7 +105,12 @@ public class VideoManager : SingletonBehavior {
         };
         data.clipHandles += 1;
         vid.player.targetTexture = vid.tex;
+#if UNITY_WEBGL
+        vid.player.url = "https:/psywombats.github.io/video/" + data.data.Key + ".mp4";
+#else
         vid.player.clip = data.data.clip;
+#endif
+            
         vid.player.audioOutputMode = VideoAudioOutputMode.None;
         vid.player.Play();
         vid.Graduate();
@@ -141,7 +152,12 @@ public class VideoManager : SingletonBehavior {
         public int vidHandles;
 
         public void Graduate() {
-            graduateAt = Mathf.Min(Random.Range(4f, 12f), (float)data.data.clip.length);
+#if UNITY_WEBGL
+            graduateAt = Mathf.Min(Random.Range(3f, 5f));
+#else
+        graduateAt = Mathf.Min(Random.Range(4f, 12f), (float)data.data.clip.length);
+#endif
+            
             elapsed = 0f;
         }
     }

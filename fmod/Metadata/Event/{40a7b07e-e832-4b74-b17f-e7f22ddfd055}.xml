@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{40a7b07e-e832-4b74-b17f-e7f22ddfd055}">
 		<property name="name">
-			<value>Monitor On</value>
+			<value>monitor_on</value>
 		</property>
 		<property name="outputFormat">
 			<value>2</value>
@@ -31,6 +31,9 @@
 		<relationship name="timeline">
 			<destination>{bbd88da7-2336-43db-b099-48e7bfdff4c7}</destination>
 		</relationship>
+		<relationship name="banks">
+			<destination>{1c85f798-0db8-45d1-b434-859a5a8c5ebf}</destination>
+		</relationship>
 	</object>
 	<object class="EventMixer" id="{b53c0fa5-db45-48a0-b3ad-7ff5db18127c}">
 		<relationship name="masterBus">
@@ -50,7 +53,7 @@
 			<destination>{f0d2e2ae-5e6c-4b71-ac62-250f00b5b982}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{5af502cd-8836-4d9c-b345-8f72735fb99f}</destination>
+			<destination>{bebc6b70-584e-4439-8c45-7883d83f8e44}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{f0eaf127-0bcf-422a-98fd-6085abc79963}" />
@@ -87,7 +90,10 @@
 	<object class="MixerBusPanner" id="{f0d2e2ae-5e6c-4b71-ac62-250f00b5b982}" />
 	<object class="SingleSound" id="{9ce7799b-112a-4f92-b934-f7924d9b31b2}">
 		<property name="length">
-			<value>2.8202392681210418</value>
+			<value>0.65117647058823525</value>
+		</property>
+		<property name="timelockedOffset">
+			<value>0.14882352941176469</value>
 		</property>
 		<relationship name="audioFile">
 			<destination>{dc64133a-9fed-463b-a85b-f491b9d15b33}</destination>

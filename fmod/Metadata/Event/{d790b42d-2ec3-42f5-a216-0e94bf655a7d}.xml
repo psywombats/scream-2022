@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{d790b42d-2ec3-42f5-a216-0e94bf655a7d}">
 		<property name="name">
-			<value>Evil Monitor</value>
+			<value>monitorswap</value>
 		</property>
 		<property name="outputFormat">
 			<value>2</value>
@@ -31,6 +31,9 @@
 		<relationship name="timeline">
 			<destination>{a2735ed8-b8ba-4dd3-aaeb-a3601ee65c53}</destination>
 		</relationship>
+		<relationship name="banks">
+			<destination>{1c85f798-0db8-45d1-b434-859a5a8c5ebf}</destination>
+		</relationship>
 	</object>
 	<object class="EventMixer" id="{6cda9492-434c-4a52-afa3-16b5c24e924e}">
 		<relationship name="masterBus">
@@ -50,7 +53,7 @@
 			<destination>{fdf8bb39-b5f0-4d5f-8553-871d14782020}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{5af502cd-8836-4d9c-b345-8f72735fb99f}</destination>
+			<destination>{bebc6b70-584e-4439-8c45-7883d83f8e44}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{391e2cf0-b201-425e-950f-b995825cbb79}" />

@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{15218f57-0320-494d-93b5-83dffe595fe4}">
 		<property name="name">
-			<value>AVDist Monster</value>
+			<value>monster</value>
 		</property>
 		<property name="outputFormat">
 			<value>2</value>
@@ -31,6 +31,9 @@
 		<relationship name="timeline">
 			<destination>{a6010feb-0ccd-43e1-bf5c-ed6bb530529e}</destination>
 		</relationship>
+		<relationship name="banks">
+			<destination>{1c85f798-0db8-45d1-b434-859a5a8c5ebf}</destination>
+		</relationship>
 	</object>
 	<object class="EventMixer" id="{76fb803b-fae2-488b-9509-004f53ffddad}">
 		<relationship name="masterBus">
@@ -50,7 +53,7 @@
 			<destination>{e1126b69-a5af-435c-8920-e7f73763f552}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{5af502cd-8836-4d9c-b345-8f72735fb99f}</destination>
+			<destination>{bebc6b70-584e-4439-8c45-7883d83f8e44}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{0f20c739-25c4-486b-b9a8-7accf5a4dac7}" />

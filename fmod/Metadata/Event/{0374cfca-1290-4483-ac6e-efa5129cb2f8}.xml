@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{0374cfca-1290-4483-ac6e-efa5129cb2f8}">
 		<property name="name">
-			<value>Elevator</value>
+			<value>elevator</value>
 		</property>
 		<property name="outputFormat">
 			<value>0</value>
@@ -31,6 +31,9 @@
 		<relationship name="timeline">
 			<destination>{ca24f01e-6ac9-46cf-9b59-4c8d7fe9a3da}</destination>
 		</relationship>
+		<relationship name="banks">
+			<destination>{1c85f798-0db8-45d1-b434-859a5a8c5ebf}</destination>
+		</relationship>
 	</object>
 	<object class="EventMixer" id="{158c264b-fc8e-446c-a8ad-3758096b5090}">
 		<relationship name="masterBus">
@@ -50,7 +53,7 @@
 			<destination>{28e826e2-114a-4347-b7fd-0d3f32759420}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{5af502cd-8836-4d9c-b345-8f72735fb99f}</destination>
+			<destination>{bebc6b70-584e-4439-8c45-7883d83f8e44}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{59f7de96-5e16-40f0-9dcc-5c28d79d9642}" />

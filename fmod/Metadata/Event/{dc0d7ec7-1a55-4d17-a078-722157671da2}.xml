@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{dc0d7ec7-1a55-4d17-a078-722157671da2}">
 		<property name="name">
-			<value>Gazer On</value>
+			<value>gazer_on</value>
 		</property>
 		<property name="outputFormat">
 			<value>1</value>
@@ -31,6 +31,9 @@
 		<relationship name="timeline">
 			<destination>{04acf31e-8fac-48f4-ab8f-89412e2d62e5}</destination>
 		</relationship>
+		<relationship name="banks">
+			<destination>{1c85f798-0db8-45d1-b434-859a5a8c5ebf}</destination>
+		</relationship>
 	</object>
 	<object class="EventMixer" id="{f261e73d-c165-47c8-8e7f-cde6a5fd3904}">
 		<relationship name="masterBus">
@@ -50,7 +53,7 @@
 			<destination>{16fb7862-eb57-4fe1-805f-01f86c24249d}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{5af502cd-8836-4d9c-b345-8f72735fb99f}</destination>
+			<destination>{bebc6b70-584e-4439-8c45-7883d83f8e44}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{9cc1ee6b-b418-4e94-991f-e9fe9f767f70}" />

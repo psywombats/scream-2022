@@ -6,6 +6,7 @@ end
 -- TODO: plock
 wait(.9)
 -- TODO: hum
+play('elevator')
 elevate()
 wait(4)
 setSwitch('swap_floor', not getSwitch('swap_floor'))
