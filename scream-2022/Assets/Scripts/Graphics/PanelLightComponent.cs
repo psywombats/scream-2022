@@ -12,12 +12,13 @@ public class PanelLightComponent : MonoBehaviour {
     [Space]
     [SerializeField] public MeshRenderer goodRenderer;
     [SerializeField] public MeshRenderer badRenderer;
-    [SerializeField] public Material badMaterial;
-    [SerializeField] public Material goodMaterial;
     [SerializeField] public bool preferRunning;
     [Space]
     [SerializeField] public StudioEventEmitter sfxBoot;
     [SerializeField] public StudioEventEmitter sfxSwap;
+
+    private float elapsed = 0f;
+    private float graduates;
 
     private bool isEvil;
     public bool IsEvil {
@@ -27,7 +28,6 @@ public class PanelLightComponent : MonoBehaviour {
                 isEvil = value;
                 if (vid != null) {
                     sfxSwap.Play();
-                    VideoManager.Instance.ReleaseVideo(vid);
                     vid = null;
                 }
             }
@@ -73,6 +73,20 @@ public class PanelLightComponent : MonoBehaviour {
         }
     }
 
+    public void Update() {
+        if (elapsed > graduates || graduates == 0) {
+            graduates = Random.Range(4f, 12f);
+            if (elapsed > 0) {
+                elapsed = 0f;
+                vid = null;
+                UpdateMode();
+            }
+        }
+        if (!IsShutDown) {
+            elapsed += Time.deltaTime;
+        }
+    }
+
     public void OnDestroy() {
         if (manager != null) {
             manager.allLights.Remove(this);
@@ -90,23 +104,18 @@ public class PanelLightComponent : MonoBehaviour {
         foreach (var item in evilModes) {
             item.SetActive(!IsShutDown && IsEvil);
         }
-        if (IsShutDown && vid != null) {
-            VideoManager.Instance.ReleaseVideo(vid);
-        }
         if (!IsShutDown && vid == null && 
             ((!IsEvil && goodRenderer != null) || (IsEvil && badRenderer != null))) {
-            vid = VideoManager.Instance.RequestVideo(IsEvil ? VideoData.Type.Evil : VideoData.Type.Good, preferRunning);
-            if (IsEvil) {
-                if (badRenderer.material != null) { Destroy(badRenderer.material); }
-                badRenderer.material = new Material(badMaterial);
-                badRenderer.material.mainTexture = vid.tex;
-            } else {
-                if (goodRenderer.material != null) { Destroy(goodRenderer.material); }
-                goodRenderer.material = new Material(goodMaterial);
-                goodRenderer.material.mainTexture = vid.tex;
-            }
+            vid = VideoManager.Instance.RequestVideo(IsEvil ? VideoData.Type.Evil : VideoData.Type.Good);
+            var renderer = IsEvil ? badRenderer : goodRenderer;
+            renderer.GetComponent<MeshFilter>().mesh.SetUVs(0, new Vector2[] {
+                    new Vector2(vid.uvs.x + .00f, vid.uvs.y + .00f),
+                    new Vector2(vid.uvs.x + .25f, vid.uvs.y + .00f),
+                    new Vector2(vid.uvs.x + .00f, vid.uvs.y + .25f),
+                    new Vector2(vid.uvs.x + .25f, vid.uvs.y + .25f),
+                });
             foreach (var light in lights) {
-                light.color = vid.data.data.color;
+                light.color = vid.data.color;
             }
         }
     }

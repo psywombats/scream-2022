@@ -86,7 +86,7 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
 
         switch (routineName) {
             case "pt1a":
-                await Task.Delay(7 * 1000);
+                await Task.Delay(700 * 1000);
                 await RandomSwapAsync(1.5f);
                 await Task.Delay(5 * 1000);
                 await RandomShutdownAsync(3.2f);

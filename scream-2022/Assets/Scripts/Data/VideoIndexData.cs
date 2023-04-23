@@ -14,7 +14,7 @@ public class VideoData : GenericDataObject {
         Good, Evil, Ad, None,
     }
 
-    public VideoClip clip;
+    public int index;
     public Type type;
     public Color color;
 }
