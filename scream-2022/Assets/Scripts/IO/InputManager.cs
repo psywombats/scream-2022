@@ -159,6 +159,7 @@ public class InputManager : SingletonBehavior {
                 action.AddBinding(Keyboard.current.spaceKey);
                 action.AddBinding(Keyboard.current.enterKey);
                 action.AddBinding(Keyboard.current.zKey);
+                action.AddBinding(Keyboard.current.numpadEnterKey);
                 action.AddBinding("<Gamepad>/buttonSouth");
                 action.AddBinding(Mouse.current.leftButton);
                 break;

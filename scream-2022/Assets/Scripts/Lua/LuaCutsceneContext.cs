@@ -4,6 +4,7 @@ using System;
 using MoonSharp.Interpreter;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using DG.Tweening;
 
 public class LuaCutsceneContext : LuaContext {
 
@@ -69,6 +70,8 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["jolt"] = (Action<DynValue>)Jolt;
         lua.Globals["elevate"] = (Action)Elevate;
         lua.Globals["cs_clue"] = (Action<DynValue>)Clue;
+        lua.Globals["finaleCorridor"] = (Action)FinaleCorridor;
+        lua.Globals["endGame"] = (Action)EndGame;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -256,5 +259,15 @@ public class LuaCutsceneContext : LuaContext {
         var menu = MapOverlayUI.Instance.deduction;
         var res = await menu.DoMenuAsync();
         lua.Globals["selection"] = Marshal(expected.Equals(res));
+    }
+
+    private void FinaleCorridor() {
+        var corridor = GameObject.FindObjectOfType<CorridorController>();
+        _ = corridor.RandomSwapAsync(10f);
+    }
+
+    private void EndGame() {
+        MapOverlayUI.Instance.endGame.gameObject.SetActive(true);
+        MapOverlayUI.Instance.endGame.DOFade(1f, 3f);
     }
 }

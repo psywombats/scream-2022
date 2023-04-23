@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FMODUnity;
 using UnityEngine;
 
 public class GazerController : MonoBehaviour {
 
     [SerializeField] private List<PanelLightComponent> allLights;
+    [Space]
+    [SerializeField] private StudioEventEmitter sfxOn;
+    [SerializeField] private StudioEventEmitter sfxOff;
 
     public void OnEnable() {
         UpdateAmbient();
@@ -46,6 +50,11 @@ public class GazerController : MonoBehaviour {
     }
 
     public async Task BootAsync(bool on) {
+        if (on) {
+            sfxOn.Play();
+        } else {
+            sfxOff.Play();
+        }
         float duration = 2f;
         var randomLights = allLights.OrderBy(a => Guid.NewGuid()).ToList();
         foreach (var light in randomLights) {

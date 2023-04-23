@@ -2,81 +2,72 @@
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class GlitchRendererFeature : ScriptableRendererFeature {
+internal class GlitchRendererFeature : ScriptableRendererFeature {
+    public float m_Intensity;
 
-    [System.Serializable]
-    public class GlitchSettings {
-        public bool IsEnabled = true;
-        public RenderPassEvent WhenToInsert = RenderPassEvent.AfterRendering;
-        public Material MaterialToBlit;
+    public Material m_Material;
+
+    ColorBlitPass m_RenderPass = null;
+
+    public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData) {
+        if (renderingData.cameraData.cameraType == CameraType.Game) {
+            //Calling ConfigureInput with the ScriptableRenderPassInput.Color argument ensures that the opaque texture is available to the Render Pass
+            m_RenderPass.ConfigureInput(ScriptableRenderPassInput.Color);
+            m_RenderPass.SetTarget(renderer.cameraColorTarget, m_Intensity);
+            renderer.EnqueuePass(m_RenderPass);
+        }
     }
-    
-    public GlitchSettings settings = new GlitchSettings();
-
-    RenderTargetHandle renderTextureHandle;
-    GlitchPass glitchPass;
 
     public override void Create() {
-        glitchPass = new GlitchPass(
-          "Glitch pass",
-          settings.WhenToInsert,
-          settings.MaterialToBlit
-        );
+
+        m_RenderPass = new ColorBlitPass(m_Material);
     }
 
-    // called every frame once per camera
-    public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData) {
-        if (!settings.IsEnabled) {
-            return;
-        }
-        
-        var cameraColorTargetIdent = renderer.cameraColorTarget;
-        glitchPass.Setup(cameraColorTargetIdent);
-        
-        renderer.EnqueuePass(glitchPass);
+    protected override void Dispose(bool disposing) {
+
     }
 
-    class GlitchPass : ScriptableRenderPass {
-        
-        string profilerTag;
+    internal class ColorBlitPass : ScriptableRenderPass {
+        ProfilingSampler m_ProfilingSampler = new ProfilingSampler("ColorBlit");
+        Material m_Material;
+        RenderTargetIdentifier m_CameraColorTarget;
+        float m_Intensity;
 
-        Material materialToBlit;
-        RenderTargetIdentifier cameraColorTargetIdent;
-        RenderTargetHandle tempTexture;
+        public ColorBlitPass(Material material) {
+            m_Material = material;
+            renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
+        }
 
-        public GlitchPass(string profilerTag,
-          RenderPassEvent renderPassEvent, Material materialToBlit) {
-            this.profilerTag = profilerTag;
-            this.renderPassEvent = renderPassEvent;
-            this.materialToBlit = materialToBlit;
+        public void SetTarget(RenderTargetIdentifier colorHandle, float intensity) {
+            m_CameraColorTarget = colorHandle;
+            m_Intensity = intensity;
         }
-        
-        public void Setup(RenderTargetIdentifier cameraColorTargetIdent) {
-            this.cameraColorTargetIdent = cameraColorTargetIdent;
-        }
-        
-        public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) {
-            cmd.GetTemporaryRT(tempTexture.id, cameraTextureDescriptor);
+
+        public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData) {
+            ConfigureTarget(new RenderTargetIdentifier(m_CameraColorTarget, 0, CubemapFace.Unknown, -1));
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData) {
-            
-            CommandBuffer cmd = CommandBufferPool.Get(profilerTag);
-            cmd.Clear();
-            
-            // we apply our material while blitting to a temporary texture
-            cmd.Blit(cameraColorTargetIdent, tempTexture.Identifier(), materialToBlit, 0);
-            // ...then blit it back again 
-            cmd.Blit(tempTexture.Identifier(), cameraColorTargetIdent);
-            
+            var camera = renderingData.cameraData.camera;
+            if (camera.cameraType != CameraType.Game)
+                return;
+
+            if (m_Material == null)
+                return;
+
+            CommandBuffer cmd = CommandBufferPool.Get();
+            using (new ProfilingScope(cmd, m_ProfilingSampler)) {
+                m_Material.SetFloat("_Intensity", m_Intensity);
+                cmd.SetRenderTarget(new RenderTargetIdentifier(m_CameraColorTarget, 0, CubemapFace.Unknown, -1));
+                //The RenderingUtils.fullscreenMesh argument specifies that the mesh to draw is a quad.
+                cmd.DrawMesh(RenderingUtils.fullscreenMesh, Matrix4x4.identity, m_Material);
+
+
+            }
             context.ExecuteCommandBuffer(cmd);
-            
             cmd.Clear();
+
             CommandBufferPool.Release(cmd);
-        }
-        
-        public override void FrameCleanup(CommandBuffer cmd) {
-            cmd.ReleaseTemporaryRT(tempTexture.id);
         }
     }
 }

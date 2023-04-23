@@ -1,9 +1,9 @@
-teleport('Gazer', 'chair', 'SOUTH')
+teleport('Recurse', 'chair', 'SOUTH')
 
 wait(0.5)
-speak('Ariel', "Let's bring Gazer online...")
+speak('Ariel', "Let's bring Recurse online...")
 wait(0.3)
-bootGazer(true)
+bootRecurse(true)
 wait(0.5)
 
 enterNVL()
@@ -16,7 +16,7 @@ if not clue('rat') then
 	return
 end
 
-speak('ARIEL', "...the poor rats. Either because of my experiences in Ward No.9, or my later experimentation with Gazer, I was on a timer. I lost my ability to keep my nightmares in check.")
+speak('ARIEL', "...the poor rats. Either because of my experiences in Ward No.9, or my later experimentation with Recurse, I was on a timer. I lost my ability to keep my nightmares in check.")
 speak('ARIEL', "I tried to run from those old horrors that bled into my perception. But, my ultimate fate is detailed here:")
 
 if not clue('pendant') then
@@ -79,7 +79,7 @@ speak('ARIEL', "And so, once again, I am a lab rat.")
 exitNVL()
 
 speak('ARIEL', "The pieces fit. This concludes my lucid dream of March 2nd. In this dream, I wander the Lucir office and gather the evidence to support my theory.")
-bootGazer(false)
+bootRecurse(false)
 speak('ARIEL', "All that remains is for me to wake up.")
 speak('ARIEL', "...to wake up.")
 fade('black')

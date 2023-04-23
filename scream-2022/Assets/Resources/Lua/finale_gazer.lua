@@ -1,0 +1,5 @@
+rotateTo('chair')
+bootRecurse(true)
+setSwitch('finale_Recurse', true)
+wait(1)
+speak('Ariel', "Guess I'm out of time.")

@@ -1,6 +1,7 @@
 ﻿using FMOD.Studio;
 using FMODUnity;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class AudioManager : SingletonBehavior {
@@ -48,9 +49,8 @@ public class AudioManager : SingletonBehavior {
         }
     }
 
-    public void PlaySFX(string sfxKey) {
+    public void PlaySFX(string sfxKey, StudioEventEmitter emitter = null) {
         sfxEvent = RuntimeManager.CreateInstance($"event:/SFX/{sfxKey}");
-        sfxEvent.start();
     }
 
     public void StopSFX() {
@@ -88,6 +88,13 @@ public class AudioManager : SingletonBehavior {
             yield return FadeOutRoutine(FadeSeconds);
         }
         PlayBGM(tag);
+    }
+
+    public async void Jumpscare() {
+        PlaySFX("jumpscare");
+        bgmVolumeMult = 0f;
+        await Task.Delay(700);
+        bgmVolumeMult = 1f;
     }
 
     private IEnumerator MuteRoutine(float muteDuration) {

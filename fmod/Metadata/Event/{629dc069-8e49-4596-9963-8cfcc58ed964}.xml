@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.02.01.00">
+<objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{629dc069-8e49-4596-9963-8cfcc58ed964}">
 		<property name="name">
 			<value>cursor</value>
@@ -33,9 +33,6 @@
 		</relationship>
 		<relationship name="parameters">
 			<destination>{af008d74-fceb-43b8-b880-c8a6cdd9638e}</destination>
-		</relationship>
-		<relationship name="banks">
-			<destination>{1a1e692a-405c-4e04-b02d-94def2347ea1}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixer" id="{1a5ba9d1-5b3b-47c7-b195-bea890c84881}">

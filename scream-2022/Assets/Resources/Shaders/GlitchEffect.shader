@@ -174,8 +174,6 @@
             fixed4 frag(v2f IN) : SV_Target {
                 float2 xy = IN.texcoord;
                 float4 pxXY = IN.vertex;
-                xy.y = 1 - xy.y;
-                pxXY.y = 720 - pxXY.y;
                 float depth = tex2D(_DLimitDepthTex, xy) * _DLimitFar;
                 fixed4 orig = tex2D(_MainTex, xy);
                 fixed4 c;

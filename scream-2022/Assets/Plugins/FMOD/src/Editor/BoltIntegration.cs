@@ -62,21 +62,6 @@ namespace FMODUnity
         }
 
 #else
-        [InitializeOnLoadMethod]
-        private static void RegisterCompleteBuild()
-        {
-            EditorApplication.delayCall += CompleteBuild;
-        }
-
-        private static void CompleteBuild()
-        {
-            if (Settings.Instance.BoltUnitOptionsBuildPending)
-            {
-                Settings.Instance.BoltUnitOptionsBuildPending = false;
-                BuildBoltUnitOptions();
-            }
-        }
-
         private static void BuildBoltUnitOptions()
         {
 #if (UNITY_BOLT_EXIST)
@@ -105,6 +90,8 @@ namespace FMODUnity
 
             List<Type> allTypes = new List<Type>(GetTypesForNamespace(fmodUnityAssembly, "FMOD"));
             allTypes.AddRange(GetTypesForNamespace(fmodUnityAssembly, "FMOD.Studio"));
+            allTypes.AddRange(GetTypesForNamespace(fmodUnityAssembly, "FMODUnity"));
+            allTypes.AddRange(GetTypesForNamespace(fmodUnityResonanceAssembly, "FMODUnityResonance"));
 
             foreach (Type type in allTypes)
             {
@@ -118,6 +105,7 @@ namespace FMODUnity
 #if (UNITY_BOLT_EXIST)
             UnitBase.Build();
 #else
+            BoltCore.Configuration.Save();
             UnitBase.Rebuild();
 #endif
         }
@@ -128,5 +116,16 @@ namespace FMODUnity
                     .Where(t => string.Equals(t.Namespace, requestedNamespace, StringComparison.Ordinal));
         }
 #endif
+
+        public static void Startup()
+        {
+#if (UNITY_BOLT_EXIST || UNITY_VISUALSCRIPTING_EXIST)
+            if (Settings.Instance.BoltUnitOptionsBuildPending)
+            {
+                Settings.Instance.BoltUnitOptionsBuildPending = false;
+                BuildBoltUnitOptions();
+            }
+#endif
+        }
     }
 }

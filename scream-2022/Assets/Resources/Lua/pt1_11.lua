@@ -11,7 +11,7 @@ speak('BRAULIO', "Wait... That isn't her. That's an old woman.")
 speak('CHRIS', "Sumi Chey is almost ninety years old. She's not an heiress or anything like that. She founded the whole damn congolomerate.")
 expr('BRAULIO', 'unsure')
 speak('BRAULIO', "Then that woman who was here today...")
-speak('CHRIS', "They're not Sumi Chey. They're an imposter. Almost certainly a corporate spy from some overseas lab looking to steal Gazer.")
+speak('CHRIS', "They're not Sumi Chey. They're an imposter. Almost certainly a corporate spy from some overseas lab looking to steal Recurse.")
 exitNVL()
 
 --TODO: ding!

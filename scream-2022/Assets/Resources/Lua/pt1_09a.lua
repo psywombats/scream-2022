@@ -19,7 +19,7 @@ if not getSwitch('pt1_09a') then
 	expr('BRAULIO', nil)
 	speak('BRAULIO', "Why edit dreams when you can craft new ones in realtime, right?")
 	speak('ARIEL', "Does Sumi think we're going to try and develop the editor?")
-	speak('BRAULIO', "I don't know. I don't really feel like asking. Maybe I'll start working on editing again, once we've got the new Gazer prototype built.")
+	speak('BRAULIO', "I don't know. I don't really feel like asking. Maybe I'll start working on editing again, once we've got the new Recurse prototype built.")
 	speak('ARIEL', "Sounds good.")
 else
 	speak('BRAULIO', "I think Chris was looking for you in the chemistry lab?")

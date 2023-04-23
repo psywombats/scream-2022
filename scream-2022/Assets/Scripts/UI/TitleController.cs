@@ -2,96 +2,47 @@
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TitleController : MonoBehaviour {
-
-    [SerializeField] private ListSelector selector = null;
+    
     [SerializeField] private CanvasGroup canvas = null;
     [SerializeField] private CanvasGroup continueGroup = null;
-    [SerializeField] private Text continueText = null;
+    [SerializeField] private CanvasGroup mainGroup = null;
     [SerializeField] private GameObject canvasParent = null;
 
     private static readonly string[] Continues = { "March 1 11:00AM", "March 1 4:00PM", "March 1 9:00PM", "MIDNIGHT", "March 2 5:00PM", "March 2 10:00PM", "RECKONING" };
-    private int continueIndex = 0;
-
-    public void Start() {
-        DoMenu();
-    }
-
-    private async void DoMenu() { await DoMenuAsync(); }
-    private async Task DoMenuAsync() {
-        var selection = await selector.SelectItemAsync();
-        switch (selection) {
-            case 0:
-                StartGame();
-                break;
-            case 1:
-                ChooseBookmark();
-                break;
-            case 2:
-                ExitGame();
-                break;
-            default:
-                break;
-        }
-    }
 
     public void StartGame() {
         Global.Instance.StartCoroutine(StartRoutine());
     }
 
-    public async void ChooseBookmark() {
-        continueText.text = Continues[continueIndex];
-        await CoUtils.RunTween(selector.GetComponent<CanvasGroup>().DOFade(0f, .25f));
-        await CoUtils.RunTween(continueGroup.DOFade(1f, .25f));
-        InputManager.Instance.PushListener("continue", (cmd, ev) => {
-            if (ev != InputManager.Event.Down) {
-                return true;
-            }
-            if (cmd == InputManager.Command.Left) {
-                AudioManager.Instance.PlaySFX("cursor");
-                continueIndex -= 1;
-            }
-            if (cmd == InputManager.Command.Right) {
-                AudioManager.Instance.PlaySFX("cursor");
-                continueIndex += 1;
-            }
-            if (continueIndex < 0) continueIndex = Continues.Length - 1;
-            if (continueIndex >= Continues.Length) continueIndex = 0;
-            continueText.text = Continues[continueIndex];
-            if (cmd == InputManager.Command.Secondary || cmd == InputManager.Command.Menu) {
-                Return();
-            }
-
-            if (cmd == InputManager.Command.Primary) {
-                AudioManager.Instance.PlaySFX("selection");
-                Continue();
-            }
-
-            return true;
-        });
+    public async void ShowBookmarks() {
+        continueGroup.gameObject.SetActive(true);
+        await CoUtils.RunTween(mainGroup.DOFade(0f, .5f));
+        await CoUtils.RunTween(continueGroup.DOFade(1f, .5f));
+        mainGroup.gameObject.SetActive(false);
+        
     }
 
-    public async void Return() {
-        await CoUtils.RunTween(continueGroup.DOFade(0f, .25f));
-        await CoUtils.RunTween(selector.GetComponent<CanvasGroup>().DOFade(1f, .25f));
-        selector.Selection = 1;
-        await DoMenuAsync();
+    public async void HideBookmarks() {
+        mainGroup.gameObject.SetActive(true);
+        await CoUtils.RunTween(continueGroup.DOFade(0f, .5f));
+        await CoUtils.RunTween(mainGroup.DOFade(1f, .5f));
+        continueGroup.gameObject.SetActive(false);
     }
 
     public void ExitGame() {
         Application.Quit();
     }
     
-    public void Continue() {
-        Global.Instance.StartCoroutine(ContinueRoutine());
+    public void ResumeBookmark(int mark) {
+        Global.Instance.StartCoroutine(ResumeBookmarkRoutine(mark));
     }
-    private IEnumerator ContinueRoutine() {
+    private IEnumerator ResumeBookmarkRoutine(int mark) {
         StartCoroutine(AudioManager.Instance.FadeOutRoutine(1));
         yield return FadeOutRoutine();
-        ContinueSwitches.Activate(continueIndex);
-        switch (continueIndex) {
+        ContinueSwitches.Activate(mark);
+        switch (mark) {
             case 0:
                 yield return Global.Instance.Serialization.StartGameRoutine("F2", "pt1target", OrthoDir.North);
                 break;

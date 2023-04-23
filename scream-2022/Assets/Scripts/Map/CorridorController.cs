@@ -15,7 +15,7 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
     [SerializeField] private GameObject cork2;
     [Space]
     [SerializeField] private bool deathMode;
-    [SerializeField] private AudioSource deafen;
+    [SerializeField] private bool winMode;
 
     public List<PanelLightComponent> allLights = new List<PanelLightComponent>();
 
@@ -31,19 +31,21 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
 
     private Dictionary<int, TacticsTerrainMesh> chunks = new Dictionary<int, TacticsTerrainMesh>();
 
-    private bool deafenOn;
-    private float deafenMult;
-
     private bool restrictOn;
     private float restrictMult;
 
-    public void Start() {
+    public async void Start() {
         chunks.Add(0, Map.Terrain);
 
-        if (deathMode) {
+        if (deathMode || winMode) {
             DefaultShutdown = true;
             DefaultEvil = true;
-            _ = RunRoutineAsync("pt1b");
+            _ = RunDeathAsync();
+        }
+
+        if (winMode) {
+            await Task.Delay(10 * 5000);
+            await Global.Instance.Maps.Lua.RunRoutineFromFile("finale_kowalski");
         }
     }
 
@@ -52,23 +54,15 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
     }
 
     public void OnDisable() {
-        AvatarEvent.Instance.FreeTraverse = false;
+        if (AvatarEvent.Instance != null) {
+            AvatarEvent.Instance.FreeTraverse = false;
+        }
     }
 
     public void Update() {
         AvatarEvent.Instance.FreeTraverse = true;
         UpdateTerrain();
         UpdateLighting();
-
-        if (deafenOn) {
-            deafenMult += Time.deltaTime * (1f / 8f);
-            if (deafenMult > 1) {
-                deafenMult = 1;
-            }
-            var a = AvatarEvent.Instance.TowardsBeastLook();
-            var vol = a;
-            deafen.volume = vol * deafenMult;
-        }
 
         if (restrictOn) {
             restrictMult += Time.deltaTime * (1f / 5f);
@@ -88,10 +82,10 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
 
         switch (routineName) {
             case "pt1a":
-                await Task.Delay(8 * 1000);
-                await RandomSwapAsync();
+                await Task.Delay(7 * 1000);
+                await RandomSwapAsync(1.5f);
                 await Task.Delay(5 * 1000);
-                await RandomShutdownAsync();
+                await RandomShutdownAsync(3.2f);
                 await Task.Delay(3 * 1000);
 
                 fade = IndexDatabase.Instance.Fades.GetData("black");
@@ -106,27 +100,27 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
                 await MapManager.Instance.Lua.RunRoutineFromFile("pt1_02");
                 
                 break;
-            case "pt1b":
-                deafenOn = true;
-                restrictOn = true;
-                await Task.Delay(3 * 1000);
-                await OrderedTurnOnAsync();
-                await Task.Delay(6 * 1000);
-                await RandomShutdownAsync(3f);
-
-                fade = IndexDatabase.Instance.Fades.GetData("black");
-                AvatarEvent.Instance.PauseInput();
-                await MapManager.Instance.Camera.fade.FadeRoutine(fade, invert: false, .1f);
-                MapManager.Instance.Teleport("Gazer", "chair", OrthoDir.South, isRaw: true);
-                MapOverlayUI.Instance.adv.SetWake(0);
-                await Task.Delay(2 * 1000);
-                await MapManager.Instance.Camera.fade.FadeRoutine(fade, invert: true, 2.5f);
-                AvatarEvent.Instance.UnpauseInput();
-
-                await MapManager.Instance.Lua.RunRoutineFromFile("pt2_01");
-
-                break;
         }
+    }
+
+    private async Task RunDeathAsync() {
+        deafenOn = true;
+        restrictOn = true;
+        await Task.Delay(3 * 1000);
+        await OrderedTurnOnAsync();
+        await Task.Delay(6 * 1000);
+        await RandomShutdownAsync(3f);
+
+        var fade = IndexDatabase.Instance.Fades.GetData("black");
+        AvatarEvent.Instance.PauseInput();
+        await MapManager.Instance.Camera.fade.FadeRoutine(fade, invert: false, .1f);
+        MapManager.Instance.Teleport("Gazer", "chair", OrthoDir.South, isRaw: true);
+        MapOverlayUI.Instance.adv.SetWake(0);
+        await Task.Delay(2 * 1000);
+        await MapManager.Instance.Camera.fade.FadeRoutine(fade, invert: true, 2.5f);
+        AvatarEvent.Instance.UnpauseInput();
+
+        await MapManager.Instance.Lua.RunRoutineFromFile("pt2_01");
     }
 
     public async Task OrderedTurnOnAsync() {
@@ -154,7 +148,7 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
         DefaultEvil = true;
         var randomLights = allLights.OrderBy(a => Guid.NewGuid()).ToList();
         foreach (var light in randomLights) {
-            light.IsEvil = true;
+            light.IsEvil = !light.IsEvil;
             await Task.Delay((int)(1000 * duration / randomLights.Count()));
         }
     }

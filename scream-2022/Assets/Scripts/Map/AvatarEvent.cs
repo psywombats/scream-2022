@@ -297,9 +297,11 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
     }
 
     private void ShowMenu() {
+        /*
         PauseInput();
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        */
     }
 
     private void HandleFPC() {

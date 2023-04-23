@@ -1,10 +1,10 @@
 setSwitch('pt2_06', true)
-teleport('Gazer', 'chair', 'SOUTH')
+teleport('Recurse', 'chair', 'SOUTH')
 
 enterNVL()
 enter('SUMI', 'd')
 enter('BRAULIO', 'b')
-speak('BRAULIO', "Hey Sumi! And um, Ariel. If we're ready to go, I'll boot up Gazer.")
+speak('BRAULIO', "Hey Sumi! And um, Ariel. If we're ready to go, I'll boot up Recurse.")
 speak('SUMI', "I can't wait.")
 speak('BRAULIO', "And you're, uh, really not worried about oneirophrenia?")
 speak('SUMI', "If I was, I wouldn't have signed the waiver.")

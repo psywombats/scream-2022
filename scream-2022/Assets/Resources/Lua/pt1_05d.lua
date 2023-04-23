@@ -45,6 +45,7 @@ if not getSwitch('pt1_05d') then
 		exit('BRAULIO')
 		wait(1.0)
 		speak('ARIEL', "Good luck, Braulio.")
+		exitNVL()
 		wait(.5)
 		play('pt1_06')
 	else

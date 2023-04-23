@@ -45,8 +45,8 @@ function rotateTo(event)
 	await()
 end
 
-function bootGazer(on)
-	cs_bootGazer(on)
+function bootRecurse(on)
+	cs_bootRecurse(on)
 	await()
 end
 

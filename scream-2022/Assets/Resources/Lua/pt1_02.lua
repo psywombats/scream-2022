@@ -1,3 +1,4 @@
+
 enterNVL()
 
 speak('CHRIS', "Ariel. Ariel! Are you alright?")
@@ -24,10 +25,10 @@ enter('CHRIS', 'b')
 enter('NOEMI', 'd')
 speak('CHRIS', "There's no need to apologize. Did something happen? Your heart was beating so fast that I was afraid I'd overdosed you.")
 speak('ARIEL', "Nothing happened.")
-speak('NOEMI', "Whatever you were dreaming, I couldn't record it. Gazer didn't pick it up... Too bad.")
+speak('NOEMI', "Whatever you were dreaming, I couldn't record it. Recurse didn't pick it up... Too bad.")
 speak('ARIEL', "It wasn't a lucid dream. You wouldn't have wanted to record it anyway.")
 speak('CHRIS', "Maybe it's a problem with the new formula... I'll change the balance back for next time.")
-speak('NOEMI', "Or a bug with Gazer. I'm not perfect.")
+speak('NOEMI', "Or a bug with Recurse. I'm not perfect.")
 speak('ARIEL', "Just a bug...")
 exitNVL()
 

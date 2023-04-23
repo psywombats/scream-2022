@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using FMODUnity;
 using UnityEngine;
 
 public class PanelLightComponent : MonoBehaviour {
@@ -14,6 +15,9 @@ public class PanelLightComponent : MonoBehaviour {
     [SerializeField] public Material badMaterial;
     [SerializeField] public Material goodMaterial;
     [SerializeField] public bool preferRunning;
+    [Space]
+    [SerializeField] public StudioEventEmitter sfxBoot;
+    [SerializeField] public StudioEventEmitter sfxSwap;
 
     private bool isEvil;
     public bool IsEvil {
@@ -22,6 +26,7 @@ public class PanelLightComponent : MonoBehaviour {
             if (value != isEvil) {
                 isEvil = value;
                 if (vid != null) {
+                    sfxSwap.Play();
                     VideoManager.Instance.ReleaseVideo(vid);
                     vid = null;
                 }
@@ -75,7 +80,7 @@ public class PanelLightComponent : MonoBehaviour {
     }
 
     public void PlayBootupSFX() {
-        // TODO: sfx
+        sfxBoot.Play();
     }
 
     private void UpdateMode() {
