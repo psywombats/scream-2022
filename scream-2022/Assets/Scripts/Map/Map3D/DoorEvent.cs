@@ -72,6 +72,7 @@ public class DoorEvent : MonoBehaviour {
             yield return CoUtils.Wait(.75f);
             MapOverlayUI.Instance.setting.Scramble();
             Global.Instance.Data.SetSwitch("glitch_on", true);
+            AudioManager.Instance.PlaySFX("glitch");
             yield return CoUtils.Wait(.75f);
             Global.Instance.Data.SetSwitch("no_settings", true);
             yield return Global.Instance.Maps.TeleportRoutine(glitchBackMap, glitchBackEvent, glitchBackDir, isRaw: true);

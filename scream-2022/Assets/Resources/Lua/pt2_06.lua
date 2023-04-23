@@ -1,5 +1,5 @@
 setSwitch('pt2_06', true)
-teleport('Recurse', 'chair', 'SOUTH')
+teleport('gazer', 'chair', 'SOUTH')
 
 enterNVL()
 enter('SUMI', 'd')

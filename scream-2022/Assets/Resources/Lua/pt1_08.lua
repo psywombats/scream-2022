@@ -1,4 +1,4 @@
-teleport('Recurse', 'pt1a', 'NORTH')
+teleport('gazer', 'pt1a', 'NORTH')
 
 wait(2)
 rotateTo('sumi_2')

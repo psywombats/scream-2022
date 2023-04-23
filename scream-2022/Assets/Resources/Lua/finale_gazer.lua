@@ -1,5 +1,5 @@
 rotateTo('chair')
-bootRecurse(true)
-setSwitch('finale_Recurse', true)
+bootGazer(true)
+setSwitch('finale_gazer', true)
 wait(1)
 speak('Ariel', "Guess I'm out of time.")

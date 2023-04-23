@@ -141,7 +141,7 @@ public class VideoManager : SingletonBehavior {
         public int vidHandles;
 
         public void Graduate() {
-            graduateAt = Mathf.Min(Random.Range(2f, 4f), (float)data.data.clip.length);
+            graduateAt = Mathf.Min(Random.Range(4f, 12f), (float)data.data.clip.length);
             elapsed = 0f;
         }
     }

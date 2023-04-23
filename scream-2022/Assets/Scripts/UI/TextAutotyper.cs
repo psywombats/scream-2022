@@ -40,7 +40,7 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
 
     public void StartGlitch() {
         _ = MapOverlayUI.Instance.adv.GetHighlightedPortrait().JoltAsync();
-        AudioManager.Instance.Jumpscare();
+        _ = AudioManager.Instance.JumpscareAsync();
     }
 
     public IEnumerator TypeRoutine(string text, bool waitForConfirm = true) {

@@ -1,9 +1,9 @@
-teleport('Recurse', 'chair', 'SOUTH')
+teleport('gazer', 'chair', 'SOUTH')
 
 wait(0.5)
 speak('Ariel', "Let's bring Recurse online...")
 wait(0.3)
-bootRecurse(true)
+bootGazer(true)
 wait(0.5)
 
 enterNVL()
@@ -79,7 +79,7 @@ speak('ARIEL', "And so, once again, I am a lab rat.")
 exitNVL()
 
 speak('ARIEL', "The pieces fit. This concludes my lucid dream of March 2nd. In this dream, I wander the Lucir office and gather the evidence to support my theory.")
-bootRecurse(false)
+bootGazer(false)
 speak('ARIEL', "All that remains is for me to wake up.")
 speak('ARIEL', "...to wake up.")
 fade('black')

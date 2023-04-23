@@ -40,11 +40,15 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
         if (deathMode || winMode) {
             DefaultShutdown = true;
             DefaultEvil = true;
+        }
+        if (deathMode) { 
             _ = RunDeathAsync();
         }
 
         if (winMode) {
-            await Task.Delay(10 * 5000);
+            await Task.Delay(3 * 1000);
+            await OrderedTurnOnAsync();
+            await Task.Delay(10 * 1000);
             await Global.Instance.Maps.Lua.RunRoutineFromFile("finale_kowalski");
         }
     }
@@ -104,7 +108,6 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
     }
 
     private async Task RunDeathAsync() {
-        deafenOn = true;
         restrictOn = true;
         await Task.Delay(3 * 1000);
         await OrderedTurnOnAsync();

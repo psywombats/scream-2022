@@ -51,6 +51,7 @@ public class AudioManager : SingletonBehavior {
 
     public void PlaySFX(string sfxKey, StudioEventEmitter emitter = null) {
         sfxEvent = RuntimeManager.CreateInstance($"event:/SFX/{sfxKey}");
+        sfxEvent.start();
     }
 
     public void StopSFX() {
@@ -60,8 +61,8 @@ public class AudioManager : SingletonBehavior {
     public void SetVolume() {
         var sfxBus = RuntimeManager.GetBus("bus:/SFX");
         var bgmBus = RuntimeManager.GetBus("bus:/BGM");
-        sfxBus.setVolume(sfxVolumeSetting.Value * BaseVolume);
-        bgmBus.setVolume(bgmVolumeSetting.Value * BaseVolume);
+        sfxBus.setVolume(BaseVolume);
+        bgmBus.setVolume(BaseVolume * bgmVolumeMult);
     }
 
     public IEnumerator FadeOutRoutine(float durationSeconds) {
@@ -90,11 +91,13 @@ public class AudioManager : SingletonBehavior {
         PlayBGM(tag);
     }
 
-    public async void Jumpscare() {
+    public async Task JumpscareAsync() {
         PlaySFX("jumpscare");
         bgmVolumeMult = 0f;
+        SetVolume();
         await Task.Delay(700);
         bgmVolumeMult = 1f;
+        SetVolume();
     }
 
     private IEnumerator MuteRoutine(float muteDuration) {

@@ -1,4 +1,4 @@
-teleport('Recurse', 'chair', 'SOUTH', true)
+teleport('gazer', 'chair', 'SOUTH', true)
 fade('normal')
 wait(1)
 setting("March 1st, 4:00PM")
@@ -22,4 +22,4 @@ speak('BRAULIO', "Never mind! Catch me in the office if you need anything!")
 exitNVL()
 
 setSwitch('pt1_08b', true)
-teleport('F2', 'Recurse', 'NORTH')
+teleport('F2', 'gazer', 'NORTH')

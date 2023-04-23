@@ -21,7 +21,7 @@ wait(.6)
 
 fade('black')
 setSwitch('pt2_07', true)
-teleport('Recurse', 'pt2_target', 'NORTH', true)
+teleport('gazer', 'pt2_target', 'NORTH', true)
 fade('normal')
 
 wait(.6)
@@ -38,7 +38,7 @@ speak('BRAULIO', "Sweet dreams!")
 exitNVL()
 
 wait(1)
-bootRecurse(true)
+bootGazer(true)
 wait(1.7)
 
 enterNVL()
@@ -70,7 +70,7 @@ speak('ARIEL', "Sumi! Braulio, unhook her!")
 exitNVL()
 
 wait(.7)
-bootRecurse(false)
+bootGazer(false)
 wait(.7)
 
 enterNVL()
@@ -100,4 +100,4 @@ speak('BRAULIO', "Got it.")
 exitNVL()
 
 setSwitch('clear_sprites', true)
-teleport('F2', 'Recurse', 'NORTH')
+teleport('F2', 'gazer', 'NORTH')

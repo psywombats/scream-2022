@@ -58,7 +58,7 @@
         "got_rat",
         "got_laptop",
         "got_pendant",
-        "got_file",
+        "got_report",
         "got_diary",
         "got_photo",
     };
