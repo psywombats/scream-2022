@@ -1,7 +1,7 @@
 teleport('gazer', 'chair', 'SOUTH')
 
 wait(0.5)
-speak('Ariel', "Let's bring Recurse online...")
+speak('Ariel', "Let's bring Recurser online...")
 wait(0.3)
 bootGazer(true)
 wait(0.5)
@@ -16,7 +16,7 @@ if not clue('rat') then
 	return
 end
 
-speak('ARIEL', "...the poor rats. Either because of my experiences in Ward No.9, or my later experimentation with Recurse, I was on a timer. I lost my ability to keep my nightmares in check.")
+speak('ARIEL', "...the poor rats. Either because of my experiences in Ward No.9, or my later experimentation with Recurser, I was on a timer. I lost my ability to keep my nightmares in check.")
 speak('ARIEL', "I tried to run from those old horrors that bled into my perception. But, my ultimate fate is detailed here:")
 
 if not clue('pendant') then
@@ -46,14 +46,16 @@ end
 
 speak('ARIEL', "...the tampering software. Probably Braulio clumsily deleted every mention of oneirophrenia from Ariel's dreams so I wouldn't discover what really happened.")
 speak('ARIEL', "That didn't work too well. I could tell something was missing.")
-speak('ARIEL', "If I'm not Ariel, though... I can only think of one person who would try to save my dreams even after my death...")
+speak('ARIEL', "If I'm not Ariel, though... Who would erase themself to try and save my dreams even after my death?")
+speak('ARIEL', "I can think of someone misguided and depressed enough to try. And they detailed those thoughts...")
 
 if not clue('diary') then
 	play('finale_quit')
 	return
 end
 
-speak('ARIEL', "...Dr. Kowalski. I'm Dr. Christian Kowalski. Or at least my body is. He must've erased himself with Bluepill.")
+speak('ARIEL', "...in the dream diary of Dr. Kowalski.")
+speak('ARIEL', "Or should I say, my diary. I am Dr. Christian Kowalski. My body is his, anyway. He must've erased himself with Bluepill.")
 speak('ARIEL', "He figured out that with Bluepill-induced oneirophrenia, high-quality dreams could be interpreted as memory.")
 speak('ARIEL', "And he tried to tell me, even if Braulio erased those bits.")
 speak('ARIEL', "It's clear from his dream diary that he was depressed and still felt guilty about his role in the trauma that Noemi and I experienced.")
@@ -69,7 +71,7 @@ end
 
 speak('ARIEL', "...Sara Andrianami. That's her real name. Sumi, or Sara, was no stranger to Bluepill dreams. She even said so to Braulio.")
 speak('ARIEL', "There are plenty of unethical labs overseas experimenting with Bluepill. Even some here, like the one that ran the hospital with Noemi and me.")
-speak('ARIEL', "At one of those underground labs, Sumi Chey must've tried to erase Sara's identity and replace it with her own.")
+speak('ARIEL', "At one of those underground labs, Sumi Chey must've tried to erase Sara's identity and replace it with her own. Her goal is reincarnation.")
 speak('ARIEL', "I doubt it was consensual. Did Sumi Chey just pick someone that matched her younger self? It seems like Sara may not have even spoken English.")
 speak('ARIEL', "And the overwrite clearly wasn't clean. Part of her is still there, trying to fight back in Sumi's dreams, and might even be awake now, and very disturbed.")
 speak('ARIEL', "If the overwriting was incomplete, of course the real Sumi would be looking for another lab to try it again, but more thoroughly. And so she found Lucir.")

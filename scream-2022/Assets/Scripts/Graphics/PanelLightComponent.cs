@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FMODUnity;
 using UnityEngine;
@@ -27,7 +28,7 @@ public class PanelLightComponent : MonoBehaviour {
             if (value != isEvil) {
                 isEvil = value;
                 if (vid != null) {
-                    sfxSwap.Play();
+                    PlaySwapSFX();
                     vid = null;
                 }
             }
@@ -60,8 +61,11 @@ public class PanelLightComponent : MonoBehaviour {
     private VideoManager.RunningVideo vid;
     private CorridorController manager;
 
-    public async void Start() {
-        await Task.Delay(50);
+    public void Start() {
+        StartCoroutine(StartRoutine());
+    }
+    private IEnumerator StartRoutine() {
+        yield return null;
         manager = FindObjectOfType<CorridorController>();
         if (manager != null) {
             manager.allLights.Add(this);
@@ -95,6 +99,10 @@ public class PanelLightComponent : MonoBehaviour {
 
     public void PlayBootupSFX() {
         sfxBoot.Play();
+    }
+
+    public void PlaySwapSFX() {
+        sfxSwap.Play();
     }
 
     private void UpdateMode() {

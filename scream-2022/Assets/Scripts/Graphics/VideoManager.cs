@@ -11,24 +11,24 @@ public class VideoManager : SingletonBehavior {
     public void Start() {
         player = gameObject.AddComponent<VideoPlayer>();
         player.targetTexture = Resources.Load<RenderTexture>("Textures/RenderTextures/VideoBank");
-        player.audioOutputMode = VideoAudioOutputMode.None;
+
 #if UNITY_WEBGL
+        player.url = "https://psyvideo.github.io/page/master2.webm";
+        //player.url = "https://theroccob.github.io/myvideo/video.mp4";
+        player.source = VideoSource.Url;
+        player.playOnAwake = false;
+#else
         player.clip = Resources.Load<VideoClip>("Video/master");
         player.source = VideoSource.VideoClip;
         player.Play();
-#else
-        player.url = "https://psywombats.github.io/video/master.mp4";
-        player.source = VideoSource.Url;
-        player.playOnAwake = false;
-#endif
-
         player.isLooping = true;
-        
+#endif
     }
 
     public void Update() {
         if (Mouse.current.leftButton.wasPressedThisFrame) {
             player.Play();
+            player.isLooping = true;
         }
     }
 

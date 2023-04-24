@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,11 +14,11 @@ public class GazerController : MonoBehaviour {
     [SerializeField] private StudioEventEmitter sfxOff;
 
     public void OnEnable() {
-        UpdateAmbient();
+        StartCoroutine(UpdateAmbientRoutine());
     }
 
-    public async void UpdateAmbient() {
-        await Task.Delay(100);
+    public IEnumerator UpdateAmbientRoutine() {
+        yield return CoUtils.Wait(.1f);
         foreach (var light in allLights) {
             light.IsShutDown = true;
         }
@@ -49,7 +50,7 @@ public class GazerController : MonoBehaviour {
         }
     }
 
-    public async Task BootAsync(bool on) {
+    public IEnumerator BootRoutine(bool on) {
         if (on) {
             sfxOn.Play();
         } else {
@@ -62,7 +63,7 @@ public class GazerController : MonoBehaviour {
             light.IsEvil = Global.Instance.Data.Time == TimeblockType.Midnight;
             light.IsShutDown = !on;
 
-            await Task.Delay((int)(1000 * duration / randomLights.Count()));
+            yield return CoUtils.Wait(duration / randomLights.Count());
         }
     }
 

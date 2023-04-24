@@ -94,13 +94,13 @@ public class PortraitComponent : MonoBehaviour {
         IsHighlighted = false;
     }
 
-    public async Task JoltAsync() {
+    public IEnumerator JoltRoutine() {
         var duration = .7f;
-        if (!IsHighlighted) await nvl.SetHighlightRoutine(Speaker);
-        await Task.WhenAll(GlitchBrushAsync(duration), GlitchAsync(duration));
+        if (!IsHighlighted) yield return nvl.SetHighlightRoutine(Speaker);
+        yield return CoUtils.RunParallel(this, GlitchBrushRoutine(duration), GlitchRoutine(duration));
     }
 
-    private async Task GlitchBrushAsync(float duration) {
+    private IEnumerator GlitchBrushRoutine(float duration) {
         var interval = 50;
         var i = 0;
         altSprite.color = Color.white;
@@ -114,7 +114,7 @@ public class PortraitComponent : MonoBehaviour {
                 altSprite.transform.localScale.y * (Random.Range(0, 2) == 0 ? 1 : -1),
                 altSprite.transform.localScale.z);
             altSprite.SetNativeSize();
-            await Task.Delay(interval);
+            yield return CoUtils.Wait(interval / 1000f);
         }
         altSprite.sprite = null;
         altSprite.transform.localScale = new Vector3(
@@ -124,16 +124,16 @@ public class PortraitComponent : MonoBehaviour {
         altSprite.color = Color.clear;
     }
 
-    private async Task GlitchAsync(float duration) {
+    private IEnumerator GlitchRoutine(float duration) {
         var frameLength = (int)(duration * 1000f / 7f);
         sprite.sprite = Speaker.glitch;
-        await Task.Delay(frameLength);
+        yield return CoUtils.Wait(frameLength / 1000f);
         sprite.sprite = Speaker.spooky;
-        await Task.Delay(frameLength * 3);
+        yield return CoUtils.Wait(frameLength / 1000f * 3f);
         sprite.sprite = Speaker.glitch;
-        await Task.Delay(frameLength);
+        yield return CoUtils.Wait(frameLength / 1000f);
         sprite.sprite = Speaker.spooky;
-        await Task.Delay(frameLength);
+        yield return CoUtils.Wait(frameLength / 1000f);
         sprite.sprite = Speaker.image;
     }
 }

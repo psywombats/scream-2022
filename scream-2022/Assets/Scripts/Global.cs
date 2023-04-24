@@ -43,6 +43,8 @@ public class Global : MonoBehaviour {
         instance.ReadSerializedManagers();
         DontDestroyOnLoad(gameObject);
         MoonSharp.Interpreter.UserData.RegisterAssembly();
+        Get<VideoManager>();
+        QualitySettings.vSyncCount = 1;
     }
 
     public T Get<T>() where T : SingletonBehavior {

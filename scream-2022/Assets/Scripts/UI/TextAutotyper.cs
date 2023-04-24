@@ -39,8 +39,8 @@ public class TextAutotyper : MonoBehaviour, IInputListener {
     }
 
     public void StartGlitch() {
-        _ = MapOverlayUI.Instance.adv.GetHighlightedPortrait().JoltAsync();
-        _ = AudioManager.Instance.JumpscareAsync();
+        StartCoroutine(MapOverlayUI.Instance.adv.GetHighlightedPortrait().JoltRoutine());
+        StartCoroutine(AudioManager.Instance.JumpscareRoutine());
     }
 
     public IEnumerator TypeRoutine(string text, bool waitForConfirm = true) {

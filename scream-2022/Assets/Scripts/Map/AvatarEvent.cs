@@ -29,8 +29,7 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
     // beast mode
     public float TurnRate { get; set; } = 1f;
-    public float TowardsBeastRestrict ;
-    public float TowardsBeastMove;
+    public float CantLook;
     public float PreventApproach;
     public float LookAway;
     // end beast mode
@@ -206,9 +205,9 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         }
     }
 
-    public async Task ShakeAsync(float s = .2f) {
+    public IEnumerator ShakeRoutine(float s = .2f) {
         FPSCam.osc.enabled = true;
-        await Task.Delay((int)(s * 1000f));
+        yield return CoUtils.Wait(s);
         FPSCam.osc.enabled = false;
         FPSCam.transform.localPosition = Vector3.zero;
     }
@@ -276,7 +275,6 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
 
         var beastly = Vector3.Angle(component, new Vector3(1, 0, 0)) / 180f;
         var beastlied = component * beastly;
-        component = TowardsBeastMove * component + (1f - TowardsBeastMove) * beastlied;
 
         if (velocityThisFrame.x > 0 && PreventApproach > 0f) {
             velocityThisFrame.x *= (1f - PreventApproach);
@@ -347,9 +345,9 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
             trans.eulerAngles.z
         );
         var newB = TowardsBeastLook();
-        if (newB > oldB && TowardsBeastRestrict > 0f) {
+        if (newB > oldB && CantLook > 0f) {
             trans.rotation = oldRot;
-            var coef = Mathf.Max(0f, (1f - TowardsBeastLook()) - .3f);
+            var coef = Mathf.Max(0f, 1f - ((CantLook * TowardsBeastLook()) + .3f * PreventApproach));
             trans.rotation = Quaternion.Euler(
                 Mathf.Clamp(ang, RotationYBounds.x, RotationYBounds.y),
                 trans.eulerAngles.y + xcom * coef,
@@ -358,7 +356,9 @@ public class AvatarEvent : MonoBehaviour, IInputListener {
         }
 
         if (LookAway > 0) {
-            var away = TowardsBeastLook() * TowardsBeastLook() * LookAway * Time.deltaTime * 40;
+            var rate = TowardsBeastLook() * LookAway * PreventApproach;
+            rate *= rate;
+            var away = rate * Time.deltaTime * 120;
             oldB = TowardsBeastLook();
             oldRot = trans.rotation;
 

@@ -36,7 +36,7 @@ if not getSwitch('pt1_05b') then
 	speak('NOEMI', "Would you like to meet the rats? They work here too.")
 	speak('ARIEL', "Noemi, don't show her the lab rats.")
 	expr('NOEMI', 'happy')
-	speak('NOEMI', "This is Ratilda. Rattheus is asleep now, but Ratrick should be around here somewhere...")
+	speak('NOEMI', "This is Rathilda. Rattheus is asleep now, but Ratrick should be around here somewhere...")
 	speak('ARIEL', "See you later, Noemi.")
 	exitNVL()
 	
@@ -45,7 +45,7 @@ if not getSwitch('pt1_05b') then
 	enterNVL()
 	enter('SUMI', 'c')
 	wait(0.2)
-	speak('ARIEL', "Sorry, Noemi is a little odd, but she's an old friend of mine. Plus she programmed Recurse basically from scratch.")
+	speak('ARIEL', "Sorry, Noemi is a little odd, but she's an old friend of mine. Plus she programmed Recurser basically from scratch.")
 	speak('ARIEL', "Computational neuroscience is her specialty. All the technology that lets us record and play back brain signals -- that's all her work.")
 	speak('SUMI', "Genius and insanity go hand in hand, after all.")
 	speak('ARIEL', "She's not insane, she - ")

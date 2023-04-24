@@ -1,5 +1,6 @@
 ﻿using FMOD.Studio;
 using FMODUnity;
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -15,7 +16,7 @@ public class AudioManager : SingletonBehavior {
     private const float FadeSeconds = 0.5f;
 
     public float BaseVolume { get; set; } = 1.0f;
-    private float bgmVolumeMult = 1.0f;
+    public float bgmVolumeMult = 1.0f;
     private Setting<float> bgmVolumeSetting;
     private Setting<float> sfxVolumeSetting;
 
@@ -44,8 +45,10 @@ public class AudioManager : SingletonBehavior {
             BaseVolume = 1f;
             SetVolume();
             CurrentBGMKey = key;
-            bgmEvent = RuntimeManager.CreateInstance($"event:/BGM/{key}");
-            bgmEvent.start();
+            if (key != NoBGMKey) {
+                bgmEvent = RuntimeManager.CreateInstance($"event:/BGM/{key}");
+                bgmEvent.start();
+            }
         }
     }
 
@@ -59,10 +62,15 @@ public class AudioManager : SingletonBehavior {
     }
 
     public void SetVolume() {
-        var sfxBus = RuntimeManager.GetBus("bus:/SFX");
-        var bgmBus = RuntimeManager.GetBus("bus:/BGM");
-        sfxBus.setVolume(BaseVolume);
-        bgmBus.setVolume(BaseVolume * bgmVolumeMult);
+        try {
+            var sfxBus = RuntimeManager.GetBus("bus:/SFX");
+            var bgmBus = RuntimeManager.GetBus("bus:/BGM");
+            sfxBus.setVolume(BaseVolume);
+            bgmBus.setVolume(BaseVolume * bgmVolumeMult);
+        } catch (Exception e) {
+
+        }
+
     }
 
     public IEnumerator FadeOutRoutine(float durationSeconds) {
@@ -91,11 +99,11 @@ public class AudioManager : SingletonBehavior {
         PlayBGM(tag);
     }
 
-    public async Task JumpscareAsync() {
+    public IEnumerator JumpscareRoutine() {
         PlaySFX("jumpscare");
         bgmVolumeMult = 0f;
         SetVolume();
-        await Task.Delay(700);
+        yield return CoUtils.Wait(.7f);
         bgmVolumeMult = 1f;
         SetVolume();
     }

@@ -27,6 +27,10 @@ public class DoorEvent : MonoBehaviour {
         Event.OnCollide += () => Global.Instance.StartCoroutine(TeleportRoutine(AvatarEvent.Instance));
         Event.OnInteract += () => Global.Instance.StartCoroutine(TeleportRoutine(AvatarEvent.Instance, force: true)); 
         Event.LuaObject.Set("door", lockedCondition);
+
+        if (string.IsNullOrEmpty(mapName)) {
+            GetComponent<CharaEvent>().doll.highlightRenderer.gameObject.SetActive(false);
+        }
     }
 
     public void RefreshDoor() {

@@ -72,6 +72,8 @@ public class LuaCutsceneContext : LuaContext {
         lua.Globals["cs_clue"] = (Action<DynValue>)Clue;
         lua.Globals["finaleCorridor"] = (Action)FinaleCorridor;
         lua.Globals["endGame"] = (Action)EndGame;
+        lua.Globals["killMonitors"] = (Action)KillMonitors;
+        lua.Globals["unpause"] = (Action)Unpause;
     }
 
     // === LUA CALLABLE ============================================================================
@@ -191,7 +193,7 @@ public class LuaCutsceneContext : LuaContext {
 
     public void MonitorRoutine(DynValue value) {
         var corridor = GameObject.FindObjectOfType<CorridorController>();
-        _ = corridor.RunRoutineAsync(value.String);
+        Global.Instance.StartCoroutine(corridor.RunIntroRoutine(""));
     }
 
     public void SetCorridorBias(DynValue value) {
@@ -222,12 +224,12 @@ public class LuaCutsceneContext : LuaContext {
     }
     private IEnumerator BootGazerRoutine(bool on) {
         var gazer = GameObject.FindObjectOfType<GazerController>();
-        yield return CoUtils.TaskAsRoutine(gazer.BootAsync(on));
+        yield return gazer.BootRoutine(on);
     }
 
     public void UpdateGazer() {
         var gazer = GameObject.FindObjectOfType<GazerController>();
-        gazer.UpdateAmbient();
+        Global.Instance.StartCoroutine(gazer.UpdateAmbientRoutine());
     }
 
     public void DisableGazer() {
@@ -242,14 +244,14 @@ public class LuaCutsceneContext : LuaContext {
     private void Jolt(DynValue charaTag) {
         var speaker = IndexDatabase.Instance.Speakers.GetData(charaTag.String);
         var portrait = MapOverlayUI.Instance.adv.GetPortrait(speaker);
-        _ = portrait.JoltAsync();
+        Global.Instance.StartCoroutine(portrait.JoltRoutine());
     }
 
     private void Elevate() {
         Global.Instance.StartCoroutine(ElevatorRoutine());
     }
     private IEnumerator ElevatorRoutine() {
-        return CoUtils.TaskAsRoutine(AvatarEvent.Instance.ShakeAsync(4));
+        return AvatarEvent.Instance.ShakeRoutine(4);
     }
 
     private void Clue(DynValue expected) {
@@ -263,11 +265,23 @@ public class LuaCutsceneContext : LuaContext {
 
     private void FinaleCorridor() {
         var corridor = GameObject.FindObjectOfType<CorridorController>();
-        _ = corridor.RandomSwapAsync(10f);
+        Global.Instance.StartCoroutine(corridor.RandomSwapRoutine(10f));
     }
 
     private void EndGame() {
         MapOverlayUI.Instance.endGame.gameObject.SetActive(true);
         MapOverlayUI.Instance.endGame.DOFade(1f, 3f);
+    }
+
+    private void KillMonitors() {
+        var corridor = GameObject.FindObjectOfType<CorridorController>();
+        Global.Instance.StartCoroutine(corridor.RandomShutdownRoutine(1f));
+    }
+
+    private void Unpause() {
+        AvatarEvent.Instance.UnpauseInput();
+        AvatarEvent.Instance.UnpauseInput();
+        AvatarEvent.Instance.UnpauseInput();
+        AvatarEvent.Instance.UnpauseInput();
     }
 }

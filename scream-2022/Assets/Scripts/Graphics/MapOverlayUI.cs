@@ -26,4 +26,5 @@ public class MapOverlayUI : MonoBehaviour {
     public NVLComponent adv;
     public Image xfade;
     public CanvasGroup endGame;
+    public DeathView death;
 }

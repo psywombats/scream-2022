@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using DG.Tweening;
 using System.Threading.Tasks;
+using System.Collections;
 
 [RequireComponent(typeof(MapEvent))]
 public class CharaEvent : MonoBehaviour {
@@ -23,16 +24,16 @@ public class CharaEvent : MonoBehaviour {
         UpdateRenderer();
 
         if (phaseIn) {
-            PhaseIn();
+            StartCoroutine(PhaseInRoutine());
         }
         SetFacing(dir);
         Event.enableChild = doll.gameObject;
         doll.gameObject.SetActive(Event.IsSwitchEnabled);
     }
 
-    private async void PhaseIn() {
+    private IEnumerator PhaseInRoutine() {
         doll.offsetter.transform.localScale = new Vector3(0, 0, 1);
-        await Task.Delay((int)(phaserDelay * 1000));
+        yield return CoUtils.Wait(phaserDelay);
         doll.offsetter.transform.DOScaleY(1f, 1.5f).SetEase(Ease.OutBounce).Play();
         doll.offsetter.transform.DOScaleX(1f, 1.5f).SetEase(Ease.OutCubic).Play();
     }

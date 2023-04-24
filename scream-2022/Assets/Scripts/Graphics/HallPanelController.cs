@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(PanelLightComponent))]
@@ -7,7 +8,11 @@ public class HallPanelController : MonoBehaviour {
     private new PanelLightComponent light;
     public PanelLightComponent Light => light ?? (light = GetComponent<PanelLightComponent>());
 
-    public async void Start() {
+    public void Start() {
+        StartCoroutine(StartRoutine());
+    }
+
+    public IEnumerator StartRoutine() {
         switch (Global.Instance.Data.Time) {
             case TimeblockType.Afternoon:
             case TimeblockType.Evening:
@@ -16,7 +21,7 @@ public class HallPanelController : MonoBehaviour {
                 Light.IsShutDown = false;
                 break;
             case TimeblockType.Midnight:
-                await Task.Delay(500);
+                yield return CoUtils.Wait(.5f);
                 Light.IsEvil = true;
                 Light.preferRunning = false;
                 light.IsShutDown = false;

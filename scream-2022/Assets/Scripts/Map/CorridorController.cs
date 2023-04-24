@@ -3,6 +3,8 @@ using UnityEngine;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
+using System.Collections;
+using DG.Tweening;
 
 [RequireComponent(typeof(Map))]
 public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> {
@@ -14,8 +16,12 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
     [SerializeField] private GameObject cork1;
     [SerializeField] private GameObject cork2;
     [Space]
+    [SerializeField] private bool introMode;
     [SerializeField] private bool deathMode;
     [SerializeField] private bool winMode;
+    [SerializeField] private bool sumiMode;
+    [Space]
+    [SerializeField] private GameObject monsterPrefab;
 
     public List<PanelLightComponent> allLights = new List<PanelLightComponent>();
 
@@ -28,33 +34,29 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
     public Map Map => map ?? (map = GetComponent<Map>());
 
     private int pass;
+    private bool stopGeneration;
+    private float awaitingX;
 
     private Dictionary<int, TacticsTerrainMesh> chunks = new Dictionary<int, TacticsTerrainMesh>();
-
-    private bool restrictOn;
-    private float restrictMult;
-
-    public async void Start() {
+    public void Start() {
         chunks.Add(0, Map.Terrain);
 
         if (deathMode || winMode) {
             DefaultShutdown = true;
             DefaultEvil = true;
         }
-        if (deathMode) { 
-            _ = RunDeathAsync();
+        if (deathMode) {
+            StartCoroutine(RunDeathRoutine());
         }
 
         if (winMode) {
-            await Task.Delay(3 * 1000);
-            await OrderedTurnOnAsync();
-            await Task.Delay(10 * 1000);
-            await Global.Instance.Maps.Lua.RunRoutineFromFile("finale_kowalski");
+            StartCoroutine(RunWinRoutine());
         }
-    }
 
-    public void OnEnable() {
-        
+        if (sumiMode) {
+            DefaultShutdown = true;
+            StartCoroutine(RunSumiRoutine());
+        }
     }
 
     public void OnDisable() {
@@ -65,68 +67,102 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
 
     public void Update() {
         AvatarEvent.Instance.FreeTraverse = true;
-        UpdateTerrain();
+        if (!stopGeneration) {
+            UpdateTerrain();
+        }
         UpdateLighting();
+    }
 
-        if (restrictOn) {
-            restrictMult += Time.deltaTime * (1f / 5f);
-            if (restrictMult > 1) {
-                restrictMult = 1;
+    public IEnumerator RunIntroRoutine(string routineName) {
+
+        yield return CoUtils.Wait(7f);
+        yield return RandomSwapRoutine(1.5f);
+        yield return CoUtils.Wait(5f);
+        yield return RandomShutdownRoutine(3.2f);
+        yield return CoUtils.Wait(3f);
+
+        yield return GoToGazerRoutine();
+        yield return MapManager.Instance.Lua.RunRoutineFromFile("pt1_02");
+
+    }
+
+    private IEnumerator RunDeathRoutine() {
+
+        yield return CoUtils.Wait(3f);
+        yield return OrderedTurnOnRoutine();
+        yield return CoUtils.Wait(6f);
+
+        var mobj = Instantiate(monsterPrefab);
+        mobj.transform.SetParent(Map.transform);
+        mobj.transform.position = new Vector3(AvatarEvent.Instance.transform.position.x + MonsterController.MaxDist, 0, 3.5f);
+        var monster = mobj.GetComponent<MonsterController>();
+
+        yield return CoUtils.Wait(30f);
+
+        stopGeneration = true;
+        var bestX = 0f;
+        foreach (var chunk in chunks) {
+            if (bestX == 0f || chunk.Value.transform.position.x < bestX) {
+                bestX = chunk.Value.transform.position.x;
             }
-            //AvatarEvent.Instance.TurnRate = 1f - restrictMult * .6f;
-            //AvatarEvent.Instance.TowardsBeastRestrict = restrictMult;
-            //AvatarEvent.Instance.TowardsBeastMove = restrictMult * .8f;
-            //AvatarEvent.Instance.PreventApproach = restrictMult;
-            //AvatarEvent.Instance.LookAway = restrictMult;
         }
-    }
 
-    public async Task RunRoutineAsync(string routineName) {
-        FadeData fade;
+        awaitingX = bestX  + 2f;
+        yield return HitXRoutine();
 
-        switch (routineName) {
-            case "pt1a":
-                await Task.Delay(700 * 1000);
-                await RandomSwapAsync(1.5f);
-                await Task.Delay(5 * 1000);
-                await RandomShutdownAsync(3.2f);
-                await Task.Delay(3 * 1000);
+        monster.Unbound = true;
+        yield return CoUtils.Wait(3f);
+        awaitingX = bestX  + 1f;
+        yield return HitXRoutine();
 
-                fade = IndexDatabase.Instance.Fades.GetData("black");
-                AvatarEvent.Instance.PauseInput();
-                await MapManager.Instance.Camera.fade.FadeRoutine(fade, invert: false, .1f);
-                MapManager.Instance.Teleport("Gazer", "pt1a", OrthoDir.North, isRaw: true);
-                MapOverlayUI.Instance.adv.SetWake(0);
-                await Task.Delay(2 * 1000);
-                await MapManager.Instance.Camera.fade.FadeRoutine(fade, invert: true, 2.5f);
-                AvatarEvent.Instance.UnpauseInput();
-
-                await MapManager.Instance.Lua.RunRoutineFromFile("pt1_02");
-                
-                break;
-        }
-    }
-
-    private async Task RunDeathAsync() {
-        restrictOn = true;
-        await Task.Delay(3 * 1000);
-        await OrderedTurnOnAsync();
-        await Task.Delay(6 * 1000);
-        await RandomShutdownAsync(3f);
-
-        var fade = IndexDatabase.Instance.Fades.GetData("black");
+        monster.Dying = true;
         AvatarEvent.Instance.PauseInput();
-        await MapManager.Instance.Camera.fade.FadeRoutine(fade, invert: false, .1f);
-        MapManager.Instance.Teleport("Gazer", "chair", OrthoDir.South, isRaw: true);
+        var targetPos = new Vector3(bestX, 0f, 3.5f);
+        var dir = (targetPos - AvatarEvent.Instance.FPSCam.transform.position).normalized;
+        var lookAngles = Quaternion.LookRotation(dir).eulerAngles;
+
+        AvatarEvent.Instance.FPSCam.transform.DORotate(lookAngles, MonsterController.DeathTime).Play();
+        
+        yield return MapOverlayUI.Instance.death.RunRoutine();
         MapOverlayUI.Instance.adv.SetWake(0);
-        await Task.Delay(2 * 1000);
-        await MapManager.Instance.Camera.fade.FadeRoutine(fade, invert: true, 2.5f);
+        yield return CoUtils.Wait(2f);
+
+        MapManager.Instance.Teleport("Gazer", "chair", OrthoDir.South, isRaw: true);
+
+        MapOverlayUI.Instance.death.gameObject.SetActive(false);
         AvatarEvent.Instance.UnpauseInput();
 
-        await MapManager.Instance.Lua.RunRoutineFromFile("pt2_01");
+        yield return MapManager.Instance.Lua.RunRoutineFromFile("pt2_01");
+
+        AvatarEvent.Instance.UnpauseInput();
     }
 
-    public async Task OrderedTurnOnAsync() {
+    private IEnumerator GoToGazerRoutine() {
+        var fade = IndexDatabase.Instance.Fades.GetData("black");
+        AvatarEvent.Instance.PauseInput();
+        yield return MapManager.Instance.Camera.fade.FadeRoutine(fade, invert: false, .1f);
+        MapManager.Instance.Teleport("Gazer", "chair", OrthoDir.South, isRaw: true);
+        MapOverlayUI.Instance.adv.SetWake(0);
+        yield return CoUtils.Wait(2f);
+        yield return MapManager.Instance.Camera.fade.FadeRoutine(fade, invert: true, 2.5f);
+        AvatarEvent.Instance.UnpauseInput();
+    }
+
+    private IEnumerator RunWinRoutine() {
+        yield return CoUtils.Wait(3f);
+        yield return OrderedTurnOnRoutine();
+        yield return CoUtils.Wait(3f);
+        yield return Global.Instance.Maps.Lua.RunRoutineFromFile("finale_kowalski");
+    }
+
+    private IEnumerator RunSumiRoutine() {
+        UpdateTerrain();
+        yield return CoUtils.Wait(.1f);
+        yield return OrderedTurnOnRoutine();
+        stopGeneration = true;
+    }
+
+    public IEnumerator OrderedTurnOnRoutine() {
         DefaultShutdown = false;
         var orderedLights = allLights.OrderBy(a => Vector3.Distance(AvatarEvent.Instance.transform.position, a.transform.position)).ToList();
         for (var i = 0; i < orderedLights.Count; i += 1) {
@@ -141,27 +177,29 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
             
             foreach (var light in lgroup) {
                 light.IsShutDown = false;
-                await Task.Delay(50);
+                light.PlayBootupSFX();
+                yield return CoUtils.Wait(.05f);
             }
-            await Task.Delay(800);
+            yield return CoUtils.Wait(.8f);
         }
     }
 
-    public async Task RandomSwapAsync(float duration = 1f) {
+    public IEnumerator RandomSwapRoutine(float duration = 1f) {
         DefaultEvil = true;
         var randomLights = allLights.OrderBy(a => Guid.NewGuid()).ToList();
         foreach (var light in randomLights) {
             light.IsEvil = !light.IsEvil;
-            await Task.Delay((int)(1000 * duration / randomLights.Count()));
+            yield return CoUtils.Wait(duration / randomLights.Count());
         }
     }
 
-    public async Task RandomShutdownAsync(float duration = 2.5f, bool startup = false) {
+    public IEnumerator RandomShutdownRoutine(float duration = 2.5f, bool startup = false) {
         DefaultShutdown = true;
         var randomLights = allLights.OrderBy(a => Guid.NewGuid()).ToList();
         foreach (var light in randomLights) {
             light.IsShutDown = !startup;
-            await Task.Delay((int)(1000 * duration / randomLights.Count()));
+            light.PlayBootupSFX();
+            yield return CoUtils.Wait(duration / randomLights.Count());
         }
     }
 
@@ -239,5 +277,11 @@ public class CorridorController : MonoBehaviour, IComparer<PanelLightComponent> 
         var a = Vector3.Distance(x.transform.position, avatar.transform.position);
         var b = Vector3.Distance(y.transform.position, avatar.transform.position);
         return Mathf.RoundToInt(1000 * (a - b));
+    }
+
+    private IEnumerator HitXRoutine() {
+        while (AvatarEvent.Instance.transform.position.x > awaitingX) {
+            yield return null;
+        }
     }
 }
